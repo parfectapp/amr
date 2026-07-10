@@ -511,7 +511,7 @@ window.__tulIdx = window.AMR_TUL ? VOFF + VINYLS.indexOf(window.AMR_TUL) : null;
 (function(){
   var rail = document.getElementById('dropsrail');
   if(!rail) return;
-  var dir = 1, paused = false, dragging = false, sx = 0, sl = 0, moved = false, idle = null;
+  var dir = 1, paused = false, dragging = false, down = false, sx = 0, sl = 0, moved = false, idle = null, pid = null;
   function maxScroll(){ return rail.scrollWidth - rail.clientWidth; }
   // deriva automática lenta, rebota en los extremos
   (function drift(){
@@ -527,14 +527,22 @@ window.__tulIdx = window.AMR_TUL ? VOFF + VINYLS.indexOf(window.AMR_TUL) : null;
   rail.addEventListener('mouseenter', function(){ paused = true; });
   rail.addEventListener('mouseleave', function(){ paused = false; });
   function resumeSoon(){ paused = true; clearTimeout(idle); idle = setTimeout(function(){ paused = false; }, 2600); }
-  // arrastrar con el mouse
-  rail.addEventListener('pointerdown', function(e){ dragging = true; moved = false; sx = e.clientX; sl = rail.scrollLeft; rail.classList.add('dragging'); rail.setPointerCapture(e.pointerId); });
-  rail.addEventListener('pointermove', function(e){ if(!dragging) return; var dx = e.clientX - sx; if(Math.abs(dx) > 3) moved = true; rail.scrollLeft = sl - dx; });
-  function endDrag(){ if(!dragging) return; dragging = false; rail.classList.remove('dragging'); dir = (rail.scrollLeft > maxScroll()/2) ? -1 : 1; resumeSoon(); }
+  // arrastrar con el mouse (touch/pen usan el scroll nativo del contenedor)
+  rail.addEventListener('pointerdown', function(e){
+    if(e.pointerType !== 'mouse' || (e.button && e.button !== 0)) return;
+    down = true; dragging = false; moved = false; sx = e.clientX; sl = rail.scrollLeft; pid = e.pointerId;
+  });
+  rail.addEventListener('pointermove', function(e){
+    if(!down) return;
+    var dx = e.clientX - sx;
+    if(!dragging){ if(Math.abs(dx) < 6) return; dragging = true; moved = true; rail.classList.add('dragging'); try{ rail.setPointerCapture(pid); }catch(_){} }
+    rail.scrollLeft = sl - dx;
+  });
+  function endDrag(){ down = false; if(!dragging) return; dragging = false; rail.classList.remove('dragging'); dir = (rail.scrollLeft > maxScroll()/2) ? -1 : 1; resumeSoon(); }
   rail.addEventListener('pointerup', endDrag);
   rail.addEventListener('pointercancel', endDrag);
-  // no dispares play si venías arrastrando
-  rail.addEventListener('click', function(e){ if(moved){ e.stopPropagation(); e.preventDefault(); } }, true);
+  // solo bloquea el play si REALMENTE hubo arrastre (>6px con mouse)
+  rail.addEventListener('click', function(e){ if(moved){ e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
   rail.addEventListener('wheel', resumeSoon, {passive:true});
 })();
 /* hero: el disco TULUM (nuevo lanzamiento) */
