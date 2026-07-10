@@ -82,10 +82,11 @@ def _run():
     make_cover(pk, len(files), secs)
     print('portada THE SET lista')
 
-def make_cover(peaks, n_tracks, secs, title='THE SET', kicker='CONTINUOUS MIX', out='amr-set-the-set'):
+def make_cover(peaks, n_tracks, secs, title='THE SET', kicker='CONTINUOUS MIX', out='amr-set-the-set',
+               accent='#A62D3E', accent_lt='#C24C5C', accent_dk='#7d1f2e'):
     """Portada de un vinilo real sobre papel hueso (coherente con el hero)."""
     from PIL import Image
-    BONE='#EAE6DF'; BONE2='#e0dad1'; INK='#141210'; WINE='#A62D3E'; WINE_LT='#C24C5C'; MUT='#6E675E'
+    BONE='#EAE6DF'; BONE2='#e0dad1'; INK='#141210'; WINE=accent; WINE_LT=accent_lt; MUT='#6E675E'
     W=1400; cx=cy=W/2; R=560
     mm=f'{secs//60}:{secs%60:02d}'
     s=[f'<svg viewBox="0 0 {W} {W}" xmlns="http://www.w3.org/2000/svg">']
@@ -121,7 +122,7 @@ def make_cover(peaks, n_tracks, secs, title='THE SET', kicker='CONTINUOUS MIX', 
     # etiqueta central vino
     s.append(f'<circle cx="{cx}" cy="{cy}" r="212" fill="none" stroke="#0c0a07" stroke-width="6"/>')
     s.append(f'<circle cx="{cx}" cy="{cy}" r="205" fill="url(#lbl)"/>')
-    s.append(f'<circle cx="{cx}" cy="{cy}" r="205" fill="none" stroke="#7d1f2e" stroke-width="2"/>')
+    s.append(f'<circle cx="{cx}" cy="{cy}" r="205" fill="none" stroke="{accent_dk}" stroke-width="2"/>')
     fs = 82 if len(title) <= 7 else 60
     s.append(f'<path id="atop" d="M {cx-160} {cy} A 160 160 0 0 1 {cx+160} {cy}" fill="none"/>')
     s.append('<text font-family="Courier New, monospace" font-size="23" letter-spacing="8" '

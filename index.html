@@ -234,6 +234,17 @@ body.hasplayer{padding-bottom:70px}
 .vtracks li b{color:var(--amber);font-weight:400;min-width:24px}
 .vtracks li.on{color:var(--ink)}
 @media(max-width:520px){.vtracks{columns:1}}
+/* MONUMENTS en naranja (SESIÓN 001 queda en vino) */
+.vprod.orange .vlabel{background:radial-gradient(circle at 42% 38%,#e0954f,#C96F2B);box-shadow:0 0 0 5px #8a4a1a}
+.vprod.orange .vdisc::before{border-color:rgba(201,111,43,.45)}
+.vprod.orange .vgo.on{background:#C96F2B}
+.vprod.orange .vkick,.vprod.orange .vstats b,.vprod.orange .vbuy b,.vprod.orange .vtracks li b{color:#C96F2B}
+.vprod.orange .vplay:hover{background:#C96F2B;border-color:#C96F2B}
+.vprod.orange .vbuy:hover{border-color:#C96F2B;color:#C96F2B}
+#records .hk{color:#C96F2B}
+#records .num b{color:#C96F2B}
+#records .vinyl::after{background:#C96F2B}
+#records .card::after{background:#C96F2B}
 
 /* ---- reveal ---- */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s}
@@ -280,7 +291,7 @@ body.hasplayer{padding-bottom:70px}
 <section class="sec" id="records">
   <div class="sh">
     <div><span class="hk">MONUMENTS — THE EP</span><h2>Five sides, one record each.</h2></div>
-    <p>Cinco cortes en vinilo rojo vino, edición de pocos. Dale play a cada uno — la funda se desliza y el disco gira.</p>
+    <p>Cinco cortes en vinilo ámbar, edición de pocos. Dale play a cada uno — la funda se desliza y el disco gira.</p>
   </div>
   <div class="grid" id="recordGrid"></div>
 </section>
@@ -393,7 +404,8 @@ VINYLS.forEach(function(p,j){
   var gi = VOFF + j;   // índice global en T
   var tl = (p.titles||[]).map(function(t,k){ return '<li id="v'+j+'-tk'+k+'"><b>'+(k+1<10?'0':'')+(k+1)+'</b> '+t+'</li>'; }).join('');
   var el = document.createElement('div');
-  el.className = 'vprod'; el.id = 'vprod-'+j;
+  el.className = 'vprod' + (p.id==='amr-monuments-side' ? ' orange' : '');
+  el.id = 'vprod-'+j;
   el.innerHTML =
     '<div class="vdiscwrap">'+
       '<button class="vdisc" id="vdisc-'+j+'" aria-label="Play '+p.title+'">'+
@@ -403,7 +415,7 @@ VINYLS.forEach(function(p,j){
       '<span class="vgo" id="vgo-'+j+'">▸</span>'+
     '</div>'+
     '<div class="vmeta">'+
-      '<span class="vkick">'+(p.kicker||'')+' · WINE-RED VINYL</span>'+
+      '<span class="vkick">'+(p.kicker||'')+' · '+(p.id==='amr-monuments-side'?'AMBER VINYL':'WINE-RED VINYL')+'</span>'+
       '<h3>'+p.title+'</h3>'+
       '<div class="vstats"><span><b>'+p.tracks+'</b> TRACKS</span><span><b>'+fmt(p.dur)+'</b></span><span>EDITION OF <b>'+p.edition+'</b></span></div>'+
       '<div class="vact">'+
