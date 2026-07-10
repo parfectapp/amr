@@ -244,22 +244,15 @@ body.hasplayer{padding-bottom:70px}
 .vprod.wine .vkick,.vprod.wine .vstats b,.vprod.wine .vbuy b,.vprod.wine .vinfo-lbl b,.vprod.wine .vtracks li b{color:#A62D3E}
 .vprod.wine .vplay:hover{background:#A62D3E;border-color:#A62D3E}
 .vprod.wine .vbuy:hover{border-color:#A62D3E;color:#A62D3E}
-/* ---- carril horizontal de los dos drops ---- */
-.hscroll{position:relative;height:230vh}
-.hsticky{position:sticky;top:0;height:100vh;overflow:hidden}
-.htrack{display:flex;height:100%;width:200vw;will-change:transform}
-.hpanel{width:100vw;height:100vh;flex:none;display:flex;align-items:center}
-.hpanel .nrin{padding-top:clamp(20px,4vh,50px);padding-bottom:clamp(20px,4vh,50px);width:100%}
-.hpanel .nrtitle{font-size:clamp(60px,9vw,132px)}
-.hdots{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:6;display:flex;gap:10px}
-.hdots i{width:9px;height:9px;border-radius:50%;background:rgba(234,230,223,.35);transition:background .3s,transform .3s}
-.hdots i.on{background:var(--bone);transform:scale(1.25)}
+/* ---- carril horizontal libre: deriva sola, arrastrable ---- */
+.dropsrail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;-webkit-overflow-scrolling:touch}
+.dropsrail::-webkit-scrollbar{display:none}
+.dropsrail.dragging{cursor:grabbing;scroll-snap-type:none}
+.hpanel{flex:0 0 100%;scroll-snap-align:center;display:flex;align-items:center;min-height:min(760px,84vh)}
+.hpanel .nrin{padding-top:clamp(30px,5vh,60px);padding-bottom:clamp(30px,5vh,60px);width:100%}
 @media(max-width:860px){
-  .hscroll{height:auto}
-  .hsticky{position:static;height:auto;overflow:visible}
-  .htrack{display:block;width:auto;transform:none !important}
-  .hpanel{width:auto;height:auto;display:block}
-  .hdots{display:none}
+  .dropsrail{display:block;overflow:visible;cursor:auto}
+  .hpanel{display:block;min-height:0}
 }
 
 /* ---- NUEVO LANZAMIENTO — noche azul, vivo ---- */
@@ -380,10 +373,8 @@ body.hasplayer{padding-bottom:70px}
 <!-- MARQUEE -->
 <div class="mq"><div id="mqtrack"></div></div>
 
-<!-- LOS DOS DROPS — horizontal con scroll -->
-<div class="hscroll" id="drops">
-<div class="hsticky">
-<div class="htrack" id="htrack">
+<!-- LOS DOS DROPS — carril horizontal libre (deriva sola, arrastrable) -->
+<div class="dropsrail" id="dropsrail">
 <!-- NUEVO LANZAMIENTO — TULUM (noche azul) -->
 <section class="nr hpanel" id="newrelease">
   <div class="nrin">
@@ -409,10 +400,7 @@ body.hasplayer{padding-bottom:70px}
     </div>
   </div>
 </section>
-</div><!-- /htrack -->
-<div class="hdots" id="hdots"><i class="on"></i><i></i></div>
-</div><!-- /hsticky -->
-</div><!-- /hscroll -->
+</div><!-- /dropsrail -->
 
 <!-- LO MEJOR — MONUMENTS × TULUM -->
 <section class="sec" id="records">
@@ -502,21 +490,35 @@ var T = ROLAS.concat(VINYLS);                                  // reproducibles:
 var VOFF = ROLAS.length;
 window.__tulIdx = window.AMR_TUL ? VOFF + VINYLS.indexOf(window.AMR_TUL) : null;
 
-/* ---- carril horizontal de los drops (scroll vertical → deslizamiento) ---- */
+/* ---- carril de los drops: deriva sola (ida y vuelta) + arrastrable ---- */
 (function(){
-  var hs = document.getElementById('drops'), tr = document.getElementById('htrack'), dots = document.getElementById('hdots');
-  if(!hs || !tr) return;
-  function upd(){
-    if(innerWidth <= 860){ tr.style.transform = ''; return; }
-    var total = hs.offsetHeight - innerHeight;
-    var p = Math.min(1, Math.max(0, -hs.getBoundingClientRect().top / total));
-    tr.style.transform = 'translateX(' + (-p * (tr.scrollWidth - innerWidth)) + 'px)';
-    if(dots){ var ds = dots.children; ds[0].classList.toggle('on', p < 0.5); ds[1].classList.toggle('on', p >= 0.5); }
-  }
-  // doble vía: captura (el scroller no es window por overflow-x:hidden) + rAF (suavidad)
-  document.addEventListener('scroll', upd, {passive:true, capture:true});
-  addEventListener('resize', upd);
-  (function loopH(){ upd(); requestAnimationFrame(loopH); })();
+  var rail = document.getElementById('dropsrail');
+  if(!rail) return;
+  var dir = 1, paused = false, dragging = false, sx = 0, sl = 0, moved = false, idle = null;
+  function maxScroll(){ return rail.scrollWidth - rail.clientWidth; }
+  // deriva automática lenta, rebota en los extremos
+  (function drift(){
+    requestAnimationFrame(drift);
+    if(paused || dragging || innerWidth <= 860) return;
+    var m = maxScroll();
+    if(m <= 1) return;
+    rail.scrollLeft += dir * 0.45;
+    if(rail.scrollLeft >= m){ rail.scrollLeft = m; dir = -1; }
+    else if(rail.scrollLeft <= 0){ rail.scrollLeft = 0; dir = 1; }
+  })();
+  // pausa al pasar el mouse; retoma sola tras un rato quieto
+  rail.addEventListener('mouseenter', function(){ paused = true; });
+  rail.addEventListener('mouseleave', function(){ paused = false; });
+  function resumeSoon(){ paused = true; clearTimeout(idle); idle = setTimeout(function(){ paused = false; }, 2600); }
+  // arrastrar con el mouse
+  rail.addEventListener('pointerdown', function(e){ dragging = true; moved = false; sx = e.clientX; sl = rail.scrollLeft; rail.classList.add('dragging'); rail.setPointerCapture(e.pointerId); });
+  rail.addEventListener('pointermove', function(e){ if(!dragging) return; var dx = e.clientX - sx; if(Math.abs(dx) > 3) moved = true; rail.scrollLeft = sl - dx; });
+  function endDrag(){ if(!dragging) return; dragging = false; rail.classList.remove('dragging'); dir = (rail.scrollLeft > maxScroll()/2) ? -1 : 1; resumeSoon(); }
+  rail.addEventListener('pointerup', endDrag);
+  rail.addEventListener('pointercancel', endDrag);
+  // no dispares play si venías arrastrando
+  rail.addEventListener('click', function(e){ if(moved){ e.stopPropagation(); e.preventDefault(); } }, true);
+  rail.addEventListener('wheel', resumeSoon, {passive:true});
 })();
 /* hero: el disco TULUM (nuevo lanzamiento) */
 (function(){
