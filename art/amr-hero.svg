@@ -1,0 +1,59 @@
+<svg viewBox="0 0 320 380" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs>
+    <filter id="inkH" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.011 0.015" numOctaves="3" seed="41" result="w"/>
+      <feDisplacementMap in="SourceGraphic" in2="w" scale="14" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+    <filter id="gH" x="-140%" y="-140%" width="380%" height="380%"><feGaussianBlur stdDeviation="6"/></filter>
+  </defs>
+
+  <!-- sombra -->
+  <ellipse cx="150" cy="336" rx="128" ry="13" fill="rgba(20,18,16,0.05)"/>
+
+  <!-- disco -->
+  <g filter="url(#inkH)">
+    <circle cx="150" cy="206" r="128" fill="#141210"/>
+  </g>
+  <!-- surcos -->
+  <g fill="none" stroke="#EAE6DF" stroke-opacity="0.13">
+    <circle cx="150" cy="206" r="118" stroke-width="1"/>
+    <circle cx="150" cy="206" r="106" stroke-width="1"/>
+    <circle cx="150" cy="206" r="94" stroke-width="1"/>
+    <circle cx="150" cy="206" r="82" stroke-width="1"/>
+    <circle cx="150" cy="206" r="70" stroke-width="1"/>
+    <circle cx="150" cy="206" r="58" stroke-width="1"/>
+  </g>
+  <!-- brillo del surco reproduciendo -->
+  <path d="M150 88 A118 118 0 0 1 268 206" fill="none" stroke="#C96F2B" stroke-width="2.4" stroke-linecap="round" opacity="0.55" filter="url(#gH)"/>
+  <path d="M150 88 A118 118 0 0 1 268 206" fill="none" stroke="#C96F2B" stroke-width="1.3" stroke-linecap="round" opacity="0.85"/>
+
+  <!-- etiqueta -->
+  <circle cx="150" cy="206" r="40" fill="#C96F2B"/>
+  <circle cx="150" cy="206" r="40" fill="none" stroke="#EAE6DF" stroke-width="1.4" stroke-opacity="0.5"/>
+  <circle cx="150" cy="206" r="28" fill="none" stroke="#141210" stroke-width="1" stroke-opacity="0.35"/>
+  <!-- eje -->
+  <circle cx="150" cy="206" r="3.4" fill="#EAE6DF"/>
+
+  <!-- tonearm -->
+  <g filter="url(#inkH)">
+    <!-- pivote -->
+    <circle cx="272" cy="70" r="11" fill="#141210"/>
+    <!-- contrapeso -->
+    <rect x="276" y="44" width="26" height="12" rx="4" transform="rotate(30 289 50)" fill="#141210"/>
+    <!-- brazo -->
+    <path d="M272 70 L186 176" stroke="#141210" stroke-width="6" stroke-linecap="round"/>
+    <!-- headshell -->
+    <rect x="172" y="168" width="26" height="12" rx="2" transform="rotate(52 185 174)" fill="#141210"/>
+  </g>
+  <!-- aguja / contacto ámbar -->
+  <circle cx="180" cy="184" r="4.6" fill="#C96F2B"/>
+  <circle cx="180" cy="184" r="9" fill="#C96F2B" opacity="0.3" filter="url(#gH)"/>
+
+  <!-- marcas blueprint -->
+  <circle cx="70" cy="120" r="2.2" fill="#141210"/>
+  <circle cx="250" cy="300" r="2.4" fill="#141210"/>
+  <circle cx="60" cy="286" r="1.8" fill="#141210"/>
+  <path d="M20 206 L44 206" stroke="#C96F2B" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+  <path d="M256 254 L276 254" stroke="#C96F2B" stroke-width="1.6" stroke-linecap="round" opacity="0.5"/>
+  <text x="20" y="198" font-family="'IBM Plex Mono',monospace" font-size="9" letter-spacing="2" fill="#6E675E">33⅓</text>
+</svg>
