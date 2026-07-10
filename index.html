@@ -241,6 +241,13 @@ body.hasplayer{padding-bottom:70px}
 .vprod.wine .vkick,.vprod.wine .vstats b,.vprod.wine .vbuy b,.vprod.wine .vinfo-lbl b,.vprod.wine .vtracks li b{color:#A62D3E}
 .vprod.wine .vplay:hover{background:#A62D3E;border-color:#A62D3E}
 .vprod.wine .vbuy:hover{border-color:#A62D3E;color:#A62D3E}
+/* MINIMAL SET en azul */
+.vprod.blue .vlabel{background:radial-gradient(circle at 42% 38%,#5B9BD5,#2E6FB0);box-shadow:0 0 0 5px #1a4a7a}
+.vprod.blue .vdisc::before{border-color:rgba(46,111,176,.45)}
+.vprod.blue .vgo.on{background:#2E6FB0}
+.vprod.blue .vkick,.vprod.blue .vstats b,.vprod.blue .vbuy b,.vprod.blue .vinfo-lbl b,.vprod.blue .vtracks li b{color:#2E6FB0}
+.vprod.blue .vplay:hover{background:#2E6FB0;border-color:#2E6FB0}
+.vprod.blue .vbuy:hover{border-color:#2E6FB0;color:#2E6FB0}
 
 /* ---- reveal ---- */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s}
@@ -359,14 +366,14 @@ body.hasplayer{padding-bottom:70px}
 </div>
 
 <script src="tracks.js"></script>
-<script src="set.js"></script>
 <script src="monuments.js"></script>
 <script src="sesion2.js"></script>
+<script src="minimal.js"></script>
 <script>
 var CONFIG = { email:'andremacouzetruiz@gmail.com', wa:'' }; // pon tu WhatsApp con lada, ej '52443...'
 
 var ROLAS = window.AMR_TRACKS || [];                           // 5 rolas (grid)
-var VINYLS = [window.AMR_MON, window.AMR_SET, window.AMR_S2].filter(Boolean); // discos completos
+var VINYLS = [window.AMR_MON, window.AMR_S2, window.AMR_MIN].filter(Boolean); // discos completos
 var T = ROLAS.concat(VINYLS);                                  // reproducibles: 0..4 rolas, 5.. vinilos
 var VOFF = ROLAS.length;
 var cur = -1, audio = new Audio(); audio.preload = 'metadata';
@@ -401,7 +408,7 @@ VINYLS.forEach(function(p,j){
   var gi = VOFF + j;   // índice global en T
   var tl = (p.titles||[]).map(function(t,k){ return '<li id="v'+j+'-tk'+k+'"><b>'+(k+1<10?'0':'')+(k+1)+'</b> '+t+'</li>'; }).join('');
   var el = document.createElement('div');
-  el.className = 'vprod' + ((p.id==='amr-set-the-set'||p.id==='amr-sesion-002') ? ' wine' : '');
+  el.className = 'vprod' + (p.id==='amr-sesion-002' ? ' wine' : (p.id==='amr-minimal' ? ' blue' : ''));
   el.id = 'vprod-'+j;
   el.innerHTML =
     '<div class="vdiscwrap">'+
@@ -412,7 +419,7 @@ VINYLS.forEach(function(p,j){
       '<span class="vgo" id="vgo-'+j+'">▸</span>'+
     '</div>'+
     '<div class="vmeta">'+
-      '<span class="vkick">'+(p.kicker||'')+' · '+(p.id==='amr-monuments-side'?'AMBER VINYL':'WINE-RED VINYL')+'</span>'+
+      '<span class="vkick">'+(p.kicker||'')+' · '+(p.id==='amr-monuments-side'?'AMBER VINYL':(p.id==='amr-minimal'?'BLUE VINYL':'WINE-RED VINYL'))+'</span>'+
       '<h3>'+p.title+'</h3>'+
       '<div class="vstats"><span><b>'+p.tracks+'</b> TRACKS</span><span><b>'+fmt(p.dur)+'</b></span><span>EDITION OF <b>'+p.edition+'</b></span></div>'+
       '<div class="vact">'+

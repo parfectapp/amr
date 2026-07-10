@@ -86,6 +86,8 @@ def make_cover(peaks, n_tracks, secs, title='THE SET', kicker='CONTINUOUS MIX', 
                accent='#A62D3E', accent_lt='#C24C5C', accent_dk='#7d1f2e'):
     """Portada de un vinilo real sobre papel hueso (coherente con el hero)."""
     from PIL import Image
+    def esc(s): return str(s).replace('&','&amp;').replace('<','&lt;').replace('>','&gt;')
+    title=esc(title); kicker=esc(kicker)
     BONE='#EAE6DF'; BONE2='#e0dad1'; INK='#141210'; WINE=accent; WINE_LT=accent_lt; MUT='#6E675E'
     W=1400; cx=cy=W/2; R=560
     mm=f'{secs//60}:{secs%60:02d}'
