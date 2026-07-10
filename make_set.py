@@ -82,8 +82,8 @@ def _run():
     make_cover(pk, len(files), secs)
     print('portada THE SET lista')
 
-def make_cover(peaks, n_tracks, secs):
-    """Portada del SET: un vinilo real sobre papel hueso (coherente con el hero, no el bloque negro)."""
+def make_cover(peaks, n_tracks, secs, title='THE SET', kicker='CONTINUOUS MIX', out='amr-set-the-set'):
+    """Portada de un vinilo real sobre papel hueso (coherente con el hero)."""
     from PIL import Image
     BONE='#EAE6DF'; BONE2='#e0dad1'; INK='#141210'; WINE='#A62D3E'; WINE_LT='#C24C5C'; MUT='#6E675E'
     W=1400; cx=cy=W/2; R=560
@@ -122,11 +122,12 @@ def make_cover(peaks, n_tracks, secs):
     s.append(f'<circle cx="{cx}" cy="{cy}" r="212" fill="none" stroke="#0c0a07" stroke-width="6"/>')
     s.append(f'<circle cx="{cx}" cy="{cy}" r="205" fill="url(#lbl)"/>')
     s.append(f'<circle cx="{cx}" cy="{cy}" r="205" fill="none" stroke="#7d1f2e" stroke-width="2"/>')
+    fs = 82 if len(title) <= 7 else 60
     s.append(f'<path id="atop" d="M {cx-160} {cy} A 160 160 0 0 1 {cx+160} {cy}" fill="none"/>')
     s.append('<text font-family="Courier New, monospace" font-size="23" letter-spacing="8" '
-             f'fill="{BONE}" opacity="0.9"><textPath href="#atop" startOffset="50%" text-anchor="middle">CONTINUOUS MIX</textPath></text>')
-    s.append(f'<text x="{cx}" y="{cy-6}" font-family="Georgia, serif" font-weight="bold" font-size="82" '
-             f'letter-spacing="3" fill="{BONE}" text-anchor="middle">THE SET</text>')
+             f'fill="{BONE}" opacity="0.9"><textPath href="#atop" startOffset="50%" text-anchor="middle">{kicker}</textPath></text>')
+    s.append(f'<text x="{cx}" y="{cy-6}" font-family="Georgia, serif" font-weight="bold" font-size="{fs}" '
+             f'letter-spacing="2" fill="{BONE}" text-anchor="middle">{title}</text>')
     s.append(f'<text x="{cx}" y="{cy+44}" font-family="Courier New, monospace" font-size="22" letter-spacing="4" '
              f'fill="{BONE}" opacity="0.85" text-anchor="middle">{n_tracks} TRACKS · {mm}</text>')
     s.append(f'<path id="abot" d="M {cx-160} {cy} A 160 160 0 0 0 {cx+160} {cy}" fill="none"/>')
@@ -137,12 +138,12 @@ def make_cover(peaks, n_tracks, secs):
     s.append('</svg>')
     svg=''.join(s)
     os.makedirs(os.path.join(HERE,'art'), exist_ok=True)
-    svgp=os.path.join(HERE,'art','amr-set-the-set.svg'); open(svgp,'w').write(svg)
+    svgp=os.path.join(HERE,'art',out+'.svg'); open(svgp,'w').write(svg)
     subprocess.run(['qlmanage','-t','-s','2800','-o',os.path.join(HERE,'art'),svgp], capture_output=True)
-    raw=os.path.join(HERE,'art','amr-set-the-set.svg.png')
+    raw=os.path.join(HERE,'art',out+'.svg.png')
     if os.path.exists(raw):
         im=Image.open(raw).convert('RGB').resize((1400,1400), Image.LANCZOS)
-        im.save(os.path.join(HERE,'art','amr-set-the-set.png')); os.remove(raw)
+        im.save(os.path.join(HERE,'art',out+'.png')); os.remove(raw)
 
 if __name__ == '__main__':
     _run()
