@@ -7,10 +7,10 @@
 <meta property="og:site_name" content="AMR">
 <meta property="og:title" content="AMR — MONUMENTS EP">
 <meta property="og:description" content="Five records cut like monuments. Numbered vinyl, editions of a few.">
-<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23141210"/><circle cx="16" cy="16" r="5.5" fill="%23A62D3E"/><circle cx="16" cy="16" r="1.8" fill="%23EAE6DF"/></svg>'>
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23141210"/><circle cx="16" cy="16" r="5.5" fill="%23C96F2B"/><circle cx="16" cy="16" r="1.8" fill="%23EAE6DF"/></svg>'>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono&family=Instrument+Serif&display=swap" rel="stylesheet">
 <style>
-:root{--bone:#EAE6DF;--bone2:#e0dad1;--ink:#141210;--amber:#A62D3E;--mut:#6E675E;--night:#16130f}
+:root{--bone:#EAE6DF;--bone2:#e0dad1;--ink:#141210;--amber:#C96F2B;--mut:#6E675E;--night:#16130f}
 *{box-sizing:border-box}
 html{scroll-padding-top:70px;scroll-behavior:smooth;overflow-x:hidden}
 body{margin:0;background:var(--bone);color:var(--ink);font-family:Archivo,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -202,9 +202,9 @@ body.hasplayer{padding-bottom:70px}
   background:repeating-radial-gradient(circle at 50% 50%,#141110 0 2px,#242019 2px 4.8px);
   box-shadow:0 22px 60px rgba(20,18,16,.35),inset 0 0 70px rgba(0,0,0,.4);display:grid;place-items:center;transition:transform .4s}
 .vdiscwrap:hover .vdisc{transform:scale(1.02)}
-.vdisc::before{content:"";position:absolute;width:74%;height:74%;border-radius:50%;border:1px solid rgba(166,45,62,.4)}
+.vdisc::before{content:"";position:absolute;width:74%;height:74%;border-radius:50%;border:1px solid rgba(201,111,43,.4)}
 .vlabel{position:absolute;width:43%;height:43%;border-radius:50%;display:grid;place-content:center;text-align:center;
-  background:radial-gradient(circle at 42% 38%,#C24C5C,var(--amber));box-shadow:0 0 0 5px #7d1f2e;color:var(--bone)}
+  background:radial-gradient(circle at 42% 38%,#e0954f,var(--amber));box-shadow:0 0 0 5px #8a4a1a;color:var(--bone)}
 .vlabel b{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(20px,3vw,30px);line-height:.95}
 .vlabel i{font-family:'IBM Plex Mono',monospace;font-style:normal;font-size:9px;letter-spacing:.16em;opacity:.85;margin-top:6px}
 .vhole{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4.4%;height:4.4%;border-radius:50%;background:var(--bone);z-index:3}
@@ -225,26 +225,21 @@ body.hasplayer{padding-bottom:70px}
 .vbuy:hover{border-color:var(--amber);color:var(--amber)}
 .vbuy b{color:var(--amber);font-weight:400}
 .vinfo{margin:22px auto 0;max-width:380px;text-align:left}
-.vinfo summary{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);cursor:pointer;padding:11px 0;border-top:1px solid rgba(20,18,16,.14);list-style:none}
-.vinfo summary::-webkit-details-marker{display:none}
-.vinfo summary::before{content:"+ ";color:var(--amber)}
-.vinfo[open] summary::before{content:"– "}
+.vinfo-lbl{display:block;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);padding:11px 0;border-top:1px solid rgba(20,18,16,.14)}
+.vinfo-lbl b{color:var(--amber);font-weight:400}
 .vtracks{margin:6px 0 4px;padding:0;list-style:none;columns:2;column-gap:26px}
 .vtracks li{display:flex;gap:10px;padding:6px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--mut);break-inside:avoid}
 .vtracks li b{color:var(--amber);font-weight:400;min-width:24px}
 .vtracks li.on{color:var(--ink)}
 @media(max-width:520px){.vtracks{columns:1}}
 /* MONUMENTS en naranja (SESIÓN 001 queda en vino) */
-.vprod.orange .vlabel{background:radial-gradient(circle at 42% 38%,#e0954f,#C96F2B);box-shadow:0 0 0 5px #8a4a1a}
-.vprod.orange .vdisc::before{border-color:rgba(201,111,43,.45)}
-.vprod.orange .vgo.on{background:#C96F2B}
-.vprod.orange .vkick,.vprod.orange .vstats b,.vprod.orange .vbuy b,.vprod.orange .vtracks li b{color:#C96F2B}
-.vprod.orange .vplay:hover{background:#C96F2B;border-color:#C96F2B}
-.vprod.orange .vbuy:hover{border-color:#C96F2B;color:#C96F2B}
-#records .hk{color:#C96F2B}
-#records .num b{color:#C96F2B}
-#records .vinyl::after{background:#C96F2B}
-#records .card::after{background:#C96F2B}
+/* SESIÓN 001 en rojo vino (todo lo demás queda naranja) */
+.vprod.wine .vlabel{background:radial-gradient(circle at 42% 38%,#C24C5C,#A62D3E);box-shadow:0 0 0 5px #7d1f2e}
+.vprod.wine .vdisc::before{border-color:rgba(166,45,62,.45)}
+.vprod.wine .vgo.on{background:#A62D3E}
+.vprod.wine .vkick,.vprod.wine .vstats b,.vprod.wine .vbuy b,.vprod.wine .vinfo-lbl b,.vprod.wine .vtracks li b{color:#A62D3E}
+.vprod.wine .vplay:hover{background:#A62D3E;border-color:#A62D3E}
+.vprod.wine .vbuy:hover{border-color:#A62D3E;color:#A62D3E}
 
 /* ---- reveal ---- */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .9s,transform .9s}
@@ -404,7 +399,7 @@ VINYLS.forEach(function(p,j){
   var gi = VOFF + j;   // índice global en T
   var tl = (p.titles||[]).map(function(t,k){ return '<li id="v'+j+'-tk'+k+'"><b>'+(k+1<10?'0':'')+(k+1)+'</b> '+t+'</li>'; }).join('');
   var el = document.createElement('div');
-  el.className = 'vprod' + (p.id==='amr-monuments-side' ? ' orange' : '');
+  el.className = 'vprod' + (p.id==='amr-set-the-set' ? ' wine' : '');
   el.id = 'vprod-'+j;
   el.innerHTML =
     '<div class="vdiscwrap">'+
@@ -422,7 +417,7 @@ VINYLS.forEach(function(p,j){
         '<button class="vplay" id="vplay-'+j+'">▸ PLAY THE RECORD</button>'+
         '<button class="vbuy" id="vbuy-'+j+'">GET THE VINYL <b>·</b> ED. '+p.edition+'</button>'+
       '</div>'+
-      '<details class="vinfo"><summary>Ver la info · '+p.tracks+' cortes</summary><ol class="vtracks">'+tl+'</ol></details>'+
+      '<div class="vinfo"><span class="vinfo-lbl">LAS CANCIONES <b>·</b> '+p.tracks+' CORTES</span><ol class="vtracks">'+tl+'</ol></div>'+
     '</div>';
   vgrid.appendChild(el);
   function toggle(){ (cur===gi && !audio.paused) ? pause() : playTrack(gi); }
@@ -499,7 +494,7 @@ function drawWave(){
   var n = pk.length, bw = W/n;
   for(var i=0;i<n;i++){
     var h = Math.max(2*devicePixelRatio, pk[i]*H*0.92);
-    wctx.fillStyle = (i/n < prog) ? '#A62D3E' : 'rgba(234,230,223,0.28)';
+    wctx.fillStyle = (i/n < prog) ? '#C96F2B' : 'rgba(234,230,223,0.28)';
     wctx.fillRect(i*bw, (H-h)/2, Math.max(1, bw*0.6), h);
   }
 }
