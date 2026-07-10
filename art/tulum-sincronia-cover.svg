@@ -1,0 +1,45 @@
+<svg viewBox="0 0 1600 1600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="40%" r="78%">
+      <stop offset="0%" stop-color="#F0ECE5"/>
+      <stop offset="62%" stop-color="#E9E3DA"/>
+      <stop offset="100%" stop-color="#DDD6CB"/>
+    </radialGradient>
+    <radialGradient id="aura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2E6FB0" stop-opacity="0.5"/>
+      <stop offset="45%" stop-color="#2E6FB0" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#2E6FB0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#14120F" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#14120F" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- fondo -->
+  <rect width="1600" height="1600" fill="url(#bg)"/>
+
+  <!-- dibujo de sincronía, escalado desde el espacio original 240 -->
+  <g transform="translate(140,150) scale(5.45)">
+    <!-- piso -->
+    <ellipse cx="120" cy="214" rx="86" ry="14" fill="url(#shadow)"/>
+
+    <!-- aura azul entre los dos -->
+    <circle cx="120" cy="128" r="74" fill="url(#aura)"/>
+
+    <!-- figuras -->
+    <g fill="#141210">
+      <path d="M84 200 C76 168 78 138 84 116 C88 100 96 96 100 112 C104 130 102 166 98 200 Z"/>
+      <circle cx="91" cy="86" r="14"/>
+      <path d="M142 200 C134 168 136 138 142 116 C146 100 154 96 158 112 C162 130 160 166 156 200 Z"/>
+      <circle cx="149" cy="86" r="14"/>
+    </g>
+
+    <!-- ondas de sincronía -->
+    <g fill="none" stroke="#2E6FB0" stroke-linecap="round">
+      <path d="M94 124 C104 115 112 115 120 124 C128 133 136 133 146 124" stroke-width="2.4" opacity="0.55"/>
+      <path d="M92 140 C104 130 112 130 120 140 C128 150 136 150 148 140" stroke-width="3.4"/>
+      <path d="M94 156 C104 147 112 147 120 156 C128 165 136 165 146 156" stroke-width="2.4" opacity="0.55"/>
+    </g>
+  </g>
+</svg>
