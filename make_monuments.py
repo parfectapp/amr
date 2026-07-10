@@ -7,7 +7,7 @@ import make_set
 FF = imageio_ffmpeg.get_ffmpeg_exe()
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROLAS = ['amr-001-plinth','amr-002-monolith','amr-003-vessel','amr-004-strata','amr-005-ghost']
-TITLES = ['TINTO','BARRICA','COSECHA','RESERVA','POSO']
+TITLES = ['PLINTH','MONOLITH','VESSEL','STRATA','GHOST']
 WAVS = [os.path.join(HERE,'masters',r+'.wav') for r in ROLAS]
 OUT_WAV = os.path.join(HERE,'masters','amr-monuments-side.wav')
 M4A = os.path.join(HERE,'audio','amr-monuments-side.m4a')

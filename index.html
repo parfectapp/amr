@@ -276,13 +276,13 @@ body.hasplayer{padding-bottom:70px}
 <!-- MARQUEE -->
 <div class="mq"><div id="mqtrack"></div></div>
 
-<!-- LOS DOS VINILOS -->
+<!-- MONUMENTS — las cinco rolas -->
 <section class="sec" id="records">
   <div class="sh">
-    <div><span class="hk">THE RECORDS</span><h2>Two records. Press play.</h2></div>
-    <p>Dos discos de vinilo rojo vino: el EP y el set de noventa minutos. Dale play al disco — suena aquí mismo y gira. Cuando una edición se acaba, la placa se retira.</p>
+    <div><span class="hk">MONUMENTS — THE EP</span><h2>Five sides, one record each.</h2></div>
+    <p>Cinco cortes en vinilo rojo vino, edición de pocos. Dale play a cada uno — la funda se desliza y el disco gira.</p>
   </div>
-  <div class="vgrid" id="vgrid"></div>
+  <div class="grid" id="recordGrid"></div>
 </section>
 
 <!-- THE SOUND -->
@@ -303,6 +303,15 @@ body.hasplayer{padding-bottom:70px}
   </div>
   <div class="bigdisc" id="bigdisc"></div>
 </div></div>
+
+<!-- LOS DOS DISCOS (después de sub grave) -->
+<section class="sec" id="vinyls">
+  <div class="sh">
+    <div><span class="hk">THE VINYL</span><h2>Two records. Press play.</h2></div>
+    <p>Los dos discos completos en vinilo rojo vino: el EP y el set de noventa minutos. Dale play al disco — suena aquí mismo y gira. Cuando una edición se acaba, la placa se retira.</p>
+  </div>
+  <div class="vgrid" id="vgrid"></div>
+</section>
 
 <!-- ABOUT -->
 <section class="sec about" id="about">
@@ -348,46 +357,66 @@ body.hasplayer{padding-bottom:70px}
 <script>
 var CONFIG = { email:'andremacouzetruiz@gmail.com', wa:'' }; // pon tu WhatsApp con lada, ej '52443...'
 
-var TRACKS = window.AMR_TRACKS || [];                          // 5 rolas: info + marquee
-var T = [window.AMR_MON, window.AMR_SET].filter(Boolean);      // los dos vinilos reproducibles
+var ROLAS = window.AMR_TRACKS || [];                           // 5 rolas (grid)
+var VINYLS = [window.AMR_MON, window.AMR_SET].filter(Boolean); // 2 discos completos
+var T = ROLAS.concat(VINYLS);                                  // reproducibles: 0..4 rolas, 5.. vinilos
+var VOFF = ROLAS.length;
 var cur = -1, audio = new Audio(); audio.preload = 'metadata';
 
 function fmt(s){ s=Math.max(0,Math.floor(s)); return Math.floor(s/60)+':'+('0'+s%60).slice(-2); }
+function cat(t){ return t.kicker ? t.title : 'AMR-00'+t.n; }
 
 /* ---- marquee ---- */
-var mq = TRACKS.map(function(t,i){ return '<span>AMR-00'+(i+1)+' '+t.title+'</span>'; }).join('')
+var mq = ROLAS.map(function(t,i){ return '<span>AMR-00'+(i+1)+' '+t.title+'</span>'; }).join('')
        + '<span>TWO RECORDS <b>·</b> PRESS PLAY <b>·</b> WINE-RED VINYL</span>';
 document.getElementById('mqtrack').innerHTML = mq + mq;
 
-/* ---- los dos vinilos ---- */
+/* ---- grid: las cinco rolas ---- */
+var grid = document.getElementById('recordGrid');
+ROLAS.forEach(function(t,i){
+  var b = document.createElement('button');
+  b.className = 'card'; b.id = 'card-'+i;
+  b.innerHTML =
+    '<span class="num"><span>AMR-00'+t.n+' — 12&Prime; · 45 RPM</span><b>EDITION OF '+t.edition+'</b></span>'+
+    '<div class="sleeve"><div class="vinyl"><span class="lbl">AMR-00'+t.n+'</span></div>'+
+    '<div class="cover"><img src="'+t.art+'" alt="'+t.title+' blueprint sleeve"></div>'+
+    '<span class="pchip" id="chip-'+i+'">▸ PLAY</span></div>'+
+    '<h3>'+t.title+'</h3><p class="desc">'+t.desc+'</p>'+
+    '<div class="row"><b>'+(t.bpm? t.bpm+' BPM':'BEATLESS')+'</b><span>'+t.key+'</span><b>'+fmt(t.dur)+'</b></div>';
+  b.addEventListener('click', function(){ (cur===i && !audio.paused) ? pause() : playTrack(i); });
+  grid.appendChild(b);
+});
+
+/* ---- los dos vinilos (después de sub grave) ---- */
 var vgrid = document.getElementById('vgrid');
-T.forEach(function(p,i){
-  var tl = (p.titles||[]).map(function(t,k){ return '<li id="p'+i+'-tk'+k+'"><b>'+(k+1<10?'0':'')+(k+1)+'</b> '+t+'</li>'; }).join('');
+VINYLS.forEach(function(p,j){
+  var gi = VOFF + j;   // índice global en T
+  var tl = (p.titles||[]).map(function(t,k){ return '<li id="v'+j+'-tk'+k+'"><b>'+(k+1<10?'0':'')+(k+1)+'</b> '+t+'</li>'; }).join('');
   var el = document.createElement('div');
-  el.className = 'vprod'; el.id = 'vprod-'+i;
+  el.className = 'vprod'; el.id = 'vprod-'+j;
   el.innerHTML =
     '<div class="vdiscwrap">'+
-      '<button class="vdisc" id="vdisc-'+i+'" aria-label="Play '+p.title+'">'+
+      '<button class="vdisc" id="vdisc-'+j+'" aria-label="Play '+p.title+'">'+
         '<span class="vlabel"><b>'+p.title+'</b><i>'+(p.kicker||'AMR')+'</i></span>'+
         '<span class="vhole"></span>'+
       '</button>'+
-      '<span class="vgo" id="vgo-'+i+'">▸</span>'+
+      '<span class="vgo" id="vgo-'+j+'">▸</span>'+
     '</div>'+
     '<div class="vmeta">'+
       '<span class="vkick">'+(p.kicker||'')+' · WINE-RED VINYL</span>'+
       '<h3>'+p.title+'</h3>'+
       '<div class="vstats"><span><b>'+p.tracks+'</b> TRACKS</span><span><b>'+fmt(p.dur)+'</b></span><span>EDITION OF <b>'+p.edition+'</b></span></div>'+
       '<div class="vact">'+
-        '<button class="vplay" id="vplay-'+i+'">▸ PLAY THE RECORD</button>'+
-        '<button class="vbuy" id="vbuy-'+i+'">GET THE VINYL <b>·</b> ED. '+p.edition+'</button>'+
+        '<button class="vplay" id="vplay-'+j+'">▸ PLAY THE RECORD</button>'+
+        '<button class="vbuy" id="vbuy-'+j+'">GET THE VINYL <b>·</b> ED. '+p.edition+'</button>'+
       '</div>'+
       '<details class="vinfo"><summary>Ver la info · '+p.tracks+' cortes</summary><ol class="vtracks">'+tl+'</ol></details>'+
     '</div>';
   vgrid.appendChild(el);
-  function toggle(){ (cur===i && !audio.paused) ? pause() : playTrack(i); }
-  document.getElementById('vdisc-'+i).addEventListener('click', toggle);
-  document.getElementById('vplay-'+i).addEventListener('click', toggle);
-  document.getElementById('vbuy-'+i).addEventListener('click', function(){
+  function toggle(){ (cur===gi && !audio.paused) ? pause() : playTrack(gi); }
+  document.getElementById('vdisc-'+j).addEventListener('click', toggle);
+  document.getElementById('vplay-'+j).addEventListener('click', toggle);
+  document.getElementById('vbuy-'+j).addEventListener('click', function(){
     var body = "Hola AMR — quiero "+p.title+" en vinilo (edicion de "+p.edition+").\n\nNombre:\n";
     if(CONFIG.wa){ window.open('https://wa.me/'+CONFIG.wa+'?text='+encodeURIComponent(body),'_blank'); }
     else { location.href='mailto:'+CONFIG.email+'?subject='+encodeURIComponent('AMR — '+p.title+' (vinyl)')+'&body='+encodeURIComponent(body); }
@@ -403,7 +432,9 @@ function playTrack(i){
   if(cur !== i){
     cur = i; audio.src = t.file;
     document.getElementById('pTitle').textContent = t.title;
-    document.getElementById('pCat').innerHTML = (t.kicker||'AMR')+' <b>·</b> '+t.tracks+' TRACKS · '+fmt(t.dur);
+    document.getElementById('pCat').innerHTML = t.kicker
+      ? (t.kicker+' <b>·</b> '+t.tracks+' TRACKS · '+fmt(t.dur))
+      : ('AMR-00'+t.n+' <b>·</b> '+(t.bpm? t.bpm+' BPM':'BEATLESS')+' · '+t.key);
   }
   audio.play();
   document.body.classList.add('hasplayer');
@@ -412,14 +443,23 @@ function playTrack(i){
 }
 function pause(){ audio.pause(); }
 function syncCards(){
-  T.forEach(function(p,i){
+  // las 5 rolas (grid)
+  ROLAS.forEach(function(_,i){
+    var c = document.getElementById('card-'+i), chip = document.getElementById('chip-'+i);
+    if(!c) return;
     var on = (i===cur && !audio.paused);
-    var d = document.getElementById('vdisc-'+i); if(d) d.classList.toggle('spinning', on);
-    var pl = document.getElementById('vplay-'+i); if(pl) pl.innerHTML = on ? '&#9646;&#9646; PLAYING' : '▸ PLAY THE RECORD';
-    var go = document.getElementById('vgo-'+i); if(go){ go.innerHTML = on ? '&#9646;&#9646;' : '▸'; go.classList.toggle('on', on); }
-    if(p && p.titles && i===cur && audio.duration){
+    c.classList.toggle('playing', on);
+    chip.innerHTML = on ? '&#9646;&#9646; PLAYING' : '▸ PLAY';
+  });
+  // los 2 vinilos
+  VINYLS.forEach(function(p,j){
+    var gi = VOFF + j, on = (gi===cur && !audio.paused);
+    var d = document.getElementById('vdisc-'+j); if(d) d.classList.toggle('spinning', on);
+    var pl = document.getElementById('vplay-'+j); if(pl) pl.innerHTML = on ? '&#9646;&#9646; PLAYING' : '▸ PLAY THE RECORD';
+    var go = document.getElementById('vgo-'+j); if(go){ go.innerHTML = on ? '&#9646;&#9646;' : '▸'; go.classList.toggle('on', on); }
+    if(p.titles && gi===cur && audio.duration){
       var ci = Math.floor((audio.currentTime/audio.duration)*p.tracks);
-      for(var k=0;k<p.tracks;k++){ var e=document.getElementById('p'+i+'-tk'+k); if(e) e.classList.toggle('on', k===ci); }
+      for(var k=0;k<p.tracks;k++){ var e=document.getElementById('v'+j+'-tk'+k); if(e) e.classList.toggle('on', k===ci); }
     }
   });
   player.classList.toggle('playing', !audio.paused);
