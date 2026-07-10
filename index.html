@@ -244,6 +244,24 @@ body.hasplayer{padding-bottom:70px}
 .vprod.wine .vkick,.vprod.wine .vstats b,.vprod.wine .vbuy b,.vprod.wine .vinfo-lbl b,.vprod.wine .vtracks li b{color:#A62D3E}
 .vprod.wine .vplay:hover{background:#A62D3E;border-color:#A62D3E}
 .vprod.wine .vbuy:hover{border-color:#A62D3E;color:#A62D3E}
+/* ---- carril horizontal de los dos drops ---- */
+.hscroll{position:relative;height:230vh}
+.hsticky{position:sticky;top:0;height:100vh;overflow:hidden}
+.htrack{display:flex;height:100%;width:200vw;will-change:transform}
+.hpanel{width:100vw;height:100vh;flex:none;display:flex;align-items:center}
+.hpanel .nrin{padding-top:clamp(20px,4vh,50px);padding-bottom:clamp(20px,4vh,50px);width:100%}
+.hpanel .nrtitle{font-size:clamp(60px,9vw,132px)}
+.hdots{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:6;display:flex;gap:10px}
+.hdots i{width:9px;height:9px;border-radius:50%;background:rgba(234,230,223,.35);transition:background .3s,transform .3s}
+.hdots i.on{background:var(--bone);transform:scale(1.25)}
+@media(max-width:860px){
+  .hscroll{height:auto}
+  .hsticky{position:static;height:auto;overflow:visible}
+  .htrack{display:block;width:auto;transform:none !important}
+  .hpanel{width:auto;height:auto;display:block}
+  .hdots{display:none}
+}
+
 /* ---- NUEVO LANZAMIENTO — noche azul, vivo ---- */
 .nr{position:relative;background:#0b1524;color:var(--bone);overflow:hidden;border-top:1px solid rgba(46,111,176,.35);border-bottom:1px solid rgba(20,18,16,.12)}
 .nr::before{content:"";position:absolute;top:-45%;right:-12%;width:min(950px,90vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(46,111,176,.45),transparent 65%);animation:nrpulse 6s ease-in-out infinite;pointer-events:none}
@@ -362,8 +380,12 @@ body.hasplayer{padding-bottom:70px}
 <!-- MARQUEE -->
 <div class="mq"><div id="mqtrack"></div></div>
 
+<!-- LOS DOS DROPS — horizontal con scroll -->
+<div class="hscroll" id="drops">
+<div class="hsticky">
+<div class="htrack" id="htrack">
 <!-- NUEVO LANZAMIENTO — TULUM (noche azul) -->
-<section class="nr" id="newrelease">
+<section class="nr hpanel" id="newrelease">
   <div class="nrin">
     <div class="nrleft">
       <span class="nrlive"><i></i>OUT NOW — NUEVO LANZAMIENTO</span>
@@ -376,7 +398,7 @@ body.hasplayer{padding-bottom:70px}
 </section>
 
 <!-- MONUMENTS — el lanzamiento debut (noche ámbar) -->
-<section class="nr amber" id="monuments">
+<section class="nr amber hpanel" id="monuments">
   <div class="nrin">
     <div class="nrdisc" id="nrDisc2"></div>
     <div class="nrleft">
@@ -387,6 +409,10 @@ body.hasplayer{padding-bottom:70px}
     </div>
   </div>
 </section>
+</div><!-- /htrack -->
+<div class="hdots" id="hdots"><i class="on"></i><i></i></div>
+</div><!-- /hsticky -->
+</div><!-- /hscroll -->
 
 <!-- LO MEJOR — MONUMENTS × TULUM -->
 <section class="sec" id="records">
@@ -475,6 +501,23 @@ var VINYLS = [window.AMR_MON, window.AMR_SET, window.AMR_TUL].filter(Boolean); /
 var T = ROLAS.concat(VINYLS);                                  // reproducibles: 0..4 rolas, 5.. vinilos
 var VOFF = ROLAS.length;
 window.__tulIdx = window.AMR_TUL ? VOFF + VINYLS.indexOf(window.AMR_TUL) : null;
+
+/* ---- carril horizontal de los drops (scroll vertical → deslizamiento) ---- */
+(function(){
+  var hs = document.getElementById('drops'), tr = document.getElementById('htrack'), dots = document.getElementById('hdots');
+  if(!hs || !tr) return;
+  function upd(){
+    if(innerWidth <= 860){ tr.style.transform = ''; return; }
+    var total = hs.offsetHeight - innerHeight;
+    var p = Math.min(1, Math.max(0, -hs.getBoundingClientRect().top / total));
+    tr.style.transform = 'translateX(' + (-p * (tr.scrollWidth - innerWidth)) + 'px)';
+    if(dots){ var ds = dots.children; ds[0].classList.toggle('on', p < 0.5); ds[1].classList.toggle('on', p >= 0.5); }
+  }
+  // doble vía: captura (el scroller no es window por overflow-x:hidden) + rAF (suavidad)
+  document.addEventListener('scroll', upd, {passive:true, capture:true});
+  addEventListener('resize', upd);
+  (function loopH(){ upd(); requestAnimationFrame(loopH); })();
+})();
 /* hero: el disco TULUM (nuevo lanzamiento) */
 (function(){
   var hd = document.getElementById('heroDisc'), hp = document.getElementById('heroPlay');
@@ -493,8 +536,9 @@ var mq = ROLAS.map(function(t,i){ return '<span>AMR-00'+(i+1)+' '+t.title+'</spa
        + '<span>TWO RECORDS <b>·</b> PRESS PLAY <b>·</b> WINE-RED VINYL</span>';
 document.getElementById('mqtrack').innerHTML = mq + mq;
 
-/* ---- grid: las cinco rolas ---- */
+/* ---- grid LO MEJOR: naranjas (MONUMENTS) preparadas ---- */
 var grid = document.getElementById('recordGrid');
+var cardsO = [], cardsB = [];
 ROLAS.forEach(function(t,i){
   var b = document.createElement('button');
   b.className = 'card'; b.id = 'card-'+i;
@@ -506,7 +550,7 @@ ROLAS.forEach(function(t,i){
     '<h3>'+t.title+'</h3><p class="desc">'+t.desc+'</p>'+
     '<div class="row"><b>'+(t.bpm? t.bpm+' BPM':'BEATLESS')+'</b><span>'+t.key+'</span><b>'+fmt(t.dur)+'</b></div>';
   b.addEventListener('click', function(){ (cur===i && !audio.paused) ? pause() : playTrack(i); });
-  grid.appendChild(b);
+  cardsO.push(b);
 });
 
 /* ---- cortes de TULUM en LO MEJOR (dibujos azules) ---- */
@@ -541,8 +585,13 @@ if(window.AMR_TUL){
         audio.addEventListener('canplay', sk);
       }
     });
-    grid.appendChild(b);
+    cardsB.push(b);
   });
+}
+/* mixeadas: naranja, azul, naranja, azul… */
+for(var mi = 0; mi < Math.max(cardsO.length, cardsB.length); mi++){
+  if(cardsO[mi]) grid.appendChild(cardsO[mi]);
+  if(cardsB[mi]) grid.appendChild(cardsB[mi]);
 }
 
 /* ---- los dos vinilos (después de sub grave) ---- */
