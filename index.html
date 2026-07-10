@@ -228,9 +228,11 @@ body.hasplayer{padding-bottom:70px}
 .vinfo-lbl{display:block;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--mut);padding:11px 0;border-top:1px solid rgba(20,18,16,.14)}
 .vinfo-lbl b{color:var(--amber);font-weight:400}
 .vtracks{margin:6px 0 4px;padding:0;list-style:none;columns:2;column-gap:26px}
-.vtracks li{display:flex;gap:10px;padding:6px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--mut);break-inside:avoid}
+.vtracks li{display:flex;gap:10px;padding:6px 0;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--mut);break-inside:avoid;cursor:pointer;transition:color .2s}
 .vtracks li b{color:var(--amber);font-weight:400;min-width:24px}
+.vtracks li:hover{color:var(--ink)}
 .vtracks li.on{color:var(--ink)}
+.vtracks li.on b::after{content:" ▸"}
 @media(max-width:520px){.vtracks{columns:1}}
 /* MONUMENTS en naranja (SESIÓN 001 queda en vino) */
 /* SESIÓN 001 en rojo vino (todo lo demás queda naranja) */
@@ -427,6 +429,19 @@ VINYLS.forEach(function(p,j){
     var body = "Hola AMR — quiero "+p.title+" en vinilo (edicion de "+p.edition+").\n\nNombre:\n";
     if(CONFIG.wa){ window.open('https://wa.me/'+CONFIG.wa+'?text='+encodeURIComponent(body),'_blank'); }
     else { location.href='mailto:'+CONFIG.email+'?subject='+encodeURIComponent('AMR — '+p.title+' (vinyl)')+'&body='+encodeURIComponent(body); }
+  });
+  // pica una canción del tracklist → salta a ese momento del mix
+  (p.titles||[]).forEach(function(t,k){
+    var li = document.getElementById('v'+j+'-tk'+k); if(!li) return;
+    li.addEventListener('click', function(){
+      var target = (p.offsets && p.offsets[k]) || 0;
+      if(cur===gi){ try{ audio.currentTime = target; }catch(e){} if(audio.paused) audio.play(); }
+      else {
+        playTrack(gi);
+        var seek = function(){ try{ audio.currentTime = target; }catch(e){} audio.removeEventListener('canplay', seek); };
+        audio.addEventListener('canplay', seek);
+      }
+    });
   });
 });
 
