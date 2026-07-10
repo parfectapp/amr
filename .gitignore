@@ -1,2 +1,6 @@
 masters/
 .DS_Store
+upload/
+set-src/
+__pycache__/
+brand/_inspect.png
