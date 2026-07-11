@@ -1,12 +1,12 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AMR — Five records, cut like monuments</title>
+<title>Studio AMR — Three records, cut like monuments</title>
 <meta name="description" content="AMR presses deep house in numbered vinyl editions. Five records. One sound: sub bass, dust and chords that answer late. Fifty records will ever exist.">
 <meta name="theme-color" content="#EAE6DF">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="AMR">
-<meta property="og:title" content="AMR — MONUMENTS EP">
-<meta property="og:description" content="Five records cut like monuments. Numbered vinyl, editions of a few.">
+<meta property="og:site_name" content="Studio AMR">
+<meta property="og:title" content="Studio AMR — Three records, cut like monuments">
+<meta property="og:description" content="MONUMENTS, SESIÓN 001 and DELIRIO — synthesized from raw waveforms, pressed to hand-numbered vinyl. Morelia, MX.">
 <link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" fill="%23141210"/><circle cx="16" cy="16" r="5.5" fill="%23C96F2B"/><circle cx="16" cy="16" r="1.8" fill="%23EAE6DF"/></svg>'>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=IBM+Plex+Mono&family=Instrument+Serif&display=swap" rel="stylesheet">
 <style>
@@ -425,7 +425,7 @@ body.hasplayer{padding-bottom:70px}
   <img class="hero-art" src="art/amr-hero.svg" alt="" aria-hidden="true">
   <h1 class="hero-word"><span>A</span><span>M</span><span>R</span></h1>
   <div class="hero-bottom">
-    <p class="hero-claim"><b>Streaming forgets. Vinyl doesn't.</b> AMR presses its music to coloured records in short, hand-numbered runs. When a run sells out, the plate is retired — no repress, ever.</p>
+    <p class="hero-claim"><b>Streaming forgets. Vinyl doesn't.</b> Studio AMR presses its music to coloured records in short, hand-numbered runs. When a run sells out, the plate is retired — no repress, ever.</p>
     <div class="hero-cta">
       <a class="btn solid" href="#newrelease">▸ New release — DELIRIO</a>
       <a class="btn" href="#vinyls">Get the vinyl</a>
@@ -453,7 +453,7 @@ body.hasplayer{padding-bottom:70px}
     <div class="nrleft">
       <span class="nrlive"><i></i>OUT NOW — NEW RELEASE</span>
       <h2 class="nrtitle">DELIRIO</h2>
-      <p class="nrsub">The record the whole season waited for. One continuous set — <b>1h51</b>, sixteen tracks in a single take, tempo-locked transitions, <b>in sync</b> from the first bar to the last. Cut to blue vinyl, numbered by hand.</p>
+      <p class="nrsub">One night that won't let go. A continuous set — <b>1h51</b>, sixteen movements in a single take, tempo-locked transitions, <b>in sync</b> from the first bar to the last. Cut to blue vinyl, numbered by hand.</p>
       <div id="nrMeta"></div>
     </div>
     <div class="nrdisc" id="nrDisc"></div>
@@ -532,8 +532,8 @@ body.hasplayer{padding-bottom:70px}
 <!-- LOS DOS DISCOS (después de sub grave) -->
 <section class="sec" id="vinyls">
   <div class="sh">
-    <div><span class="hk">THE VINYL</span><h2>2024 album</h2></div>
-    <p>The collection: the amber EP and the ninety-minute set on wine-red vinyl. Hit play on a record — it plays right here and spins. When an edition sells out, the plate is retired.</p>
+    <div><span class="hk">THE VINYL</span><h2>Amber, wine, and blue.</h2></div>
+    <p>The collection: the amber EP, the ninety-minute session on wine-red, and DELIRIO — one continuous night on blue. Hit play on a record — it plays right here and spins. When an edition sells out, the plate is retired.</p>
   </div>
   <div class="vgrid" id="vgrid"></div>
 </section>
@@ -556,7 +556,7 @@ body.hasplayer{padding-bottom:70px}
 </div></section>
 
 <footer><div class="in">
-  <span>STUDIO AMR<b>.</b> — MONUMENTS EP</span>
+  <span>STUDIO AMR<b>.</b> — THREE RECORDS, EVER</span>
   <span>CUT IN MORELIA, MX</span>
   <span>SOUND BORN ON A <b>PLINTH</b></span>
 </div></footer>
@@ -703,7 +703,7 @@ document.getElementById('mqtrack').innerHTML = mq + mq;
 /* ---- marquee DELIRIO (azul, scroll infinito) ---- */
 if(window.AMR_TUL){
   var tn = (window.AMR_TUL.titles||[]).slice(0,8).map(function(n){ return '<span>'+n+'</span>'; }).join('');
-  var mq2 = '<span>DELIRIO <b>·</b> IN SYNC · MMXV</span>'+tn+'<span>SIXTEEN CUTS <b>·</b> ONE CONTINUOUS TAKE</span><span>BLUE VINYL <b>·</b> NUMBERED BY HAND</span>';
+  var mq2 = '<span>DELIRIO <b>·</b> IN SYNC · MMXXVI</span>'+tn+'<span>SIXTEEN MOVEMENTS <b>·</b> ONE CONTINUOUS TAKE</span><span>BLUE VINYL <b>·</b> NUMBERED BY HAND</span>';
   var el2 = document.getElementById('mqtrack2'); if(el2) el2.innerHTML = mq2 + mq2;
 }
 
