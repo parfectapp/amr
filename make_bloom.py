@@ -1,186 +1,147 @@
 #!/usr/bin/env python3
-"""BLOOM — afro / melodic house estilo Black Coffee · Keinemusik ('The Rapture Pt.III').
-Percusión orgánica en capas, marimba/kalimba, bajo rodante, piano tierno, voz sin palabras.
-Hipnótico y emotivo — sin drops de EDM."""
+"""BLOOM — banger melódico house. Motor limpio (el de las rolas/VESSEL/TULUM):
+arpegio brillante con pingpong + topline emotivo (el gancho) + groove que empuja.
+Sin percusión turbia, sin subgraves raros."""
 import os, json, subprocess, wave
 import numpy as np, imageio_ffmpeg
 import make_tracks as mt
 
 SR = mt.SR; rng = mt.rng
 HERE = os.path.dirname(os.path.abspath(__file__))
-place, reverb, fbdelay, duck_env = mt.place, mt.reverb, mt.fbdelay, mt.duck_env
-lowpass, highpass, bandpass = mt.lowpass, mt.highpass, mt.bandpass
-
+place, reverb, fbdelay, riser, duck_env = mt.place, mt.reverb, mt.fbdelay, mt.riser, mt.duck_env
+mk_pad, mk_pluck, mk_bass, mk_stab, mk_kick, mk_hat = mt.mk_pad, mt.mk_pluck, mt.mk_bass, mt.mk_stab, mt.mk_kick, mt.mk_hat
+lowpass, highpass = mt.lowpass, mt.highpass
 def stereo(y, pan=1.0): return np.vstack([y * pan, y * (2 - pan)])
-def pdecay(n, tau, atk=0.002):
-    t = np.arange(n) / SR; e = np.exp(-t / tau)
-    a = int(atk * SR)
-    if a > 0: e[:a] *= np.linspace(0, 1, a)
-    return e
 
-# ---------- percusión orgánica ----------
-def shaker(amp=0.11, dur=0.055):
-    n = int(dur * SR); x = highpass(rng.standard_normal(n), 6500)
-    return stereo(x * pdecay(n, 0.018, 0.004) * amp)
-def conga(f=200, amp=0.30, dur=0.17, pan=1.0):
-    n = int(dur * SR); t = np.arange(n) / SR
-    pitch = f * (1 + 0.55 * np.exp(-t * 42))
-    body = np.sin(2 * np.pi * np.cumsum(pitch) / SR) + 0.35 * np.sin(4 * np.pi * np.cumsum(pitch) / SR)
-    noise = highpass(rng.standard_normal(n), 1400) * np.exp(-t * 55) * 0.28
-    return stereo((body * pdecay(n, 0.10, 0.001) + noise) * amp, pan)
-def clave(amp=0.16, dur=0.05, pan=1.0):
-    n = int(dur * SR); t = np.arange(n) / SR
-    y = np.sin(2 * np.pi * 2350 * t) * np.exp(-t / 0.012)
-    y += highpass(rng.standard_normal(n), 4200) * np.exp(-t * 130) * 0.35
-    return stereo(y * amp, pan)
+def clap(amp=0.22):
+    n = int(0.18 * SR); t = np.arange(n) / SR
+    x = highpass(rng.standard_normal(n), 1300)
+    env = np.zeros(n)
+    for d in (0.0, 0.008, 0.016):
+        i = int(d * SR); env[i:] += np.exp(-np.arange(n - i) / SR / 0.012)
+    env += np.exp(-t / 0.11) * 0.5
+    y = x * env; y /= np.max(np.abs(y)) + 1e-9
+    return stereo(y * amp)
 
-# ---------- melódicos cálidos ----------
-def marimba(f, dur=0.42, amp=0.20):
+def saw_lead(f, dur, amp=0.13, K=13):
+    """topline anthem: supersaw suave (3 voces detune), filtro cálido."""
     n = int(dur * SR); t = np.arange(n) / SR
-    y = (np.sin(2 * np.pi * f * t)
-         + 0.5 * np.sin(2 * np.pi * 4 * f * t) * np.exp(-t * 13)   # el parcial 4:1 (madera)
-         + 0.22 * np.sin(2 * np.pi * 2 * f * t))
-    knock = highpass(rng.standard_normal(n), 2200) * np.exp(-t * 210) * 0.13
-    e = np.exp(-t / (dur * 0.5)); a = int(0.003 * SR); e[:a] *= np.linspace(0, 1, a)
-    return stereo(lowpass(y * e + knock, 4800) * amp)
-def kalimba(f, dur=0.55, amp=0.13):
-    n = int(dur * SR); t = np.arange(n) / SR
-    y = (np.sin(2 * np.pi * f * t) + 0.5 * np.sin(2 * np.pi * f * 2.76 * t) * np.exp(-t * 11)
-         + 0.28 * np.sin(2 * np.pi * f * 5.4 * t) * np.exp(-t * 17))
-    e = np.exp(-t / (dur * 0.4)); a = int(0.002 * SR); e[:a] *= np.linspace(0, 1, a)
-    return stereo(y * e * amp)
-def epiano(freqs, dur=1.1, amp=0.11):
-    n = int(dur * SR); t = np.arange(n) / SR; y = np.zeros(n)
-    for f in freqs:
-        y += (np.sin(2 * np.pi * f * t) + 0.28 * np.sin(2 * np.pi * f * 2 * t) * np.exp(-t * 3)
-              + 0.5 * np.sin(2 * np.pi * f * 1.004 * t))
-    e = np.exp(-t / (dur * 0.7)); a = int(0.008 * SR); e[:a] *= np.linspace(0, 1, a)
-    y = lowpass(y, 3200) * e / max(1, len(freqs)) * amp
-    return np.vstack([y * 0.97, y * 1.03])
-def vocal(f, dur, amp=0.14):
-    n = int(dur * SR); t = np.arange(n) / SR
-    vib = 0.01 * np.sin(2 * np.pi * 4.6 * t) * np.minimum(1.0, t / 0.4)
-    ph = 2 * np.pi * np.cumsum(f * (1 + vib)) / SR
-    tone = np.sin(ph) + 0.4 * np.sin(2 * ph) + 0.16 * np.sin(3 * ph)
-    tone = bandpass(tone, 880, q=0.7) * 0.7 + tone * 0.5           # vocal 'ooh'
-    env = np.ones(n); a = int(0.12 * SR); r = int(min(0.35 * SR, n // 3))
+    def one(fr):
+        ph = 2 * np.pi * fr * t; s = np.zeros(n)
+        for k in range(1, K + 1): s += np.sin(k * ph) / k
+        return s
+    y = one(f) + 0.7 * one(f * 1.004) + 0.7 * one(f * 0.996)
+    y = lowpass(y, 3400)
+    env = np.ones(n); a = int(0.02 * SR); r = int(min(0.22 * SR, n // 3))
     env[:a] = np.linspace(0, 1, a); env[-r:] *= np.linspace(1, 0, r)
-    return stereo(tone * env * amp)
+    return np.vstack([y, y]) * env * amp / 2.4
 
-# Am – F – C – G, cálido y emotivo
-CH = [
-    dict(bass=55.0,  pad=[220, 261.63, 329.63],   mar=[440, 523.25, 659.25, 523.25], pno=[220, 261.63, 329.63, 392]),
-    dict(bass=43.65, pad=[174.61, 220, 261.63],   mar=[349.23, 440, 523.25, 440],    pno=[174.61, 220, 261.63, 349.23]),
-    dict(bass=65.41, pad=[196.0, 261.63, 329.63], mar=[392, 523.25, 659.25, 523.25], pno=[196.0, 261.63, 329.63, 392]),
-    dict(bass=49.0,  pad=[196.0, 246.94, 293.66], mar=[392, 493.88, 587.33, 493.88], pno=[196.0, 246.94, 293.66, 392]),
+# Am – F – C – G (i–VI–III–VII): eufórico y catchy
+ARP = [
+    [440, 523.25, 659.25, 783.99, 880, 783.99, 659.25, 523.25],       # Am
+    [349.23, 440, 523.25, 659.25, 698.46, 659.25, 523.25, 440],       # F
+    [523.25, 659.25, 783.99, 880, 1046.5, 880, 783.99, 659.25],       # C
+    [392, 493.88, 587.33, 698.46, 783.99, 698.46, 587.33, 493.88],    # G
 ]
-def ch(bar): return CH[(bar // 4) % 4]
+STAB = [[220, 261.63, 329.63, 392], [174.61, 220, 261.63, 349.23],
+        [196, 261.63, 329.63, 392], [196, 246.94, 293.66, 392]]
+PAD = [[110, 220, 261.63, 329.63], [87.31, 174.61, 261.63, 349.23],
+       [98, 196, 261.63, 329.63], [98, 196, 293.66, 392]]
+BASS = [55.0, 43.65, 65.41, 49.0]
+def idx(bar): return (bar // 4) % 4
 def rng_in(bar, spans): return any(a <= bar < b for a, b in spans)
 
+# topline: el gancho que se canta (8 compases)
+TOP = [(0, 0, 659.25, 2), (0, 8, 523.25, 2), (1, 0, 587.33, 2), (1, 8, 440.0, 2),
+       (2, 0, 659.25, 2), (2, 8, 783.99, 2), (3, 0, 587.33, 4),
+       (4, 0, 880.0, 2), (4, 8, 659.25, 2), (5, 0, 523.25, 4),
+       (6, 0, 659.25, 2), (6, 8, 783.99, 2), (7, 0, 493.88, 2), (7, 8, 587.33, 2)]
+
 def build():
-    s = mt.Song(122, 104)
+    s = mt.Song(124, 112, swing=0.08)
     beat = s.beat
+    DROPS = [(16, 40), (64, 96)]
+    KICK_ON = [(8, 40), (56, 96), (104, 110)]
 
-    # --- kick profundo four-on-floor ---
-    KICK_ON = [(8, 48), (60, 88), (96, 102)]
-    kick_s = mt.mk_kick(f0=125, f1=44, amp=0.6, dur=0.42)
-    kk = np.zeros((2, s.N))
+    # kick + hats + clap
+    kick_s = mk_kick(f0=140, f1=47, amp=0.6, dur=0.36)
+    ho, hc = mk_hat(True), mk_hat(False)
+    drums = np.zeros((2, s.N))
     for bar in range(s.bars):
-        if not rng_in(bar, KICK_ON): continue
-        for st in [0, 4, 8, 12]:
-            place(kk, kick_s, s.t(bar, st)); s.kick_times.append(s.t(bar, st))
-    s.add(kk)
-    duck = duck_env(s.N, s.kick_times, depth=0.55, rec=0.34)
+        kon = rng_in(bar, KICK_ON)
+        if kon:
+            for st in [0, 4, 8, 12]:
+                place(drums, kick_s, s.t(bar, st)); s.kick_times.append(s.t(bar, st))
+        if rng_in(bar, DROPS) or rng_in(bar, [(8, 16), (56, 64)]):
+            for st in range(16):
+                if st % 2:  # hats offbeat
+                    h = ho if st % 4 == 3 else hc
+                    place(drums, stereo(h, 0.92 if (st // 2) % 2 else 1.08) * 0.7, s.t(bar, st))
+        if rng_in(bar, DROPS):
+            for st in [4, 12]: place(drums, clap(0.2), s.t(bar, st))
+    s.add(drums)
+    duck = duck_env(s.N, s.kick_times, depth=0.5, rec=0.34)
 
-    # --- percusión orgánica (casi siempre; adelgaza en el break) ---
-    PERC_ON = [(4, 48), (56, 104)]
-    perc = np.zeros((2, s.N))
-    for bar in range(s.bars):
-        if not rng_in(bar, PERC_ON): continue
-        thin = rng_in(bar, [(48, 60)])              # break: sólo shaker suave
-        for st in range(16):                        # shaker en 16avos con acentos
-            v = 0.13 if st % 4 == 2 else (0.09 if st % 2 else 0.06)
-            place(perc, shaker(amp=v * (0.6 if thin else 1.0)), s.t(bar, st))
-        if thin: continue
-        for st in [2, 6, 10, 14]:                   # open-hat feel: shaker fuerte en offbeat
-            place(perc, shaker(amp=0.15, dur=0.09), s.t(bar, st))
-        # congas sincopadas (tumbao): hi/lo, paneadas
-        for st, f, pan in [(3, 196, 0.8), (6, 330, 1.2), (7, 300, 1.15), (11, 180, 0.85), (14, 330, 1.2)]:
-            place(perc, conga(f=f, amp=0.24, pan=pan), s.t(bar, st))
-        for st, pan in [(6, 1.25), (14, 0.8)]:      # claves secas
-            place(perc, clave(amp=0.12, pan=pan), s.t(bar, st))
-    s.add(perc + reverb(perc, 0.9, damp=4500, mix=0.16))
-
-    # --- bajo sub rodante en offbeats (sigue el acorde) ---
-    bcache = {}
-    def bnote(f):
-        if f not in bcache: bcache[f] = mt.mk_bass(f, dur=0.34, amp=0.34)
-        return bcache[f]
+    # bajo rodante limpio (offbeats)
+    bc = {}
     bass = np.zeros((2, s.N))
     for bar in range(s.bars):
         if not rng_in(bar, KICK_ON): continue
-        bf = ch(bar)['bass']
-        for st in [2, 6, 10, 14, 7]:                # 8vos offbeat + una sincopa
-            place(bass, bnote(bf), s.t(bar, st))
+        f = BASS[idx(bar)]
+        if f not in bc: bc[f] = mk_bass(f, dur=0.32, amp=0.35)
+        for st in [2, 6, 10, 14]:
+            place(bass, bc[f], s.t(bar, st))
     s.add(bass * duck)
 
-    # --- pad cálido (bed que evoluciona por bloque) ---
+    # pad cálido
     pads = np.zeros((2, s.N))
     for blk in range(0, s.bars, 4):
-        seg = mt.mk_pad([f for f in ch(blk)['pad']] + [ch(blk)['pad'][0] * 2],
-                        4 * 4 * int(beat * SR) + SR, lfo_hz=0.05, dark=380, bright=1200, amp=0.06)
+        seg = mk_pad(PAD[idx(blk)], 4 * 4 * int(beat * SR) + SR, lfo_hz=0.06, dark=420, bright=1500, amp=0.062)
         place(pads, seg, s.t(blk))
-    s.add(pads * duck, [(0, 0.4), (16, 0.7), (32, 0.95), (48, 1.15), (60, 0.85),
-                        (64, 1.1), (88, 0.9), (104, 0.35)])
+    s.add(pads * duck, [(0, 0.5), (16, 0.85), (40, 1.25), (56, 0.9),
+                        (64, 1.15), (96, 0.95), (112, 0.4)])
 
-    # --- MARIMBA: el riff hipnótico (el gancho) ---
-    MAR_ON = [(16, 48), (52, 60), (64, 88)]
-    MARP = [(0, 0), (3, 1), (6, 2), (8, 1), (11, 3), (14, 2)]
-    mar = np.zeros((2, s.N))
+    # stabs de acorde (groove) en los drops
+    stabs = np.zeros((2, s.N))
     for bar in range(s.bars):
-        if not rng_in(bar, MAR_ON): continue
-        soft = 0.5 if rng_in(bar, [(52, 60)]) else 1.0
-        tones = ch(bar)['mar']
-        for st, ti in MARP:
-            place(mar, marimba(tones[ti], amp=0.17 * soft), s.t(bar, st))
-    mar = mar + fbdelay(mar, beat * 0.75, fb=0.34, damp=3200) * 0.45
-    s.add(mar + reverb(mar, 1.2, damp=3200, mix=0.22))
+        if not rng_in(bar, DROPS): continue
+        st_s = mk_stab(STAB[idx(bar)], dur=0.34, bp=1100, q=1.1, amp=0.14)
+        for st in [2, 10, 14]: place(stabs, st_s, s.t(bar, st))
+    stabs = stabs + fbdelay(stabs, beat * 0.75, fb=0.34, damp=2400) * 0.4
+    s.add(stabs)
 
-    # --- KALIMBA: contra-melodía brillante en el pico ---
-    kal = np.zeros((2, s.N))
-    for bar in range(64, 88):
-        tones = ch(bar)['mar']
-        for st, ti in [(2, 3), (10, 2), (13, 1)]:
-            place(kal, kalimba(tones[ti] * 2, amp=0.09), s.t(bar, st))
-    kal = kal + fbdelay(kal, beat * 0.5, fb=0.38, damp=4000) * 0.5
-    s.add(kal + reverb(kal, 1.4, damp=4000, mix=0.3))
+    # ARPEGIO brillante = el gancho (8vos up-down con pingpong)
+    ARP_ON = [(16, 40), (40, 56), (64, 96)]
+    arp = np.zeros((2, s.N))
+    for bar in range(s.bars):
+        if not rng_in(bar, ARP_ON): continue
+        soft = 0.55 if rng_in(bar, [(40, 56)]) else 1.0
+        seq = ARP[idx(bar)]
+        for i, st in enumerate([0, 2, 4, 6, 8, 10, 12, 14]):
+            pan = 0.9 if i % 2 else 1.1
+            place(arp, stereo(mk_pluck(seq[i], dur=0.42, amp=0.15 * soft, bright=2600).mean(0), pan), s.t(bar, st))
+    arp = arp + fbdelay(arp, beat * 0.75, fb=0.4, damp=2800) * 0.5
+    s.add(arp + reverb(arp, 1.1, damp=3000, mix=0.22))
 
-    # --- PIANO tierno (el break emotivo) ---
-    pno = np.zeros((2, s.N))
-    for bar in range(48, 60):
-        for st in [0, 6, 10]:
-            place(pno, epiano(ch(bar)['pno'], dur=1.3, amp=0.10), s.t(bar, st))
-    s.add(pno + reverb(pno, 1.7, damp=2600, mix=0.42))
-
-    # --- VOZ sin palabras (break + pico) ---
-    HOOK = [(0, 0, 659.25, 3), (0, 12, 523.25, 1), (1, 0, 587.33, 2), (1, 8, 440.0, 2),
-            (2, 0, 659.25, 2), (2, 8, 783.99, 2), (3, 0, 587.33, 4),
-            (4, 0, 523.25, 3), (4, 12, 440.0, 1), (5, 0, 493.88, 4),
-            (6, 0, 659.25, 2), (6, 8, 587.33, 2), (7, 0, 523.25, 4)]
-    voc = np.zeros((2, s.N))
+    # TOPLINE emotivo (el que se canta) — break + drop 2
+    top = np.zeros((2, s.N))
     def lay(sb, amp):
-        for pb, st, f, bts in HOOK:
-            place(voc, vocal(f, bts * beat * 0.95, amp=amp), s.t(sb + pb, st))
-    lay(52, 0.12)      # break
-    lay(72, 0.16)      # pico
-    s.add(voc + reverb(voc, 1.8, damp=2400, mix=0.44))
+        for pb, st, f, bts in TOP:
+            place(top, saw_lead(f, bts * beat * 0.98, amp=amp), s.t(sb + pb, st))
+    lay(40, 0.10)          # breakdown, suave
+    lay(72, 0.14)          # drop 2, presente (el gancho)
+    top = top + fbdelay(top, beat * 0.5, fb=0.3, damp=3000) * 0.3
+    s.add(top + reverb(top, 1.5, damp=2800, mix=0.32))
 
+    # risers hacia cada drop
+    place(s.mix, riser(beat * 8, s.N, f0=300, f1=6000, amp=0.06), s.t(8))
+    place(s.mix, riser(beat * 8, s.N, f0=300, f1=7000, amp=0.07), s.t(56))
     return mt.master(s, 'amr-bloom')
 
 if __name__ == '__main__':
     os.makedirs(os.path.join(HERE, 'masters'), exist_ok=True)
     os.makedirs(os.path.join(HERE, 'audio'), exist_ok=True)
-    print('Sintetizando BLOOM (afro/melodic house)…', flush=True)
+    print('Sintetizando BLOOM (banger melódico)…', flush=True)
     wav, dur, peaks = build()
     print(f'  WAV: {wav}  ({dur:.1f}s)', flush=True)
     FF = imageio_ffmpeg.get_ffmpeg_exe()
@@ -190,7 +151,7 @@ if __name__ == '__main__':
     print(f'  M4A: {m4a}', flush=True)
     meta = dict(id='amr-bloom', title='BLOOM', kicker='THE SINGLE', tracks=1,
                 dur=round(dur, 1), titles=['BLOOM'], file='audio/amr-bloom.m4a',
-                art='art/amr-bloom.svg', edition=30, peaks=peaks, offsets=[0.0], bpm=122, key='A MIN')
+                art='art/amr-bloom.svg', edition=30, peaks=peaks, offsets=[0.0], bpm=124, key='A MIN')
     with open(os.path.join(HERE, 'bloom.js'), 'w') as f:
         f.write('window.AMR_BLOOM=' + json.dumps(meta) + ';')
     print('  bloom.js escrito. done', flush=True)
