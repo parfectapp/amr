@@ -1,0 +1,23 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="gpd" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2E6FB0" stop-opacity="0.42"/>
+      <stop offset="55%" stop-color="#2E6FB0" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#2E6FB0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="120" cy="214" rx="58" ry="8" fill="#14120f" opacity="0.05"/>
+  <circle cx="120" cy="126" r="54" fill="url(#gpd)"/>
+  <!-- olas -->
+  <g fill="none" stroke="#2E6FB0" stroke-linecap="round">
+    <path d="M50 152 C68 144 82 160 100 152 C118 144 134 160 152 152 C170 144 182 154 190 152" stroke-width="3"/>
+    <path d="M58 176 C76 168 90 184 108 176 C126 168 142 184 160 176 C174 170 184 178 190 176" stroke-width="2.2" opacity="0.55"/>
+  </g>
+  <!-- barquito a la deriva (casco oscuro) -->
+  <path d="M74 148 L166 148 C158 170 82 170 74 148 Z" fill="#141210"/>
+  <path d="M120 148 L120 98" stroke="#141210" stroke-width="3" stroke-linecap="round"/>
+  <!-- vela azul -->
+  <path d="M125 102 L125 145 L155 145 Z" fill="#2E6FB0"/>
+  <circle cx="68" cy="96" r="2.2" fill="#141210"/>
+  <circle cx="178" cy="120" r="2.4" fill="#141210"/>
+</svg>

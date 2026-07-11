@@ -1,0 +1,26 @@
+<svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="gad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2E6FB0" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#2E6FB0" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#2E6FB0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <ellipse cx="120" cy="214" rx="44" ry="7" fill="#14120f" opacity="0.05"/>
+  <!-- luz adorada + rayos -->
+  <circle cx="120" cy="62" r="42" fill="url(#gad)"/>
+  <circle cx="120" cy="62" r="14" fill="#2E6FB0"/>
+  <g stroke="#2E6FB0" stroke-width="2.2" opacity="0.55" stroke-linecap="round">
+    <path d="M120 20 L120 32"/><path d="M82 34 L90 44"/><path d="M158 34 L150 44"/>
+    <path d="M64 66 L76 66"/><path d="M176 66 L164 66"/>
+  </g>
+  <!-- figura con los brazos alzados -->
+  <g fill="#141210">
+    <path d="M108 210 C104 178 106 152 110 134 C112 124 128 124 130 134 C134 152 136 178 132 210 Z"/>
+    <circle cx="120" cy="114" r="14"/>
+  </g>
+  <g fill="none" stroke="#141210" stroke-width="7" stroke-linecap="round">
+    <path d="M112 130 C102 116 94 104 90 92"/>
+    <path d="M128 130 C138 116 146 104 150 92"/>
+  </g>
+</svg>
