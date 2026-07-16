@@ -53,9 +53,9 @@
     <text x="288" y="366" font-family="'IBM Plex Mono',monospace" font-size="20" letter-spacing="6" fill="#6E675E">STUDIO AMR</text>
     <text x="832" y="366" font-family="'IBM Plex Mono',monospace" font-size="20" letter-spacing="6" fill="#C96F2B" text-anchor="end">MMXXVI</text>
     <!-- marca / dibujo -->
-    <g transform="translate(440.0 420) scale(1.0)"><circle cx="70" cy="100" r="34" fill="#141210"/><circle cx="70" cy="100" r="12" fill="#C96F2B"/><circle cx="120" cy="100" r="34" fill="#141210"/><circle cx="120" cy="100" r="12" fill="#A62D3E"/><circle cx="170" cy="100" r="34" fill="#141210"/><circle cx="170" cy="100" r="12" fill="#2E6FB0"/></g>
+    <g transform="translate(440.0 420) scale(1.0)"><circle cx="90" cy="100" r="40" fill="#141210"/><circle cx="90" cy="100" r="14" fill="#C96F2B"/><circle cx="150" cy="100" r="40" fill="#141210"/><circle cx="150" cy="100" r="14" fill="#2E6FB0"/></g>
     <text x="560.0" y="824" font-family="Georgia,serif" font-weight="bold" font-size="54" letter-spacing="1" fill="#141210" text-anchor="middle">MEGA SET</text>
-    <text x="560.0" y="862" font-family="'IBM Plex Mono',monospace" font-size="15" letter-spacing="4" fill="#C96F2B" text-anchor="middle">ALL THREE RECORDS · 3H37</text>
+    <text x="560.0" y="862" font-family="'IBM Plex Mono',monospace" font-size="15" letter-spacing="4" fill="#C96F2B" text-anchor="middle">MONUMENTS × DELIRIO · 43 MIN</text>
     <text x="560.0" y="888" font-family="'IBM Plex Mono',monospace" font-size="12" letter-spacing="3" fill="#6E675E" text-anchor="middle">EDITION OF 10 · NUMBERED BY HAND</text>
   </g>
 

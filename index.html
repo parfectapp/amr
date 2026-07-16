@@ -273,7 +273,7 @@ body.hasplayer{padding-bottom:70px}
 .vprod.wine .vkick,.vprod.wine .vstats b,.vprod.wine .vbuy b,.vprod.wine .vinfo-lbl b,.vprod.wine .vtracks li b{color:#A62D3E}
 .vprod.wine .vplay:hover{background:#A62D3E;border-color:#A62D3E}
 .vprod.wine .vbuy:hover{border-color:#A62D3E;color:#A62D3E}
-.vprod.tri .vlabel{background:conic-gradient(from 210deg,#C96F2B 0 33.3%,#A62D3E 33.3% 66.6%,#2E6FB0 66.6% 100%);box-shadow:0 0 0 5px #141210}
+.vprod.tri .vlabel{background:conic-gradient(from 270deg,#C96F2B 0 50%,#2E6FB0 50% 100%);box-shadow:0 0 0 5px #141210}
 .vprod.tri .vdisc::before{border-color:rgba(234,230,223,.25)}
 /* ---- carril horizontal libre: deriva sola, arrastrable ---- */
 .dropsrail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;cursor:grab;-webkit-overflow-scrolling:touch}
@@ -535,7 +535,7 @@ body.hasplayer{padding-bottom:70px}
 <section class="sec" id="vinyls">
   <div class="sh">
     <div><span class="hk">THE VINYL</span><h2>Amber, wine, and blue.</h2></div>
-    <p>The collection: the amber EP, the ninety-minute session on wine-red, DELIRIO on blue — and the MEGA SET, all three records blended into one continuous 3h37 mix on triple vinyl. Hit play on a record — it plays right here and spins. When an edition sells out, the plate is retired.</p>
+    <p>The collection: the amber EP, the ninety-minute session on wine-red, DELIRIO on blue — and the MEGA SET, the best of both albums beat-mixed into one 43-minute DJ set on double vinyl. Hit play on a record — it plays right here and spins. When an edition sells out, the plate is retired.</p>
   </div>
   <div class="vgrid" id="vgrid"></div>
 </section>
@@ -616,7 +616,7 @@ var CONFIG = { email:'andremacouzetruiz@gmail.com', wa:'' }; // pon tu WhatsApp 
     'amr-monuments-side':{img:'art/shots/shot-monuments.jpg', kick:'THE EP · MONUMENTS', title:'MONUMENTS', desc:'Amber 12″ pressed from pure waveforms — no samples, no presets. Ships in its printed jacket with the digital master and the number inked on the label.'},
     'amr-set-the-set':{img:'art/shots/shot-sesion.jpg', kick:'THE SET · SESIÓN 001', title:'SESIÓN 001', desc:'The ninety-minute set on wine-red vinyl. One continuous mix, hand-numbered jacket, download code inside.'},
     'amr-tulum':{img:'art/shots/shot-tulum.jpg', kick:'IN SYNC · DELIRIO', title:'DELIRIO', desc:'Blue 12″ — one continuous take, in sync from the first bar to the last. Numbered by hand, printed jacket, digital master included.'},
-    'amr-megaset':{img:'art/shots/shot-megaset.jpg', kick:'ALL THREE RECORDS · MEGA SET', title:'MEGA SET', desc:'Triple 12″ — the whole catalogue in one continuous 3h37 mix: MONUMENTS into SESIÓN 001 into DELIRIO, forty tracks beat-blended from dusk till dawn. The definitive Studio AMR session.'}
+    'amr-megaset':{img:'art/shots/shot-megaset.jpg', kick:'MONUMENTS × DELIRIO · MEGA SET', title:'MEGA SET', desc:'Double 12″ — the best of both albums, beat-mixed like a real DJ set: thirteen cuts locked to 121 BPM, long blends, EQ swaps, one 43-minute arc from LLEGADA to AMANECER.'}
   };
   var current = null;
   window.openShot = function(p){
@@ -836,7 +836,7 @@ VINYLS.forEach(function(p,j){
     var el = document.createElement('div');
     el.className = 'vprod' + (p.id==='amr-set-the-set' ? ' wine' : (p.id==='amr-megaset' ? ' tri' : ''));
     el.id = 'vprod-'+j;
-    var vcol = p.id==='amr-megaset' ? 'TRIPLE VINYL' : 'WINE-RED VINYL';
+    var vcol = p.id==='amr-megaset' ? 'DOUBLE VINYL' : 'WINE-RED VINYL';
     el.innerHTML = discHTML +
       '<div class="vmeta">'+
         '<span class="vkick">'+(p.kicker||'')+' · '+vcol+'</span>'+
