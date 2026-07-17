@@ -41,9 +41,9 @@ def riser(bars, rng):
     n = int(bars * SPB)
     t = np.arange(n) / n
     noise = rng.standard_normal(n).astype(np.float32)
-    x = hp(noise, 400, 2) * (t ** 2.2).astype(np.float32) * 0.5
+    x = hp(noise, 400, 2) * (t ** 2.6).astype(np.float32) * 0.22
     f = 180.0 * (2 ** (t * 2.2))
-    x += np.sin(2 * np.pi * np.cumsum(f) / SR).astype(np.float32) * (t ** 3).astype(np.float32) * 0.3
+    x += np.sin(2 * np.pi * np.cumsum(f) / SR).astype(np.float32) * (t ** 3).astype(np.float32) * 0.12
     return x
 
 def downlifter(rng):
@@ -63,7 +63,7 @@ def revcym(rng):
     h = hit_hat(rng, open_=True)
     n = int(1 * SPB)
     pad = np.zeros(n, np.float32); pad[-len(h):] = h[::-1] if len(h) <= n else h[:n][::-1]
-    return pad * np.linspace(0.1, 1.0, n).astype(np.float32) * 0.8
+    return pad * np.linspace(0.1, 1.0, n).astype(np.float32) * 0.45
 
 def build():
     rng = np.random.default_rng(77)
@@ -88,7 +88,7 @@ def build():
             x = lead_warm(prev or f, f, ln * S16 / SR * 1.15, seed=9000 + s + base % 97, cutoff=cutoff)
             add(hookb, base + sw16(s % 16, 'keys') + SPB * (s // 16), x, g)
             if wide and (s % 8 == 0):                    # doble kalimba de brillo en los drops
-                add(hookb, base + sw16(s % 16, 'keys') + SPB * (s // 16), kalimba(f * 2, 0.5, rng), g * 0.4)
+                add(hookb, base + sw16(s % 16, 'keys') + SPB * (s // 16), kalimba(f * 2, 0.5, rng), g * 0.28)
             prev = f
 
     pos_bar = 0
@@ -98,8 +98,8 @@ def build():
             base = gb * SPB
             ch = CHORDS[(gb // 2) % 4]
             in_drop = name in ('drop', 'drop2')
-            e = dict(intro=0.35, groove=0.6, build=0.75, drop=1.0, targ=0.5,
-                     drop2=1.0, outro=0.4).get(name, 0.5)
+            e = dict(intro=0.35, groove=0.6, build=0.75, drop=0.85, targ=0.5,
+                     drop2=0.85, outro=0.4).get(name, 0.5)
             # KICK
             if name not in ('break',) and not (name == 'intro' and bar < 4):
                 for beat in range(4):
@@ -111,7 +111,7 @@ def build():
                 fr = midi_f(ch[0] - 12)
                 VAR = [[s for s in range(16) if s % 4 != 0], [2, 3, 6, 7, 10, 11, 14, 15], [1, 3, 6, 9, 11, 14]]
                 steps = VAR[(gb // 8) % 3]
-                fc = 700 + (500 if in_drop else 0)
+                fc = 700 + (300 if in_drop else 0)
                 for s in steps:
                     if rng.uniform() < 0.1: continue
                     f = fr * (2.0 if (s % 8 == 7 and rng.uniform() < 0.4) else 1.0)
@@ -148,9 +148,9 @@ def build():
                 elif name == 'groove' and bar >= 8:
                     hook_at(base, 900, 0.38)
                 elif name == 'drop':
-                    hook_at(base, 1900, 0.55, wide=True)
+                    hook_at(base, 1700, 0.46, wide=True)
                 elif name == 'drop2':
-                    hook_at(base, 2100, 0.55, octs=(1 if bar >= 16 else 0), wide=True, counter=True)
+                    hook_at(base, 1900, 0.46, octs=(1 if bar >= 16 else 0), wide=True, counter=True)
                 elif name == 'break':
                     hook_at(base, 1400, 0.42)                                 # solo, con reverb enorme después
             # PADS (break y builds) + campana de tensión
@@ -164,12 +164,12 @@ def build():
                 add(hookb, base, campana(midi_f(deg(ROOT, SC, [0, 4, 2, 4][(bar // 4) % 4], 1)), 3.0, rng), 0.4)
             # EAR CANDY por transición
             if name.startswith('build') and bar == 0:
-                add(fxb, base, riser(bars, rng), 0.8)
+                add(fxb, base, riser(bars, rng), 0.3)
             if in_drop and bar == 0:
-                add(fxb, base, impact(rng), 0.9)
+                add(fxb, base, impact(rng), 0.55)
             if in_drop and bar % 8 == 0 and bar > 0:
                 swp = bp(rng.standard_normal(int(SPB)).astype(np.float32), 2000, 8000, 2)
-                add(fxb, base, swp * np.linspace(0, 0.14, int(SPB)).astype(np.float32) ** 1.5, 1.0)
+                add(fxb, base, swp * np.linspace(0, 0.07, int(SPB)).astype(np.float32) ** 1.5, 1.0)
             if in_drop and bar == bars - 1:
                 add(fxb, base + SPB - int(0.1 * SR), downlifter(rng), 1.0)
             if name.startswith('build') and bar == bars - 1:
@@ -195,13 +195,13 @@ def build():
     pads = np.stack([padL, padR]) * (env * 0.4 + 0.6)[None, :]
     verb = np.stack([fconv(pads[0], _verb_ir(2.8, 4600, 11)), fconv(pads[1], _verb_ir(2.8, 4600, 88))])
     music = drum_st * 0.8 + hook_st * 0.85 + (pads + verb) * 0.9 + np.stack([fxb, fxb]) * 0.7
-    mm = 0.5 * (music[0] + music[1]); ss = bp(0.5 * (music[0] - music[1]), 220, 11000, 2) * 2.6
+    mm = 0.5 * (music[0] + music[1]); ss = bp(0.5 * (music[0] - music[1]), 220, 11000, 2) * 2.2
     mix = np.stack([mm + ss, mm - ss])
     mix += kickb[None, :] * 1.18 + bassb[None, :] * 1.45
-    mix = np.stack([sat(mix[0], 1.25, 0.05), sat(mix[1], 1.25, 0.05)])
+    mix = np.stack([sat(mix[0], 1.12, 0.04), sat(mix[1], 1.12, 0.04)])
     mix = sub_mono(mix, 120.0)
     pk = np.abs(mix).max()
-    if pk > 0.95: mix *= 0.95 / pk
+    if pk > 0.90: mix *= 0.90 / pk
     return mix
 
 if __name__ == '__main__':
@@ -211,7 +211,7 @@ if __name__ == '__main__':
     raw = os.path.join(HERE, 'masters', 'fiebre-raw.wav')
     final = os.path.join(HERE, 'masters', 'amr-fiebre.wav')
     wav_write(raw, mix); del mix
-    hist = master_file(raw, final, target_i=-7.5, ceiling_db=-1.1)
+    hist = master_file(raw, final, target_i=-8.4, ceiling_db=-1.3)
     I, lra, tp = ffmeter(final)
     print(f'MASTER: {hist} → {I} LUFS · LRA {lra} · TP {tp}')
     print(final)
