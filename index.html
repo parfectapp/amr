@@ -128,20 +128,30 @@ body.hero-in .hero-bottom{opacity:1;transform:none;transition-delay:.66s}
 .card::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--amber);transition:width .5s}
 .card:hover::after,.card.playing::after{width:100%}
 
-/* ---- the mixer (consola PRO de 4 canales) ---- */
-.mixsec{background:#141210;color:var(--bone)}
-.mixsec .mixin{max-width:1300px;margin:0 auto;padding:clamp(60px,9vw,120px) clamp(20px,4vw,48px)}
+/* ---- the mixer — cabina PRO estilo club (4 canales) en entornos plinth ---- */
+.mixsec{position:relative;color:var(--bone);overflow:hidden;transition:background .8s}
+.mixsec.env-amber{background:linear-gradient(180deg,#16110c,#211710 55%,#120d09);--sc:#7a5530;--scd:#4a3320}
+.mixsec.env-blue{background:linear-gradient(180deg,#090e1a,#111b30 55%,#070b14);--sc:#33507e;--scd:#1f3252}
+.mixsec.env-jade{background:linear-gradient(180deg,#091411,#0f231d 55%,#071009);--sc:#2a6353;--scd:#1a4237}
+.mixsec.env-violet{background:linear-gradient(180deg,#0f0b1c,#181236 55%,#0b0816);--sc:#4a3f7e;--scd:#2f2854}
+.mixsec .mixin{position:relative;z-index:2;max-width:1340px;margin:0 auto;padding:clamp(60px,9vw,120px) clamp(16px,3vw,40px)}
 .mixsec .hk{color:rgba(234,230,223,.55)}
 .mixsec h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(34px,4.5vw,60px);margin:14px 0 16px}
-.mixsec .mixlede{color:rgba(234,230,223,.62);line-height:1.7;max-width:62ch;margin:0 0 30px}
+.mixsec .mixlede{color:rgba(234,230,223,.62);line-height:1.7;max-width:64ch;margin:0 0 22px}
 .mixsec .mixlede b{color:var(--bone);font-weight:500}
-.pmx{border:1px solid rgba(234,230,223,.18);border-radius:10px;background:linear-gradient(180deg,#201c18,#131110 26%,#0d0b0a);padding:clamp(12px,2vw,26px);box-shadow:0 34px 90px rgba(0,0,0,.5),inset 0 1px 0 rgba(234,230,223,.07);font-family:'IBM Plex Mono',monospace}
-#pmxScreen{display:block;width:100%;height:clamp(170px,24vw,250px);border-radius:6px;background:#050606;border:1px solid rgba(234,230,223,.16);cursor:crosshair}
-.pmxshelf{display:flex;gap:8px;overflow-x:auto;padding:12px 2px 14px;scrollbar-width:none;border-bottom:1px solid rgba(234,230,223,.1);margin-bottom:16px}
+.sculpts{position:absolute;inset:0;z-index:1;pointer-events:none}
+.sculpts svg{position:absolute;bottom:-2%;color:var(--sc);opacity:.5;transition:color .8s}
+.sculpts .sc-l{left:-3%;width:clamp(220px,26vw,420px)}
+.sculpts .sc-r{right:-4%;width:clamp(240px,28vw,460px)}
+.envchips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 18px;font-family:'IBM Plex Mono',monospace}
+.envchips button{font-family:inherit;font-size:9px;letter-spacing:.16em;background:none;border:1px solid rgba(234,230,223,.22);border-radius:99px;color:rgba(234,230,223,.6);cursor:pointer;padding:6px 14px;transition:.2s}
+.envchips button:hover{border-color:rgba(234,230,223,.5);color:var(--bone)}
+.envchips button.on{background:var(--bone);border-color:var(--bone);color:#141210}
+.pmxshelf{display:flex;gap:8px;overflow-x:auto;padding:10px 2px 14px;scrollbar-width:none;margin-bottom:14px;font-family:'IBM Plex Mono',monospace}
 .pmxshelf::-webkit-scrollbar{display:none}
 .shrec{flex:0 0 auto;width:82px;background:none;border:none;cursor:pointer;text-align:center;font-family:inherit;color:rgba(234,230,223,.72);padding:4px 0;transition:transform .22s}
 .shrec:hover{transform:translateY(-3px);color:var(--bone)}
-.sdisc{width:48px;height:48px;margin:0 auto 7px;border-radius:50%;position:relative;background:repeating-radial-gradient(circle at 50% 50%,#0d0b0a 0 1.5px,#1d1a17 1.5px 3.4px);box-shadow:0 4px 12px rgba(0,0,0,.5);display:grid;place-items:center}
+.sdisc{width:46px;height:46px;margin:0 auto 7px;border-radius:50%;position:relative;background:repeating-radial-gradient(circle at 50% 50%,#0d0b0a 0 1.5px,#1d1a17 1.5px 3.4px);box-shadow:0 4px 12px rgba(0,0,0,.5);display:grid;place-items:center}
 .sdisc::after{content:"";width:36%;height:36%;border-radius:50%;background:var(--mc,#C96F2B)}
 .sdisc::before{content:"";position:absolute;width:8%;height:8%;border-radius:50%;background:#141210;z-index:2}
 .shrec:hover .sdisc{animation:spin 2.4s linear infinite}
@@ -149,63 +159,92 @@ body.hero-in .hero-bottom{opacity:1;transform:none;transition-delay:.66s}
 .shrec em{display:block;font-style:normal;font-size:8px;letter-spacing:.08em;color:rgba(234,230,223,.38);margin-top:2px}
 .shrec.deny .sdisc{animation:mxshake .3s}
 @keyframes mxshake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
-.pmxboard{display:grid;grid-template-columns:repeat(4,1fr) minmax(118px,.85fr);gap:clamp(8px,1.2vw,16px)}
-.pmxch{--mc:#5a544c;--mlc:#8b857c;border:1px solid rgba(234,230,223,.12);border-radius:5px;padding:10px 8px 12px;display:flex;flex-direction:column;gap:9px;min-width:0;background:linear-gradient(180deg,rgba(234,230,223,.035),rgba(234,230,223,.008))}
-.pmxch .chn{font-size:9px;letter-spacing:.14em;color:rgba(234,230,223,.4);display:flex;justify-content:space-between;align-items:center}
-.pmxch .chn b{font-weight:400;color:var(--mlc);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%}
-.pjogrow{display:flex;gap:8px;align-items:center;justify-content:center}
-.pjog{width:58px;height:58px;border-radius:50%;position:relative;border:none;cursor:pointer;padding:0;background:repeating-radial-gradient(circle at 50% 50%,#0d0b0a 0 1.6px,#1e1b18 1.6px 3.6px);box-shadow:0 6px 16px rgba(0,0,0,.5);display:grid;place-items:center;flex:0 0 auto}
-.pjog::after{content:"";width:36%;height:36%;border-radius:50%;background:var(--mc)}
-.pjog::before{content:"";position:absolute;width:7%;height:7%;border-radius:50%;background:#141210;z-index:2}
-.pjog.empty{background:none;border:1px dashed rgba(234,230,223,.25);box-shadow:none}
-.pjog.empty::after{background:none;border:1px dashed rgba(234,230,223,.18)}
-.pjog.empty::before{display:none}
-.pmxch.playing .pjog{animation:spin 1.8s linear infinite}
-.pjogside{display:flex;flex-direction:column;gap:5px;min-width:0}
-.pbtn{font-family:inherit;font-size:10px;letter-spacing:.08em;background:none;border:1px solid rgba(234,230,223,.24);border-radius:3px;color:var(--bone);cursor:pointer;padding:5px 8px;transition:.18s;white-space:nowrap}
-.pbtn:hover:not(:disabled){border-color:var(--mlc);color:var(--mlc)}
-.pbtn:disabled{opacity:.28;cursor:default}
-.pbtn.pplay{background:var(--mc);border-color:var(--mc);color:#0d0b0a;font-weight:600}
-.pmxch:not(.loaded) .pbtn.pplay{background:none;color:var(--bone)}
-.pbtn.pcue.set{border-color:#d9a13b;color:#d9a13b}
-.ptrow{display:flex;gap:4px;align-items:stretch}
-.ptrow .pbtn{padding:4px 5px;font-size:9px;flex:0 0 auto}
-.ptrack{flex:1;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:rgba(234,230,223,.6);line-height:1.25;text-align:center;overflow:hidden;align-self:center;min-height:22px}
-.ptrack b{display:block;font-weight:400;color:var(--mlc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ppitchrow{display:flex;flex-direction:column;gap:2px;font-size:8px;letter-spacing:.14em;color:rgba(234,230,223,.38)}
-.ppitchrow input{width:100%;accent-color:var(--mc);cursor:pointer;margin:0;height:14px}
-.pknobs{display:grid;grid-template-columns:1fr 1fr;gap:8px 4px;justify-items:center}
-.pknob{display:flex;flex-direction:column;align-items:center;gap:3px;user-select:none;-webkit-user-select:none}
-.pknob span{font-size:8px;letter-spacing:.14em;color:rgba(234,230,223,.42)}
-.pkcap{width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 36% 30%,#2c2823,#161310 72%);border:1px solid rgba(234,230,223,.24);position:relative;cursor:ns-resize;touch-action:none;box-shadow:0 3px 8px rgba(0,0,0,.45)}
-.pkcap::after{content:"";position:absolute;left:50%;top:50%;width:2px;height:11px;margin:-14px 0 0 -1px;background:var(--mlc);transform-origin:1px 14px;transform:rotate(var(--rot,0deg));border-radius:1px}
-.pfadrow{display:flex;gap:10px;justify-content:center;align-items:flex-end;margin-top:2px}
-.pvu{display:flex;flex-direction:column-reverse;gap:2px;padding-bottom:2px}
-.pvu i{width:9px;height:5px;border-radius:1px;background:rgba(234,230,223,.1)}
-.pvu i.on{background:#3fae5a}
-.pvu i.a.on{background:#d9a13b}
-.pvu i.r.on{background:#d1342f}
-.pfader{position:relative;width:36px;height:118px;cursor:ns-resize;touch-action:none;background:linear-gradient(90deg,transparent 45%,rgba(234,230,223,.22) 48% 52%,transparent 55%)}
-.pfhandle{position:absolute;left:1px;right:1px;height:16px;border-radius:3px;background:linear-gradient(180deg,#3d3831,#221e1a);border:1px solid rgba(234,230,223,.32);box-shadow:0 2px 6px rgba(0,0,0,.5)}
-.pfhandle::after{content:"";position:absolute;left:4px;right:4px;top:50%;height:1px;background:var(--mlc)}
-.pxarow{display:flex;gap:4px;justify-content:center;align-items:center;font-size:8px;letter-spacing:.12em;color:rgba(234,230,223,.38)}
-.pxarow .pbtn{padding:3px 9px;font-size:9px}
-.pxarow .pbtn.xa-a{border-color:#5B9BD5;color:#5B9BD5}
-.pxarow .pbtn.xa-b{border-color:#d9a13b;color:#d9a13b}
-.peject{font-family:inherit;font-size:8px;letter-spacing:.14em;background:none;border:1px solid rgba(234,230,223,.16);border-radius:3px;color:rgba(234,230,223,.5);cursor:pointer;padding:4px 0;transition:.18s}
+/* --- la cabina: CDJ · CDJ · DJM · CDJ · CDJ --- */
+.booth{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr minmax(400px,1.42fr) 1fr 1fr;gap:8px;align-items:stretch;font-family:'IBM Plex Mono',monospace}
+.unit{background:linear-gradient(180deg,#1c1d21,#101114 38%,#0b0c0e);border:1px solid #2b2d33;border-radius:6px;box-shadow:0 26px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);padding:9px 8px 10px;position:relative;min-width:0}
+.unit::before,.unit::after{content:"";position:absolute;top:5px;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#3d4046,#191a1d 70%);box-shadow:inset 0 0 1px #000}
+.unit::before{left:6px}.unit::after{right:6px}
+/* --- CDJ --- */
+.cdj{display:flex;flex-direction:column;gap:7px}
+.cdjscr{width:100%;height:76px;background:#04070a;border:1px solid #272a31;border-radius:3px;cursor:crosshair;display:block}
+.cdjmid{display:flex;gap:7px;align-items:center;justify-content:center}
+.jogwrap{position:relative;flex:0 0 auto;display:grid;place-items:center}
+.jog{width:clamp(92px,8.4vw,132px);aspect-ratio:1;border-radius:50%;background:repeating-conic-gradient(#17181c 0 5deg,#1e2025 5deg 10deg);border:1px solid #2e3138;display:grid;place-items:center;position:relative;box-shadow:0 8px 20px rgba(0,0,0,.5)}
+.jog::before{content:"";position:absolute;inset:9%;border-radius:50%;background:radial-gradient(circle at 40% 32%,#23252b,#0d0e11 72%);border:1px solid #33363d}
+.jogring{position:absolute;inset:3%;border-radius:50%;border:3px solid rgba(255,255,255,.05);transition:.25s;pointer-events:none}
+.cdj.playing .jogring{border-color:#e5372e;box-shadow:0 0 16px rgba(229,55,46,.5),inset 0 0 12px rgba(229,55,46,.28)}
+.jogart{width:46%;aspect-ratio:1;border-radius:50%;background:var(--mc,#2c2e33);display:grid;place-items:center;position:relative;z-index:2;box-shadow:0 0 0 4px #0a0b0d,0 0 0 5px #34373e;color:#0d0b0a;font-size:8px;font-weight:600;letter-spacing:.06em;text-align:center;overflow:hidden;padding:4px}
+.cdj.playing .jogart{animation:spin 2.4s linear infinite}
+.tempo{position:relative;width:24px;height:112px;flex:0 0 auto;cursor:ns-resize;touch-action:none;background:linear-gradient(90deg,transparent 42%,rgba(234,230,223,.2) 46% 54%,transparent 58%)}
+.tempo::after{content:"";position:absolute;left:2px;right:2px;top:50%;height:1px;background:rgba(234,230,223,.35)}
+.tcap{position:absolute;left:0;right:0;height:14px;border-radius:2px;background:linear-gradient(180deg,#3d3831,#211d19);border:1px solid rgba(234,230,223,.32);box-shadow:0 2px 5px rgba(0,0,0,.5)}
+.tcap::after{content:"";position:absolute;left:3px;right:3px;top:50%;height:1px;background:#e8e5df}
+.tlab{font-size:7px;letter-spacing:.12em;color:rgba(234,230,223,.4);text-align:center;margin-top:3px}
+.cdjbtns{display:flex;gap:8px;justify-content:center;align-items:center}
+.rbtn{width:40px;height:40px;border-radius:50%;border:2px solid #3c4046;background:radial-gradient(circle at 35% 30%,#212328,#101114);color:#cfccc5;font-size:13px;cursor:pointer;display:grid;place-items:center;transition:.2s;padding:0;font-family:inherit}
+.rbtn:disabled{opacity:.3;cursor:default}
+.rbtn.play.on{border-color:#35e07a;color:#35e07a;box-shadow:0 0 12px rgba(53,224,122,.45)}
+.rbtn.cue{font-size:8px;letter-spacing:.08em}
+.rbtn.cue.set{border-color:#ff9f1a;color:#ff9f1a;box-shadow:0 0 10px rgba(255,159,26,.4)}
+.tsk{display:flex;gap:4px;justify-content:center}
+.tsk button,.peject{font-family:inherit;font-size:8px;letter-spacing:.1em;background:#17181b;border:1px solid #34373e;border-radius:2px;color:#c9c5bd;cursor:pointer;padding:4px 8px;transition:.18s}
+.tsk button:hover:not(:disabled){border-color:#8b857c;color:#fff}
+.tsk button:disabled,.peject:disabled{opacity:.28;cursor:default}
 .peject:hover:not(:disabled){border-color:#d1342f;color:#d1342f}
-.peject:disabled{opacity:.25;cursor:default}
-.pmxmaster{border:1px solid rgba(234,230,223,.14);border-radius:5px;padding:10px 8px 12px;display:flex;flex-direction:column;gap:10px;align-items:center;background:linear-gradient(180deg,rgba(234,230,223,.05),rgba(234,230,223,.012))}
-.pmlab{font-size:9px;letter-spacing:.18em;color:rgba(234,230,223,.45);text-align:center}
-.pmvu{display:flex;gap:5px}
-.pfxon{width:100%}
-.pfxon.on{background:#d1342f;border-color:#d1342f;color:#0d0b0a;font-weight:600}
-.pmxxf{display:flex;gap:14px;align-items:center;justify-content:center;margin-top:16px;font-size:11px;letter-spacing:.2em;color:rgba(234,230,223,.5)}
-.xftrack{position:relative;width:min(300px,56vw);height:34px;cursor:ew-resize;touch-action:none;background:linear-gradient(180deg,transparent 44%,rgba(234,230,223,.22) 47% 53%,transparent 56%)}
-.xfhandle{position:absolute;top:1px;bottom:1px;width:22px;border-radius:3px;background:linear-gradient(180deg,#3d3831,#221e1a);border:1px solid rgba(234,230,223,.32);box-shadow:0 2px 6px rgba(0,0,0,.5)}
-.xfhandle::after{content:"";position:absolute;top:4px;bottom:4px;left:50%;width:1px;background:rgba(234,230,223,.6)}
-@media(max-width:940px){.pmxboard{grid-template-columns:1fr 1fr}.pmxmaster{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:14px}}
-@media(max-width:430px){.pmxboard{grid-template-columns:1fr}}
+.cdjfoot{font-size:7px;letter-spacing:.26em;color:#5c5f66;text-align:center;margin-top:1px}
+/* --- DJM --- */
+.djm{display:flex;flex-direction:column;gap:6px}
+.djmgrid{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:0;flex:1}
+.strip{display:flex;flex-direction:column;align-items:center;gap:6px;padding:4px 3px 6px;border-right:1px solid #232529;min-width:0}
+.stname{font-size:7px;letter-spacing:.08em;color:var(--mlc,#8b857c);text-transform:uppercase;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-height:10px}
+.knob{width:29px;height:29px;border-radius:50%;background:radial-gradient(circle at 38% 30%,#2c2e34,#101114 74%);border:1px solid #3b3e45;box-shadow:0 2px 5px rgba(0,0,0,.5),inset 0 1px 1px rgba(255,255,255,.06);position:relative;cursor:ns-resize;touch-action:none}
+.knob::after{content:"";position:absolute;left:50%;top:50%;width:2px;height:10px;margin:-13px 0 0 -1px;background:#e8e5df;transform-origin:1px 13px;transform:rotate(var(--rot,0deg));border-radius:1px}
+.klab{font-size:7px;letter-spacing:.12em;color:#9a968e;margin-top:-3px}
+.cuebtn{width:82%;padding:4px 0;background:#17181b;border:1px solid #3a3d44;border-radius:2px;color:#c9c5bd;font-size:8px;letter-spacing:.16em;cursor:pointer;font-family:inherit;transition:.18s}
+.cuebtn.set{background:#ff9f1a;border-color:#ff9f1a;color:#141210;box-shadow:0 0 10px rgba(255,159,26,.45)}
+.chipnum{min-width:16px;height:14px;background:#ff7f27;color:#141210;font-size:9px;font-weight:600;display:grid;place-items:center;border-radius:2px;padding:0 3px}
+.fadrow{display:flex;gap:7px;align-items:flex-end;justify-content:center}
+.pvu{display:flex;flex-direction:column-reverse;gap:1.6px;padding-bottom:2px}
+.pvu i{width:8px;height:4px;border-radius:1px;background:rgba(234,230,223,.09)}
+.pvu i.on{background:#37c95d}
+.pvu i.a.on{background:#d9a13b}
+.pvu i.r.on{background:#e5372e}
+.pfader{position:relative;width:32px;height:112px;cursor:ns-resize;touch-action:none;background:linear-gradient(90deg,transparent 45%,rgba(234,230,223,.2) 48% 52%,transparent 55%)}
+.pfh{position:absolute;left:1px;right:1px;height:15px;border-radius:2px;background:linear-gradient(180deg,#3d3831,#221e1a);border:1px solid rgba(234,230,223,.32);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.pfh::after{content:"";position:absolute;left:4px;right:4px;top:50%;height:1px;background:#e8e5df}
+.xa3{display:flex;gap:2px}
+.xa3 button{font-family:inherit;font-size:7px;letter-spacing:.06em;background:#141519;border:1px solid #33363d;border-radius:2px;color:#8f8b83;cursor:pointer;padding:3px 5px;transition:.15s}
+.xa3 button.on{background:#e8e5df;border-color:#e8e5df;color:#141210}
+/* FX + master */
+.fxcol{display:flex;flex-direction:column;gap:6px;align-items:center;padding:4px 6px 6px;min-width:96px}
+.fxlcd{width:100%;background:#050607;border:1px solid #2b2e34;border-radius:3px;padding:6px 7px;color:#ffb03a;display:flex;flex-direction:column;gap:3px;font-size:9px}
+.fxlcd .lrow{display:flex;justify-content:space-between;align-items:center}
+.fxlcd b{font-weight:600;letter-spacing:.1em}
+.fxlcd .lsm{font-size:8px;color:rgba(255,176,58,.65)}
+.beatdot{width:6px;height:6px;border-radius:50%;background:#ffb03a;opacity:.15;transition:opacity .05s}
+.beatdot.on{opacity:1;box-shadow:0 0 6px rgba(255,176,58,.7)}
+.fxsel{display:grid;grid-template-columns:1fr 1fr;gap:3px;width:100%}
+.fxsel button,.chsel button{font-family:inherit;font-size:7px;letter-spacing:.08em;background:#17181b;border:1px solid #34373e;border-radius:2px;color:#a5a199;cursor:pointer;padding:4px 2px;transition:.15s}
+.fxsel button.on{border-color:#ffb03a;color:#ffb03a}
+.chsel{display:flex;gap:3px;width:100%}
+.chsel button{flex:1}
+.chsel button.on{border-color:#ffb03a;color:#ffb03a}
+.fxon{width:100%;font-family:inherit;font-size:9px;letter-spacing:.14em;background:#17181b;border:1px solid #3a3d44;border-radius:3px;color:#c9c5bd;cursor:pointer;padding:7px 0;transition:.2s}
+.fxon.on{background:#ffb03a;border-color:#ffb03a;color:#141210;animation:fxpulse 1s ease-in-out infinite}
+@keyframes fxpulse{50%{box-shadow:0 0 16px rgba(255,176,58,.65)}}
+.mstrow{display:flex;gap:10px;align-items:center;justify-content:center;border-top:1px solid #232529;padding-top:7px}
+.pmvu{display:flex;gap:4px}
+.mstlab{font-size:7px;letter-spacing:.16em;color:#9a968e;text-align:center}
+.xfrow{display:flex;align-items:center;gap:10px;justify-content:center;border-top:1px solid #232529;padding-top:8px;font-size:10px;letter-spacing:.18em;color:rgba(234,230,223,.5)}
+.xftrack{position:relative;width:min(240px,52%);height:28px;cursor:ew-resize;touch-action:none;background:linear-gradient(180deg,transparent 42%,rgba(234,230,223,.2) 46% 54%,transparent 58%)}
+.xfhandle{position:absolute;top:1px;bottom:1px;width:20px;border-radius:2px;background:linear-gradient(180deg,#3d3831,#221e1a);border:1px solid rgba(234,230,223,.32);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.xfhandle::after{content:"";position:absolute;top:4px;bottom:4px;left:50%;width:1px;background:#e8e5df}
+.djmlogo{font-size:8px;letter-spacing:.3em;color:#6e7178;text-align:center}
+/* pedestal plinth */
+.plinthbase{position:relative;z-index:1;width:86%;margin:0 auto;height:34px;background:linear-gradient(180deg,#2a2620,#171310);border:1px solid rgba(234,230,223,.14);border-top:none;box-shadow:0 26px 50px rgba(0,0,0,.5)}
+.plinthbase::after{content:"";position:absolute;left:6%;right:6%;top:100%;height:22px;background:linear-gradient(180deg,#211d18,#100d0a);border:1px solid rgba(234,230,223,.1);border-top:none}
+@media(max-width:1150px){.booth{grid-template-columns:1fr 1fr}.djm{grid-column:1/-1;order:3}.cdj[data-d="0"]{order:1}.cdj[data-d="1"]{order:2}.cdj[data-d="2"]{order:4}.cdj[data-d="3"]{order:5}}
+@media(max-width:560px){.booth{grid-template-columns:1fr}.djmgrid{grid-template-columns:1fr 1fr}.fxcol{grid-column:1/-1}}
 
 /* ---- about ---- */
 .about{text-align:center}
@@ -679,18 +718,40 @@ body.hasplayer{padding-bottom:70px}
 <!-- MARQUEE DELIRIO (azul, scroll infinito) -->
 <div class="mq blue"><div id="mqtrack2"></div></div>
 
-<!-- THE MIXER — consola PRO de 4 canales -->
-<div class="mixsec" id="sound">
+<!-- THE MIXER — cabina PRO (CDJ·CDJ·DJM·CDJ·CDJ) en entornos plinth -->
+<div class="mixsec env-amber" id="sound">
+<div class="sculpts" aria-hidden="true">
+  <svg class="sc-l" viewBox="0 0 400 520" fill="currentColor">
+    <rect x="40" y="470" width="200" height="50"/>
+    <rect x="60" y="440" width="160" height="30" opacity=".85"/>
+    <rect x="80" y="300" width="120" height="140" opacity=".7"/>
+    <circle cx="140" cy="240" r="62" opacity=".9"/>
+    <rect x="270" y="480" width="100" height="40"/>
+    <rect x="282" y="170" width="76" height="310" opacity=".6"/>
+    <rect x="270" y="150" width="100" height="22" opacity=".85"/>
+    <rect x="278" y="128" width="84" height="14" opacity=".7"/>
+  </svg>
+  <svg class="sc-r" viewBox="0 0 400 520" fill="currentColor">
+    <rect x="30" y="475" width="130" height="45"/>
+    <polygon points="65,120 125,120 112,460 78,460" opacity=".8"/>
+    <polygon points="79,86 111,86 125,120 65,120" opacity=".9"/>
+    <rect x="200" y="480" width="170" height="40"/>
+    <path d="M225 480 L225 300 A60 60 0 0 1 345 300 L345 480 L310 480 L310 305 A25 25 0 0 0 260 305 L260 480 Z" opacity=".7"/>
+  </svg>
+</div>
 <div class="mixin">
-  <span class="hk">THE MIXER — PRO CONSOLE · FOUR CHANNELS</span>
+  <span class="hk">THE MIXER — PRO BOOTH · FOUR CHANNELS</span>
   <h2>Mix the catalogue yourself.</h2>
-  <p class="mixlede">The full booth, on screen. Pick a record below — it loads to the first open deck and spins in its colour. Per channel: <b>trim, three-band EQ, colour filter, tempo ±8</b>, cue, a vertical fader and true LED metering. Master section with <b>echo FX</b> and a crossfader under it all. <b>Drag a knob up or down</b> to turn it — double-click resets. The screen shows all four waveforms: tap one to jump.</p>
-  <div class="pmx">
-    <canvas id="pmxScreen"></canvas>
-    <div class="pmxshelf" id="mxShelf"></div>
-    <div class="pmxboard" id="mxDecks"></div>
-    <div class="pmxxf"><span>A</span><div class="xftrack" id="xfTrack"><div class="xfhandle" id="xfHandle"></div></div><span>B</span></div>
+  <p class="mixlede">The club-standard booth, modelled knob for knob: <b>two players each side, the four-channel mixer in the middle</b>. Every player has its own screen, jog and tempo fader; every channel runs trim, full-kill three-band EQ, a colour filter, LED metering and a proper fader — with <b>beat FX</b> and a crossfader in the centre. Pick a record below to load a deck. Drag knobs and faders; double-click resets. The booth stands on the plinth — change the room behind it.</p>
+  <div class="envchips" id="envChips">
+    <button data-env="amber" class="on">HALL · AMBER</button>
+    <button data-env="blue">NIGHT · BLUE</button>
+    <button data-env="jade">DESERT · JADE</button>
+    <button data-env="violet">BLOOM · VIOLET</button>
   </div>
+  <div class="pmxshelf" id="mxShelf"></div>
+  <div class="booth" id="mxBooth"></div>
+  <div class="plinthbase"></div>
 </div>
 </div>
 
@@ -903,11 +964,10 @@ if(window.AMR_TUL){
   var el2 = document.getElementById('mqtrack2'); if(el2) el2.innerHTML = mq2 + mq2;
 }
 
-/* ---- THE MIXER PRO: consola de 4 canales — pantalla, EQ 3 bandas, FX, metering ---- */
+/* ---- THE MIXER PRO BOOTH: CDJ·CDJ·DJM·CDJ·CDJ — motor completo ---- */
 (function(){
-  var shelf = document.getElementById('mxShelf'), board = document.getElementById('mxDecks');
-  var scr = document.getElementById('pmxScreen');
-  if(!shelf || !board || !scr) return;
+  var shelf = document.getElementById('mxShelf'), booth = document.getElementById('mxBooth');
+  if(!shelf || !booth) return;
   var RECS = [
     {v:window.AMR_MON,       c:'#C96F2B', lc:'#E0954F'},
     {v:window.AMR_SET,       c:'#A62D3E', lc:'#C8495E'},
@@ -920,7 +980,7 @@ if(window.AMR_TUL){
   ].filter(function(r){ return !!r.v; });
   RECS.forEach(function(r){
     if(r.v.peaks && r.v.peaks.length){ r.pk = r.v.peaks; return; }
-    var p=[], s=7; // singles sin peaks: forma de onda determinista
+    var p=[], s=7;
     for(var i=0;i<240;i++){ s=(s*1103515245+12345)%2147483648; p.push(0.2+0.55*Math.abs(Math.sin(i*0.31))+((s/2147483648)-0.5)*0.2); }
     r.pk = p;
   });
@@ -929,9 +989,17 @@ if(window.AMR_TUL){
       '<span class="sdisc"></span><i>'+r.v.title+'</i><em>'+(r.v.bpm?r.v.bpm+' BPM':(r.v.kicker||'AMR'))+'</em></button>';
   }).join('');
 
+  /* --- entornos plinth --- */
+  var mixsec = document.getElementById('sound');
+  document.getElementById('envChips').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    mixsec.className = 'mixsec env-'+b.getAttribute('data-env');
+    [].forEach.call(this.children, function(c){ c.classList.toggle('on', c===b); });
+  });
+
   /* --- registro de perillas --- */
   var KV = {}, KDEF = {}, KAPPLY = {};
-  function knobHTML(name, label, def){ KV[name]=def; KDEF[name]=def; return '<div class="pknob"><div class="pkcap" data-kn="'+name+'" id="kn_'+name+'"></div><span>'+label+'</span></div>'; }
+  function knobHTML(name, label, def){ KV[name]=def; KDEF[name]=def; return '<div class="knob" data-kn="'+name+'" id="kn_'+name+'"></div><span class="klab">'+label+'</span>'; }
   function setKnob(name, v){
     KV[name] = Math.max(0, Math.min(1, v));
     var e = document.getElementById('kn_'+name);
@@ -939,52 +1007,78 @@ if(window.AMR_TUL){
     if(KAPPLY[name]) KAPPLY[name](KV[name]);
   }
 
-  /* --- DOM de la consola --- */
-  var stripHTML = [0,1,2,3].map(function(i){
-    return '<div class="pmxch" id="pmxch'+i+'">'+
-      '<span class="chn">CH '+(i+1)+'<b id="chname'+i+'"></b></span>'+
-      '<div class="pjogrow">'+
-        '<button class="pjog empty" id="pjog'+i+'" aria-label="Deck '+(i+1)+'"></button>'+
-        '<div class="pjogside">'+
-          '<button class="pbtn pplay" id="pplay'+i+'" disabled>&#9656;</button>'+
-          '<button class="pbtn pcue" id="pcue'+i+'" disabled>CUE</button>'+
-        '</div>'+
+  /* --- DOM: 2 CDJs, DJM, 2 CDJs --- */
+  function cdjHTML(i){
+    return '<div class="unit cdj" data-d="'+i+'" id="pcdj'+i+'">'+
+      '<canvas class="cdjscr" id="cscr'+i+'"></canvas>'+
+      '<div class="cdjmid">'+
+        '<div class="jogwrap"><div class="jog"><div class="jogart" id="jart'+i+'"></div></div><div class="jogring"></div></div>'+
+        '<div><div class="tempo" id="ptmp'+i+'"><div class="tcap" id="ptcap'+i+'"></div></div><div class="tlab">TEMPO<br>&#177;8</div></div>'+
       '</div>'+
-      '<div class="ptrow">'+
-        '<button class="pbtn" id="pprev'+i+'" disabled>&#9666;&#9666;</button>'+
-        '<div class="ptrack" id="ptk'+i+'">NO TRACK</div>'+
-        '<button class="pbtn" id="pnext'+i+'" disabled>&#9656;&#9656;</button>'+
+      '<div class="cdjbtns">'+
+        '<button class="rbtn cue" id="pcue'+i+'" disabled>CUE</button>'+
+        '<button class="rbtn play" id="pplay'+i+'" disabled>&#9656;</button>'+
       '</div>'+
-      '<label class="ppitchrow">TEMPO &#177;8<input type="range" id="ppitch'+i+'" min="-8" max="8" value="0" step="0.1" disabled></label>'+
-      '<div class="pknobs">'+
-        knobHTML('trim'+i,'TRIM',0.5)+knobHTML('fil'+i,'FILTER',0.5)+
-        knobHTML('hi'+i,'HI',0.5)+knobHTML('mid'+i,'MID',0.5)+
-        knobHTML('low'+i,'LOW',0.5)+
-        '<div class="pknob"><button class="pbtn" id="pxa'+i+'">A</button><span>X-ASSIGN</span></div>'+
+      '<div class="tsk">'+
+        '<button id="pprev'+i+'" disabled>&#9666;&#9666; TRACK</button>'+
+        '<button id="pnext'+i+'" disabled>TRACK &#9656;&#9656;</button>'+
+        '<button class="peject" id="pej'+i+'" disabled>EJECT</button>'+
       '</div>'+
-      '<div class="pfadrow">'+
-        '<div class="pvu" id="pvu'+i+'"></div>'+
-        '<div class="pfader" id="pfader'+i+'"><div class="pfhandle" id="pfh'+i+'"></div></div>'+
-      '</div>'+
-      '<button class="peject" id="pej'+i+'" disabled>EJECT</button>'+
+      '<div class="cdjfoot">AMR &#183; CDJ &#183; DECK '+(i+1)+'</div>'+
     '</div>';
-  }).join('');
-  var masterHTML = '<div class="pmxmaster">'+
-    '<span class="pmlab">MASTER</span>'+
-    '<div class="pmvu"><div class="pvu" id="pvuML"></div><div class="pvu" id="pvuMR"></div></div>'+
-    knobHTML('master','LEVEL',0.75)+
-    '<span class="pmlab" style="margin-top:6px">BEAT FX &#183; ECHO</span>'+
+  }
+  function stripHTML(i){
+    return '<div class="strip" id="pstrip'+i+'">'+
+      '<span class="chipnum">'+(i+1)+'</span>'+
+      '<span class="stname" id="stname'+i+'"></span>'+
+      knobHTML('trim'+i,'TRIM',0.5)+
+      knobHTML('hi'+i,'HI',0.5)+
+      knobHTML('mid'+i,'MID',0.5)+
+      knobHTML('low'+i,'LOW',0.5)+
+      knobHTML('col'+i,'COLOR',0.5)+
+      '<button class="cuebtn" id="scue'+i+'">CUE</button>'+
+      '<div class="fadrow"><div class="pvu" id="pvu'+i+'"></div><div class="pfader" id="pfader'+i+'"><div class="pfh" id="pfh'+i+'"></div></div></div>'+
+      '<div class="xa3">'+
+        '<button id="pxa'+i+'a">A</button><button id="pxa'+i+'t">THRU</button><button id="pxa'+i+'b">B</button>'+
+      '</div>'+
+    '</div>';
+  }
+  var fxHTML = '<div class="fxcol">'+
+    '<div class="fxlcd">'+
+      '<div class="lrow"><b id="lcdfx">ECHO</b><span class="beatdot" id="lcddot"></span></div>'+
+      '<div class="lrow"><span id="lcdms">500 ms</span><span id="lcdbpm">&#8212; BPM</span></div>'+
+      '<div class="lrow lsm"><span>CH <b id="lcdch">1</b></span><span id="lcdon">OFF</span></div>'+
+    '</div>'+
+    '<div class="fxsel" id="fxSel">'+
+      '<button data-f="0">DELAY</button><button data-f="1" class="on">ECHO</button>'+
+      '<button data-f="2">SPIRAL</button><button data-f="3">REVERB</button>'+
+    '</div>'+
+    '<div class="chsel" id="chSel"><button data-c="0" class="on">1</button><button data-c="1">2</button><button data-c="2">3</button><button data-c="3">4</button></div>'+
     knobHTML('fxtime','TIME',0.4)+
-    knobHTML('fxlvl','FX LEVEL',0.5)+
-    '<button class="pbtn pfxon" id="pfxon">FX ON</button>'+
+    knobHTML('fxlvl','LEVEL / DEPTH',0.5)+
+    '<button class="fxon" id="pfxon">ON / OFF</button>'+
+    '<div class="mstrow"><div class="pmvu"><div class="pvu" id="pvuML"></div><div class="pvu" id="pvuMR"></div></div><div>'+knobHTML('master','MASTER',0.75)+'</div></div>'+
+    '<span class="mstlab">MASTER</span>'+
   '</div>';
-  board.innerHTML = stripHTML + masterHTML;
-  function segs(id){ var e=document.getElementById(id), h=''; for(var k=0;k<12;k++) h+='<i class="'+(k>=10?'r':k>=7?'a':'')+'"></i>'; e.innerHTML=h; return e; }
-  var VUS = [segs('pvu0'),segs('pvu1'),segs('pvu2'),segs('pvu3')];
-  var VUML = segs('pvuML'), VUMR = segs('pvuMR');
+  var djmHTML = '<div class="unit djm">'+
+    '<div class="djmgrid">'+stripHTML(0)+stripHTML(1)+stripHTML(2)+stripHTML(3)+fxHTML+'</div>'+
+    '<div class="xfrow"><span>A</span><div class="xftrack" id="xfTrack"><div class="xfhandle" id="xfHandle"></div></div><span>B</span></div>'+
+    '<div class="djmlogo">STUDIO AMR &#183; AMR-900 &#183; 4CH</div>'+
+  '</div>';
+  booth.innerHTML = cdjHTML(0)+cdjHTML(1)+djmHTML+cdjHTML(2)+cdjHTML(3);
+  function segs(id,n,amb,red){ var e=document.getElementById(id), h=''; for(var k=0;k<n;k++) h+='<i class="'+(k>=red?'r':k>=amb?'a':'')+'"></i>'; e.innerHTML=h; return e; }
+  var VUS = [segs('pvu0',15,10,13),segs('pvu1',15,10,13),segs('pvu2',15,10,13),segs('pvu3',15,10,13)];
+  var VUML = segs('pvuML',15,10,13), VUMR = segs('pvuMR',15,10,13);
 
   /* --- grafo de audio --- */
   var ctx = null, BUS = null;
+  var FXMODES = [
+    {n:'DELAY',  t:0.25, fb:0.3,  lp:16000},
+    {n:'ECHO',   t:0.5,  fb:0.5,  lp:9000},
+    {n:'SPIRAL', t:0.38, fb:0.72, lp:12000},
+    {n:'REVERB', t:0.09, fb:0.68, lp:3200}
+  ];
+  var fxi = 1, selCh = 0, fxOn = false;
   function actx(){
     var AC = window.AudioContext||window.webkitAudioContext;
     if(!ctx && AC){
@@ -993,8 +1087,9 @@ if(window.AMR_TUL){
       BUS.sum = ctx.createGain();
       BUS.master = ctx.createGain(); BUS.master.gain.value = KV.master*1.3;
       BUS.send = ctx.createGain(); BUS.send.gain.value = 0;
-      BUS.dly = ctx.createDelay(2.0); BUS.dly.delayTime.value = 0.06+0.69*KV.fxtime;
-      BUS.fb = ctx.createGain(); BUS.fb.gain.value = 0.45;
+      BUS.dly = ctx.createDelay(2.0);
+      BUS.fb = ctx.createGain();
+      BUS.wetLP = ctx.createBiquadFilter(); BUS.wetLP.type='lowpass';
       BUS.wet = ctx.createGain(); BUS.wet.gain.value = KV.fxlvl*1.1;
       BUS.split = ctx.createChannelSplitter(2);
       BUS.anL = ctx.createAnalyser(); BUS.anL.fftSize = 512;
@@ -1002,17 +1097,25 @@ if(window.AMR_TUL){
       BUS.sum.connect(BUS.master);
       BUS.sum.connect(BUS.send); BUS.send.connect(BUS.dly);
       BUS.dly.connect(BUS.fb); BUS.fb.connect(BUS.dly);
-      BUS.dly.connect(BUS.wet); BUS.wet.connect(BUS.master);
+      BUS.dly.connect(BUS.wetLP); BUS.wetLP.connect(BUS.wet); BUS.wet.connect(BUS.master);
       BUS.master.connect(BUS.split);
       BUS.split.connect(BUS.anL,0); BUS.split.connect(BUS.anR,1);
       BUS.master.connect(ctx.destination);
+      applyFX();
     }
     if(ctx && ctx.state==='suspended') ctx.resume();
     return ctx;
   }
+  function fxTime(){ return FXMODES[fxi].t*(0.35+1.3*KV.fxtime); }
+  function applyFX(){
+    if(!BUS) return;
+    BUS.dly.delayTime.value = fxTime();
+    BUS.fb.gain.value = FXMODES[fxi].fb;
+    BUS.wetLP.frequency.value = FXMODES[fxi].lp;
+  }
 
   var DECKS = [];
-  for(var di=0;di<4;di++) DECKS.push({i:di, rec:null, au:null, node:null, fv:1, xa:(di<2?0:2), cuePt:0});
+  for(var di=0;di<4;di++) DECKS.push({i:di, rec:null, au:null, node:null, fv:1, tv:0, xa:(di<2?0:2), cuePt:0});
 
   function eqDb(v){ return v<0.03 ? -40 : (v<0.5 ? (v-0.5)/0.5*26 : (v-0.5)/0.5*6); }
   function wire(d){
@@ -1045,7 +1148,7 @@ if(window.AMR_TUL){
   }
   function applyFilter(d){
     if(!d.filt) return;
-    var v = KV['fil'+d.i];
+    var v = KV['col'+d.i];
     if(Math.abs(v-0.5) < 0.04){ d.filt.type='allpass'; return; }
     if(v < 0.5){ var t=(0.5-v)/0.5; d.filt.type='lowpass'; d.filt.frequency.value = 20000*Math.pow(100/20000, t); }
     else { var t2=(v-0.5)/0.5; d.filt.type='highpass'; d.filt.frequency.value = 20*Math.pow(8000/20, t2); }
@@ -1057,13 +1160,13 @@ if(window.AMR_TUL){
   }
   for(var ki=0; ki<4; ki++)(function(i){
     KAPPLY['trim'+i] = KAPPLY['hi'+i] = KAPPLY['mid'+i] = KAPPLY['low'+i] = function(){ applyDeck(DECKS[i]); };
-    KAPPLY['fil'+i] = function(){ applyFilter(DECKS[i]); };
+    KAPPLY['col'+i] = function(){ applyFilter(DECKS[i]); };
   })(ki);
   KAPPLY.master = function(v){ if(BUS) BUS.master.gain.value = v*1.3; };
-  KAPPLY.fxtime = function(v){ if(BUS) BUS.dly.delayTime.value = 0.06+0.69*v; };
+  KAPPLY.fxtime = function(){ applyFX(); };
   KAPPLY.fxlvl  = function(v){ if(BUS) BUS.wet.gain.value = v*1.1; };
 
-  /* --- drags: perillas, faders, crossfader --- */
+  /* --- drags --- */
   function dragKnob(cap){
     var name = cap.getAttribute('data-kn');
     cap.addEventListener('pointerdown', function(e){
@@ -1075,34 +1178,42 @@ if(window.AMR_TUL){
     });
     cap.addEventListener('dblclick', function(){ setKnob(name, KDEF[name]); });
   }
-  [].forEach.call(document.querySelectorAll('.pkcap'), dragKnob);
+  [].forEach.call(booth.querySelectorAll('.knob'), dragKnob);
   Object.keys(KV).forEach(function(n){ setKnob(n, KV[n]); });
 
-  function setFader(d, v){
-    d.fv = Math.max(0, Math.min(1, v));
-    var tr = document.getElementById('pfader'+d.i), h = document.getElementById('pfh'+d.i);
-    h.style.top = ((1-d.fv)*(tr.clientHeight-16))+'px';
-    if(d.fadeG) d.fadeG.gain.value = Math.pow(d.fv, 1.4);
-  }
-  function dragFader(d){
-    var tr = document.getElementById('pfader'+d.i);
-    function pos(ev){ var r=tr.getBoundingClientRect(); setFader(d, 1-(ev.clientY-r.top-8)/(r.height-16)); }
-    tr.addEventListener('pointerdown', function(e){
-      tr.setPointerCapture(e.pointerId); pos(e); e.preventDefault();
+  function vslider(track, cap, get, set){
+    function paintPos(){ cap.style.top = ((1-get())*(track.clientHeight-cap.offsetHeight))+'px'; }
+    function pos(ev){ var r=track.getBoundingClientRect(); set(1-(ev.clientY-r.top-7)/(r.height-14)); paintPos(); }
+    track.addEventListener('pointerdown', function(e){
+      track.setPointerCapture(e.pointerId); pos(e); e.preventDefault();
       function mv(ev){ pos(ev); }
-      function up(){ tr.removeEventListener('pointermove',mv); tr.removeEventListener('pointerup',up); tr.removeEventListener('pointercancel',up); }
-      tr.addEventListener('pointermove',mv); tr.addEventListener('pointerup',up); tr.addEventListener('pointercancel',up);
+      function up(){ track.removeEventListener('pointermove',mv); track.removeEventListener('pointerup',up); track.removeEventListener('pointercancel',up); }
+      track.addEventListener('pointermove',mv); track.addEventListener('pointerup',up); track.addEventListener('pointercancel',up);
     });
-    tr.addEventListener('dblclick', function(){ setFader(d,1); });
+    paintPos();
+    return paintPos;
   }
+  DECKS.forEach(function(d){
+    var i = d.i;
+    var ftr = document.getElementById('pfader'+i), fh = document.getElementById('pfh'+i);
+    d.paintF = vslider(ftr, fh,
+      function(){ return d.fv; },
+      function(v){ d.fv = Math.max(0,Math.min(1,v)); if(d.fadeG) d.fadeG.gain.value = Math.pow(d.fv,1.4); });
+    ftr.addEventListener('dblclick', function(){ d.fv=1; if(d.fadeG) d.fadeG.gain.value=1; d.paintF(); });
+    var ttr = document.getElementById('ptmp'+i), tc = document.getElementById('ptcap'+i);
+    d.paintT = vslider(ttr, tc,
+      function(){ return (d.tv+8)/16; },
+      function(v){ d.tv = (Math.max(0,Math.min(1,v)))*16-8; if(d.au) d.au.playbackRate = 1+d.tv/100; });
+    ttr.addEventListener('dblclick', function(){ d.tv=0; if(d.au) d.au.playbackRate=1; d.paintT(); });
+  });
   var xfT = document.getElementById('xfTrack'), xfH = document.getElementById('xfHandle');
   function setXF(v){
     XFPOS = Math.max(-1, Math.min(1, v));
-    xfH.style.left = (((XFPOS+1)/2)*(xfT.clientWidth-22))+'px';
+    xfH.style.left = (((XFPOS+1)/2)*(xfT.clientWidth-20))+'px';
     applyXF();
   }
   (function(){
-    function pos(ev){ var r=xfT.getBoundingClientRect(); setXF(((ev.clientX-r.left-11)/(r.width-22))*2-1); }
+    function pos(ev){ var r=xfT.getBoundingClientRect(); setXF(((ev.clientX-r.left-10)/(r.width-20))*2-1); }
     xfT.addEventListener('pointerdown', function(e){
       xfT.setPointerCapture(e.pointerId); pos(e); e.preventDefault();
       function mv(ev){ pos(ev); }
@@ -1120,45 +1231,41 @@ if(window.AMR_TUL){
     for(var j=0;j<off.length;j++) if(t >= off[j]-0.4) k = j;
     return k;
   }
-  function cueTxt(d){
-    var ts = titlesOf(d.rec), k = curIdx(d);
-    document.getElementById('ptk'+d.i).innerHTML = '<b>'+ts[k]+'</b>'+(ts.length>1 ? ('CUT '+(k+1<10?'0':'')+(k+1)+'/'+ts.length) : (d.rec.v.kicker||'THE SINGLE'));
-  }
   function paint(d){
-    var i=d.i, ch=document.getElementById('pmxch'+i), jog=document.getElementById('pjog'+i);
+    var i=d.i, cdj=document.getElementById('pcdj'+i), strip=document.getElementById('pstrip'+i);
+    var jart=document.getElementById('jart'+i), name=document.getElementById('stname'+i);
     if(!d.rec){
-      ch.classList.remove('loaded','playing'); ch.style.removeProperty('--mc'); ch.style.removeProperty('--mlc');
-      jog.classList.add('empty'); document.getElementById('chname'+i).textContent='';
-      document.getElementById('ptk'+i).innerHTML='NO TRACK';
-      ['pplay','pcue','pprev','pnext','pej','ppitch'].forEach(function(p){ document.getElementById(p+i).disabled=true; });
+      cdj.classList.remove('playing'); cdj.style.removeProperty('--mc'); strip.style.removeProperty('--mlc');
+      jart.style.removeProperty('background'); jart.textContent='';
+      name.textContent='';
+      ['pplay','pcue','pprev','pnext','pej'].forEach(function(p){ document.getElementById(p+i).disabled=true; });
       document.getElementById('pplay'+i).innerHTML='&#9656;';
+      document.getElementById('pplay'+i).classList.remove('on');
       document.getElementById('pcue'+i).classList.remove('set');
-      document.getElementById('ppitch'+i).value = 0;
       return;
     }
-    ch.classList.add('loaded'); ch.style.setProperty('--mc', d.rec.c); ch.style.setProperty('--mlc', d.rec.lc);
-    jog.classList.remove('empty'); document.getElementById('chname'+i).textContent=d.rec.v.title;
+    cdj.style.setProperty('--mc', d.rec.c); strip.style.setProperty('--mlc', d.rec.lc);
+    jart.style.background = d.rec.c; jart.textContent = d.rec.v.title;
+    name.textContent = d.rec.v.title;
     var many = titlesOf(d.rec).length>1;
     document.getElementById('pprev'+i).disabled=!many; document.getElementById('pnext'+i).disabled=!many;
-    ['pplay','pcue','pej','ppitch'].forEach(function(p){ document.getElementById(p+i).disabled=false; });
-    cueTxt(d);
+    ['pplay','pcue','pej'].forEach(function(p){ document.getElementById(p+i).disabled=false; });
   }
   function load(d, r){
     if(d.au){ d.au.pause(); if(d.node){ try{ d.node.disconnect(); }catch(e){} } }
     d.rec=r; d.node=null; d.cuePt=0;
     d.au = new Audio(r.v.file); d.au.preload='auto';
     try{ d.au.preservesPitch=false; d.au.mozPreservesPitch=false; d.au.webkitPreservesPitch=false; }catch(e){}
-    d.au.playbackRate = 1 + (+document.getElementById('ppitch'+d.i).value)/100;
+    d.au.playbackRate = 1 + d.tv/100;
     d.au.addEventListener('play', function(){
-      document.getElementById('pmxch'+d.i).classList.add('playing');
-      document.getElementById('pplay'+d.i).innerHTML='&#10074;&#10074;';
+      document.getElementById('pcdj'+d.i).classList.add('playing');
+      var pb = document.getElementById('pplay'+d.i); pb.innerHTML='&#10074;&#10074;'; pb.classList.add('on');
       if(!audio.paused) audio.pause();
     });
     d.au.addEventListener('pause', function(){
-      document.getElementById('pmxch'+d.i).classList.remove('playing');
-      document.getElementById('pplay'+d.i).innerHTML='&#9656;';
+      document.getElementById('pcdj'+d.i).classList.remove('playing');
+      var pb = document.getElementById('pplay'+d.i); pb.innerHTML='&#9656;'; pb.classList.remove('on');
     });
-    d.au.addEventListener('timeupdate', function(){ cueTxt(d); });
     paint(d);
   }
   function eject(d){
@@ -1188,38 +1295,54 @@ if(window.AMR_TUL){
     });
     document.getElementById('pprev'+i).addEventListener('click', function(){
       if(!d.au) return; var off=offsetsOf(d.rec), k=Math.max(0,curIdx(d)-1);
-      try{ d.au.currentTime=off[k]; }catch(e){} cueTxt(d);
+      try{ d.au.currentTime=off[k]; }catch(e){}
     });
     document.getElementById('pnext'+i).addEventListener('click', function(){
       if(!d.au) return; var off=offsetsOf(d.rec), k=Math.min(off.length-1,curIdx(d)+1);
-      try{ d.au.currentTime=off[k]; }catch(e){} cueTxt(d);
+      try{ d.au.currentTime=off[k]; }catch(e){}
     });
-    document.getElementById('ppitch'+i).addEventListener('input', function(){
-      if(d.au) d.au.playbackRate = 1 + (+this.value)/100;
-    });
-    var xb = document.getElementById('pxa'+i);
-    xb.addEventListener('click', function(){
-      d.xa = (d.xa+1)%3;
-      this.textContent = ['A','THRU','B'][d.xa];
-      this.classList.toggle('xa-a', d.xa===0); this.classList.toggle('xa-b', d.xa===2);
-      applyXF();
-    });
-    xb.textContent = ['A','THRU','B'][d.xa];
-    xb.classList.toggle('xa-a', d.xa===0); xb.classList.toggle('xa-b', d.xa===2);
     document.getElementById('pej'+i).addEventListener('click', function(){ eject(d); });
-    dragFader(d); setFader(d, 1);
+    document.getElementById('scue'+i).addEventListener('click', function(){ this.classList.toggle('set'); });
+    ['a','t','b'].forEach(function(x, xi){
+      document.getElementById('pxa'+i+x).addEventListener('click', function(){
+        d.xa = xi;
+        ['a','t','b'].forEach(function(x2,k2){ document.getElementById('pxa'+i+x2).classList.toggle('on', k2===xi); });
+        applyXF();
+      });
+    });
+    document.getElementById('pxa'+i+(['a','t','b'][d.xa])).classList.add('on');
+    var cscr = document.getElementById('cscr'+i);
+    cscr.addEventListener('click', function(e){
+      if(!d.au || !d.rec) return;
+      var r = cscr.getBoundingClientRect(), dur = d.rec.v.dur || d.au.duration || 0;
+      try{ d.au.currentTime = (e.clientX-r.left)/r.width * dur; }catch(err){}
+    });
     paint(d);
   });
+  document.getElementById('fxSel').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    fxi = +b.getAttribute('data-f');
+    [].forEach.call(this.children, function(c){ c.classList.toggle('on', c===b); });
+    document.getElementById('lcdfx').textContent = FXMODES[fxi].n;
+    applyFX();
+  });
+  document.getElementById('chSel').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    selCh = +b.getAttribute('data-c');
+    [].forEach.call(this.children, function(c){ c.classList.toggle('on', c===b); });
+    document.getElementById('lcdch').textContent = selCh+1;
+  });
   document.getElementById('pfxon').addEventListener('click', function(){
-    var on = this.classList.toggle('on');
-    if(actx()) BUS.send.gain.value = on ? 0.9 : 0;
+    fxOn = this.classList.toggle('on');
+    if(actx()) BUS.send.gain.value = fxOn ? 0.9 : 0;
+    document.getElementById('lcdon').textContent = fxOn ? 'ON' : 'OFF';
   });
   setXF(0);
   audio.addEventListener('play', function(){
     DECKS.forEach(function(d){ if(d.au && !d.au.paused) d.au.pause(); });
   });
 
-  /* --- pantalla + meters (un solo RAF) --- */
+  /* --- pantallas CDJ + meters + LCD (un RAF) --- */
   var u8 = new Uint8Array(256);
   function lvlDb(an){
     if(!an) return -100;
@@ -1229,57 +1352,60 @@ if(window.AMR_TUL){
     return rms<=0.0001 ? -100 : 20*Math.log(rms)/Math.LN10;
   }
   function setVU(e, db){
-    var n = Math.round((db+40)/40*12);
-    for(var k=0;k<12;k++) e.children[k].classList.toggle('on', k<n);
+    var n = Math.round((db+40)/40*15);
+    for(var k=0;k<15;k++) e.children[k].classList.toggle('on', k<n);
   }
+  function drawDeck(d){
+    var cv = document.getElementById('cscr'+d.i);
+    var dpr = devicePixelRatio||1, W = Math.floor(cv.clientWidth*dpr), H = Math.floor(cv.clientHeight*dpr);
+    if(!W||!H) return;
+    if(cv.width!==W||cv.height!==H){ cv.width=W; cv.height=H; }
+    var g = cv.getContext('2d');
+    g.fillStyle='#04070a'; g.fillRect(0,0,W,H);
+    g.font = Math.round(8.5*dpr)+'px "IBM Plex Mono",monospace'; g.textBaseline='top';
+    if(!d.rec){
+      g.fillStyle='rgba(234,230,223,.2)';
+      g.fillText('DECK '+(d.i+1)+' — NO TRACK', 8*dpr, H/2-5*dpr);
+      return;
+    }
+    var pk = d.rec.pk, dur = d.rec.v.dur || (d.au&&d.au.duration) || 1;
+    var t = d.au ? d.au.currentTime : 0, prog = Math.min(1, t/dur);
+    var wy = 14*dpr, wh = H-28*dpr;
+    var n = Math.max(50, Math.min(pk.length, Math.floor(W/(2.6*dpr)))), step = pk.length/n, bw = W/n;
+    for(var b=0;b<n;b++){
+      var v = pk[Math.floor(b*step)]||0.05, bh = Math.max(1.6*dpr, Math.min(1,v)*wh*0.95);
+      g.fillStyle = (b/n<prog) ? d.rec.lc : 'rgba(234,230,223,.16)';
+      g.fillRect(b*bw, wy+(wh-bh)/2, Math.max(1,bw*0.62), bh);
+    }
+    g.fillStyle='#EAE6DF'; g.fillRect(prog*(W-2), wy, 2, wh);
+    var ts = titlesOf(d.rec)[curIdx(d)];
+    g.fillStyle=d.rec.lc; g.fillText(ts, 6*dpr, 2*dpr);
+    var tm = fmt(t)+' / -'+fmt(Math.max(0,dur-t));
+    var tw = g.measureText(tm).width;
+    g.fillStyle='rgba(234,230,223,.72)'; g.fillText(tm, W-tw-6*dpr, 2*dpr);
+    var bpm = d.rec.v.bpm ? (d.rec.v.bpm*(1+d.tv/100)).toFixed(1)+' BPM' : '— BPM';
+    g.fillStyle='rgba(234,230,223,.6)'; g.fillText(bpm, 6*dpr, H-11*dpr);
+    var pvt = (d.tv>0?'+':'')+d.tv.toFixed(1)+'%';
+    var pw = g.measureText(pvt).width;
+    g.fillStyle=d.rec.lc; g.fillText(pvt, W-pw-6*dpr, H-11*dpr);
+  }
+  var lcdms = document.getElementById('lcdms'), lcdbpm = document.getElementById('lcdbpm'), lcddot = document.getElementById('lcddot');
   function draw(){
     requestAnimationFrame(draw);
-    var dpr = devicePixelRatio||1, W = Math.floor(scr.clientWidth*dpr), H = Math.floor(scr.clientHeight*dpr);
-    if(!W || !H) return;
-    if(scr.width!==W||scr.height!==H){ scr.width=W; scr.height=H; }
-    var g = scr.getContext('2d');
-    g.fillStyle='#050606'; g.fillRect(0,0,W,H);
-    var lh = H/4;
-    DECKS.forEach(function(d,i){
-      var y0 = i*lh;
-      if(i){ g.strokeStyle='rgba(234,230,223,.08)'; g.lineWidth=1; g.beginPath(); g.moveTo(0,y0); g.lineTo(W,y0); g.stroke(); }
-      g.font = Math.round(9*dpr)+'px "IBM Plex Mono",monospace'; g.textBaseline='top';
-      if(!d.rec){
-        g.fillStyle='rgba(234,230,223,.22)';
-        g.fillText('CH '+(i+1)+' — NO TRACK', 10*dpr, y0+lh/2-5*dpr);
-        return;
-      }
-      var pk = d.rec.pk, dur = d.rec.v.dur || (d.au&&d.au.duration) || 1;
-      var t = d.au ? d.au.currentTime : 0, prog = Math.min(1, t/dur);
-      var n = Math.max(60, Math.min(pk.length, Math.floor(W/(3*dpr)))), step = pk.length/n, bw = W/n;
-      var wy = y0+15*dpr, wh = lh-21*dpr;
-      for(var b=0;b<n;b++){
-        var v = pk[Math.floor(b*step)]||0.05, bh = Math.max(2*dpr, Math.min(1,v)*wh*0.95);
-        g.fillStyle = (b/n<prog) ? d.rec.lc : 'rgba(234,230,223,.16)';
-        g.fillRect(b*bw, wy+(wh-bh)/2, Math.max(1,bw*0.62), bh);
-      }
-      g.fillStyle='#EAE6DF';
-      g.fillRect(prog*(W-2), wy, 2*dpr>2?2*dpr:2, wh);
-      g.fillStyle=d.rec.lc;
-      g.fillText(d.rec.v.title+' — '+titlesOf(d.rec)[curIdx(d)], 10*dpr, y0+3*dpr);
-      var pv = d.au ? Math.round((d.au.playbackRate-1)*1000)/10 : 0;
-      var bpm = d.rec.v.bpm ? (d.rec.v.bpm*(1+pv/100)).toFixed(1) : '—';
-      var right = fmt(t)+' / -'+fmt(Math.max(0,dur-t))+'  '+bpm+' BPM  '+(pv>0?'+':'')+pv.toFixed(1)+'%';
-      var tw = g.measureText(right).width;
-      g.fillStyle='rgba(234,230,223,.75)';
-      g.fillText(right, W-tw-10*dpr, y0+3*dpr);
-    });
+    DECKS.forEach(drawDeck);
     DECKS.forEach(function(d,i){ setVU(VUS[i], d.an ? lvlDb(d.an) : -100); });
     setVU(VUML, BUS ? lvlDb(BUS.anL) : -100);
     setVU(VUMR, BUS ? lvlDb(BUS.anR) : -100);
+    lcdms.textContent = Math.round(fxTime()*1000)+' ms';
+    var sd = DECKS[selCh];
+    var bpm = (sd && sd.rec && sd.rec.v.bpm) ? sd.rec.v.bpm*(1+sd.tv/100) : 0;
+    lcdbpm.textContent = bpm ? bpm.toFixed(1)+' BPM' : '— BPM';
+    if(bpm && sd.au && !sd.au.paused){
+      var ph = (performance.now()/1000) % (60/bpm);
+      lcddot.classList.toggle('on', ph < 0.12);
+    } else lcddot.classList.remove('on');
   }
   draw();
-  scr.addEventListener('click', function(e){
-    var r = scr.getBoundingClientRect(), i = Math.min(3, Math.max(0, Math.floor((e.clientY-r.top)/(r.height/4))));
-    var d = DECKS[i]; if(!d || !d.au || !d.rec) return;
-    var dur = d.rec.v.dur || d.au.duration || 0;
-    try{ d.au.currentTime = (e.clientX-r.left)/r.width * dur; }catch(err){}
-  });
 })();
 
 /* ---- próximas tocadas — EDITA AQUÍ (fecha, lugar, ciudad, nota) ---- */
