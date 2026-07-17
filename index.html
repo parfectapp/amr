@@ -391,6 +391,11 @@ body.hasplayer{padding-bottom:70px}
 .card.bluecard::after{background:#2E6FB0}
 .card.bluecard .pchip{border-color:#2E6FB0;color:#2E6FB0}
 .card.bluecard.playing .pchip{background:#2E6FB0;color:var(--bone)}
+.card.firecard .num b{color:#D1342F}
+.card.firecard .vinyl::after{background:#D1342F}
+.card.firecard::after{background:#D1342F}
+.card.firecard .pchip{border-color:#D1342F;color:#D1342F}
+.card.firecard.playing .pchip{background:#D1342F;color:var(--bone)}
 .card.rosacard .num b{color:#B93A6E}
 .card.rosacard .vinyl::after{background:#B93A6E}
 .card.rosacard::after{background:#B93A6E}
@@ -757,6 +762,7 @@ body.hasplayer{padding-bottom:70px}
 <script src="guerrero.js?v=202607170430"></script>
 <script src="jacaranda.js?v=202607170710"></script>
 <script src="hechizo.js?v=202607170850"></script>
+<script src="fiebre.js?v=202607170920"></script>
 <script>
 var CONFIG = { email:'andremacouzetruiz@gmail.com', wa:'' }; // pon tu WhatsApp con lada, ej '52443...'
 
@@ -1062,6 +1068,24 @@ var NIGHTS = [
   });
 })();
 
+/* ---- FIEBRE: el single, tarjeta roja primero ---- */
+if(window.AMR_FIEBRE){
+  var FS = window.AMR_FIEBRE;
+  var fgi = T.length; T.push({ title:FS.title, file:FS.file, dur:FS.dur, kicker:'THE SINGLE', bpm:FS.bpm, cut:true, edition:FS.edition });
+  var fb = document.createElement('button');
+  fb.className = 'card firecard'; fb.id = 'card-f0';
+  fb.innerHTML =
+    '<span class="num"><span>AMR SINGLE 001 — FIEBRE</span><b>RED 7\u2033</b></span>'+
+    '<div class="sleeve"><div class="vinyl"><span class="lbl">FIEBRE</span></div>'+
+    '<div class="cover"><img src="'+FS.art+'" alt="FIEBRE artwork"></div>'+
+    '<span class="pchip" id="chip-f0">\u25b8 PLAY</span></div>'+
+    '<h3>FIEBRE</h3><p class="desc">The single. Five minutes built like a song, not a set \u2014 one hook that will not leave, two drops, a breakdown that takes everything away, and detail in every bar.</p>'+
+    '<div class="row"><b>126 BPM</b><span>THE SINGLE \u00b7 A MIN</span><b>'+fmt(FS.dur)+'</b></div>';
+  fb.addEventListener('click', function(){ (cur===fgi && !audio.paused) ? pause() : playTrack(fgi); });
+  grid.appendChild(fb);
+  audio.addEventListener('play', function(){ var c=document.getElementById('card-f0'), ch=document.getElementById('chip-f0'); if(c){var on=(cur===fgi&&!audio.paused); c.classList.toggle('playing',on); ch.innerHTML=on?'&#9646;&#9646; PLAYING':'\u25b8 PLAY';} });
+  audio.addEventListener('pause', function(){ var c=document.getElementById('card-f0'), ch=document.getElementById('chip-f0'); if(c){c.classList.remove('playing'); ch.innerHTML='\u25b8 PLAY';} });
+}
 /* mixeadas: naranja, azul, jade, violeta… */
 for(var mi = 0; mi < Math.max(cardsO.length, cardsB.length, cardsJ.length, cardsV.length, cardsR.length); mi++){
   if(cardsO[mi]) grid.appendChild(cardsO[mi]);
