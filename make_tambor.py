@@ -18,6 +18,7 @@ from dream_core import (SR, lp, hp, bp, sat, sat_warm, widen, sub_mono, pingpong
                         stereo_verb, master_file, ffmeter, wav_write, spectrum_pct,
                         fconv, _decorr_ir)
 
+import tambor_voices as TV
 HERE = os.path.dirname(os.path.abspath(__file__))
 TMP = os.path.join(HERE, '_tambor_tmp')
 os.makedirs(TMP, exist_ok=True)
@@ -98,7 +99,7 @@ def hit_kick():
     x = sat(x.astype(np.float32), 1.6, 0.1)
     return lp(x, 3200, 2) * 0.82
 
-KICK = hit_kick()
+KICK = TV.kick_afro()
 
 def hit_conga(rng, f0=185.0, open_=True):
     dec = (0.16 if open_ else 0.055) * rng.uniform(0.88, 1.12)
@@ -392,39 +393,20 @@ def render_section(sec, idx):
                     add(kickb, base + int(14 * S16), KICK, 0.4)      # ghost de arranque
                 if kmode == 3 and bar % 2 == 1:
                     add(kickb, base + int(7 * S16), KICK, 0.3)       # empuje sincopado suave
-            # --- bajo
+            # --- bajo de goma con glide (Keinemusik), espacioso
             if b['bass']:
                 fr = midi_f(chord[0] - 12 if chord[0] >= 45 else chord[0])
                 fifth = fr * 1.5
-                if sec['bass'] == 'round':
-                    if bar % 2 == 0:
-                        dur = BEAT_S * rng.choice([2.0, 1.5, 2.5])
-                        add(bassb, base, bass_note(fr, dur, rng, 'round', 700), 0.95)
-                        add(bassb, base + int(10 * S16), bass_note(fr * rng.choice([1.0, 1.5]), BEAT_S * 1.2, rng, 'round', 700), 0.6)
-                    else:                               # el compás impar contesta distinto
-                        add(bassb, base + int(2 * S16), bass_note(fr, BEAT_S * 1.3, rng, 'round', 700), 0.8)
-                        add(bassb, base + int(8 * S16), bass_note(fifth if bvar % 2 else fr, BEAT_S * 1.6, rng, 'round', 700), 0.85)
-                        if bvar == 2:
-                            add(bassb, base + int(14 * S16), bass_note(fr * 2, BEAT_S * 0.5, rng, 'round', 900), 0.5)
+                prevb = getattr(render_section, '_pb', fr)
+                if bar % 2 == 0:
+                    add(bassb, base, TV.bass_rubber(prevb, fr, BEAT_S * 1.9, rng), 0.95)
+                    add(bassb, base + int(10 * S16), TV.bass_rubber(fr, fr, BEAT_S * 1.1, rng), 0.6)
+                    render_section._pb = fr
                 else:
-                    # rolling: la figura cambia por bloque, el filtro abre, y hay fills
-                    fc = 620 + 500 * (bi / max(1, len(blocks) - 1))
-                    steps = ROLL_VARS[bvar]
-                    for s in steps:
-                        if rng.uniform() < 0.10: continue
-                        f = fr
-                        if s % 8 == 7 and rng.uniform() < 0.4: f = fr * 2.0
-                        elif bvar == 2 and s in (6, 11): f = fifth
-                        elif b.get('gain', 1.0) >= 0.95 and s >= 14: f = fr * 2.0
-                        vel = 0.9 if s % 4 == 2 else 0.65
-                        gate = 1.7 if bvar != 1 else 2.6
-                        pos = base + int(sw(s, 'bass') + rng.normal(0, 0.004) * SR)
-                        add(bassb, pos, bass_note(f, S16 / SR * gate, rng, 'roll', fc), vel)
-                    if blockend:                        # fill: caminata al siguiente bloque
-                        for k, d in enumerate([0, 2, 3, 4]):
-                            fw = midi_f(deg(root, sc, d, 0) - 12 if chord[0] >= 45 else deg(root, sc, d, 0))
-                            pos = base + int(swing16(12 + k))
-                            add(bassb, pos, bass_note(fw, S16 / SR * 1.5, rng, 'roll', fc * 1.2), 0.75)
+                    tgt = fifth if (gb // 8) % 2 else fr
+                    add(bassb, base + int(2 * S16), TV.bass_rubber(prevb, fr, BEAT_S * 1.2, rng), 0.8)
+                    add(bassb, base + int(8 * S16), TV.bass_rubber(fr, tgt, BEAT_S * 1.6, rng), 0.85)
+                    render_section._pb = tgt
             # --- POLIRRITMIA AFRO: djembe + clave 3-2 + talking drum + cencerro
             pg = b['perc']
             pvar = (bi + idx + 1) % 3
@@ -450,6 +432,8 @@ def render_section(sec, idx):
                     add(drumb, base + int(12 * S16), hit_talking(rng, up=True), pg * 0.6)
                     if pvar == 1:
                         add(drumb, base + int(14 * S16), hit_talking(rng, up=False), pg * 0.45)
+                if bar % 2 == 1:
+                    add(drumb, base + int(8 * S16), TV.hit_udu(rng, deep=(bar % 4 == 1)), pg * 0.5)
                 if blockend and pg > 0.3:
                     for k, st in enumerate((12, 12.5, 13, 13.5, 14, 14.5, 15)):
                         pos = base + int(st * S16 + rng.normal(0, 0.003) * SR)
@@ -477,34 +461,27 @@ def render_section(sec, idx):
                 elif bar % 4 == 2:
                     for st, d2, vow, ln in [(8, 4, 'o', 2), (11, 2, 'a', 2)]:
                         add(keysb, base + int(sw(st, 'keys')), CV.vocal_la(midi_f(deg(root, sc, d2, 0)), ln * S16 / SR * 1.2, rng, vow), 0.45)
-            # --- pads supersaw (2 capas: grave + brillante) cada 2 compases
+            # --- pads de CORO humano (ahh/ooh) cada 2 compases
             if bar % 2 == 0 and b['pads'] > 0:
-                durp = int(2 * SPB * 1.05)
-                var = 1 if (gb >= bars - 2) else 0     # cambia UNA nota al final de la frase
-                for lay, (o, det, g) in enumerate([(0, 0.32, 1.0), (1, 0.48, 0.38)]):
-                    for ni, m in enumerate(chord[1:]):
-                        mm = m + 12 * o + (2 if (var and ni == len(chord) - 2) else 0)
-                        st = supersaw_st(midi_f(mm), durp, det, 0.7,
-                                         seed=idx * 91 + gb * 7 + lay * 3 + ni)
-                        cut = b['pad_fc'] * (1.0 + 0.8 * lay)
-                        st = np.stack([lp(st[0], cut, 2), lp(st[1], cut, 2)])
-                        env = np.minimum(1.0, np.arange(durp) / (0.9 * SR)).astype(np.float32)
-                        env *= np.minimum(1.0, (durp - np.arange(durp)) / (0.8 * SR)).astype(np.float32)
-                        gg = b['pads'] * g * 0.16 / max(1, len(chord) - 1)
-                        add(pads[0], base, st[0] * env, gg)
-                        add(pads[1], base, st[1] * env, gg)
-            # --- rhodes stabs en 2 y 4 (llenan 200Hz-2k)
+                durp = 2 * SPB / SR * 1.05
+                vw = 'aoeu'[(gb // 4) % 4]
+                for ni, m in enumerate(chord[1:3]):
+                    x = TV.choir(midi_f(m), durp, rng, vw)
+                    gg = b['pads'] * 0.28
+                    add(pads[0], base, x, gg)
+                    add(pads[1], base + int(0.012 * SR), x, gg * 0.92)
+            # --- stabs de ÓRGANO suave en 2 y 4
             if b['keys']:
                 for s in (4, 12):
                     if rng.uniform() < 0.9:
                         pos = base + int(swing16(s) + rng.normal(0, 0.004) * SR)
                         for m in chord[1:4]:
-                            add(keysb, pos, rhodes(midi_f(m), 0.55, rng), 0.30)
+                            add(keysb, pos, TV.organ_soft(midi_f(m), 0.5, rng), 0.28)
             # --- campanas: el gancho del pico y acentos de asombro en CATEDRAL
             if sec['name'] in ('RITUAL', 'LUNA') and bar % 4 == 0 and b['pads'] > 0.3:
                 bell_deg = [0, 4, 2, 4][(gb // 4) % 4]
                 m = deg(root, sc, bell_deg, 1 if sec['name'] == 'LUNA' else 2)
-                add(keysb, base, campana(midi_f(m), 3.2, rng), 0.55 if sec['name'] == 'RITUAL' else 0.35)
+                add(keysb, base, TV.kora(midi_f(m), 2.0, rng, bright=0.3), 0.45)
             # --- cincel: el taller trabajando — la firma de piedra del disco
             if b['perc'] > 0.3 and (bi + idx) % 2 == 0:
                 for s2 in ((3, 7, 11) if sec['name'] != 'RITUAL' else (1, 3, 7, 9, 11, 15)):
@@ -518,7 +495,7 @@ def render_section(sec, idx):
                     d = int(rng.integers(0, 5))
                     m = deg(root, sc, d, 2)
                     pos = base + int(swing16(int(s)) + rng.normal(0, 0.005) * SR)
-                    add(keysb, pos, kalimba(midi_f(m), 0.8, rng), 0.5)
+                    add(keysb, pos, TV.balafon(midi_f(m), 0.6, rng), 0.5)
             # --- el gancho (frase melódica old-school — lección Messan)
             if b['lead'] and gb % 2 == 0:
                 prev_f = None
@@ -527,11 +504,15 @@ def render_section(sec, idx):
                     f = midi_f(m)
                     dur = ln * S16 / SR * 1.15
                     pos = base + int(swing16(s % 16)) + (SPB if s >= 16 else 0)
-                    x = lead_warm(prev_f or f, f, dur, seed=idx * 313 + gb * 17 + s,
-                                  cutoff=1200 + 900 * b['gain'])
-                    add(leadb, pos, x, 0.5)
+                    x = TV.kora(f, min(dur, 1.2), rng, bright=0.45 + 0.25 * b['gain'])
+                    add(leadb, pos, x, 0.55)
+                    if b['gain'] >= 0.9 and s % 8 == 0:
+                        add(leadb, pos, TV.balafon(f, 0.5, rng), 0.3)
                     prev_f = f
 
+    if sec['name'] in ('LUNA', 'MADRUGADA', 'LLAMADO'):
+        cr = TV.crickets(n / SR, rng)
+        keysb += cr
     # ---------------- buses → estéreo
     sc_env = sidechain_env(n, kick_pos)
     bassb *= sc_env
