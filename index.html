@@ -1126,7 +1126,6 @@ if(window.AMR_COLIBRI){
     b.addEventListener('click', function(){ (cur===lp.gi && !audio.paused) ? pause() : playTrack(lp.gi); });
     cardsT.push(b);
   });
-  cardsT.forEach(function(b){ grid.appendChild(b); });
   var _sc = syncCards;
   syncCards = function(){ _sc(); LPICKS.forEach(function(lp,k){ var c=document.getElementById('card-t'+k), ch=document.getElementById('chip-t'+k); if(c){var on=(cur===lp.gi&&!audio.paused); c.classList.toggle('playing',on); ch.innerHTML=on?'&#9646;&#9646; PLAYING':'▸ PLAY';} }); };
 }
@@ -1149,13 +1148,14 @@ if(window.AMR_FIEBRE){
   audio.addEventListener('play', function(){ var c=document.getElementById('card-f0'), ch=document.getElementById('chip-f0'); if(c){var on=(cur===fgi&&!audio.paused); c.classList.toggle('playing',on); ch.innerHTML=on?'&#9646;&#9646; PLAYING':'\u25b8 PLAY';} });
   audio.addEventListener('pause', function(){ var c=document.getElementById('card-f0'), ch=document.getElementById('chip-f0'); if(c){c.classList.remove('playing'); ch.innerHTML='\u25b8 PLAY';} });
 }
-/* mixeadas: naranja, azul, jade, violeta… */
-for(var mi = 0; mi < Math.max(cardsO.length, cardsB.length, cardsJ.length, cardsV.length, cardsR.length); mi++){
+/* mixeadas: naranja, azul, jade, violeta, magenta, turquesa — todas intercaladas */
+for(var mi = 0; mi < Math.max(cardsO.length, cardsB.length, cardsJ.length, cardsV.length, cardsR.length, cardsT.length); mi++){
   if(cardsO[mi]) grid.appendChild(cardsO[mi]);
   if(cardsB[mi]) grid.appendChild(cardsB[mi]);
   if(cardsJ[mi]) grid.appendChild(cardsJ[mi]);
   if(cardsV[mi]) grid.appendChild(cardsV[mi]);
   if(cardsR[mi]) grid.appendChild(cardsR[mi]);
+  if(cardsT[mi]) grid.appendChild(cardsT[mi]);
 }
 
 /* ---- los dos vinilos (después de sub grave) ---- */
