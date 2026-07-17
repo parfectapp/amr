@@ -460,6 +460,9 @@ body.hasplayer{padding-bottom:70px}
 .ncard{background:#fff;padding:10px 10px 0;border:1px solid rgba(20,18,16,.12);box-shadow:0 14px 34px rgba(20,18,16,.09);transform:rotate(var(--tilt,0deg))}
 .ncard img{width:100%;display:block;aspect-ratio:16/9;object-fit:cover;filter:saturate(.95) contrast(.98)}
 .ncap{display:flex;justify-content:space-between;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;color:#6E675E;padding:11px 2px}
+.nightsrail{padding:6px 0 clamp(46px,7vh,88px);background:var(--bone,#F2EEE7)}
+.nightsrail .ncard{width:clamp(300px,36vw,480px);flex:0 0 auto;margin:0}
+.nightstrack{animation-duration:60s}
 /* ---- COLLABORATIONS ---- */
 .cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(18px,3vw,34px);margin-top:6px}
 .ccard{border:1px solid rgba(20,18,16,.16);padding:clamp(24px,3.4vw,40px);background:#F6F2EB;position:relative}
@@ -498,7 +501,7 @@ body.hasplayer{padding-bottom:70px}
   <div class="hero-bottom">
     <p class="hero-claim"><b>Streaming forgets. Vinyl doesn't.</b> Studio AMR presses its music to coloured records in short, hand-numbered runs. When a run sells out, the plate is retired — no repress, ever.</p>
     <div class="hero-cta">
-      <a class="btn solid" href="#newrelease">▸ New release — DELIRIO</a>
+      <a class="btn solid" href="#jacaranda">▸ New release — JACARANDA</a>
       <a class="btn" href="#vinyls">Get the vinyl</a>
     </div>
   </div>
@@ -580,14 +583,7 @@ body.hasplayer{padding-bottom:70px}
   <div class="grid" id="recordGrid"></div>
 </section>
 
-<!-- THE ART — jacarandas, seis tradiciones -->
-<section class="artsec" id="arte">
-  <div class="sh2">
-    <div><span class="hk">THE ART — ONE TREE, SIX TRADITIONS</span><h2>The jacaranda, painted six ways.</h2></div>
-    <p>Every record gets a gallery. One violet tree crosses ancient México, a 1995 anime cel, an amate codex, a woodblock print, a street mural and a 1940s litho poster. Each piece is paired with a cut from JACARANDA — hit play and look at it the way it was meant to be heard.</p>
-  </div>
-  <div class="artrail" id="artrail"><div class="arttrack" id="arttrack"></div></div>
-</section>
+
 
 <!-- MARQUEE DELIRIO (azul, scroll infinito) -->
 <div class="mq blue"><div id="mqtrack2"></div></div>
@@ -600,7 +596,7 @@ body.hasplayer{padding-bottom:70px}
     <div>
       <span class="hk">THE SOUND — MONUMENTS</span>
       <h2>Sub grave, dust, and patience.</h2>
-      <p>This sound was born on a <b>PLINTH</b> — the sculptural DJ booths cast as one object. Music built for monuments has rules: the sub sits at <b>41–65 Hz</b> where you feel it in your chest, the needle dust stays in the mix because <b>the surface is part of the song</b>, and every chord waits two bars before it answers.</p>
+      <p>Where the catalogue started. Music built like monuments has rules: the sub sits at <b>41–65 Hz</b> where you feel it in your chest, the needle dust stays in the mix because <b>the surface is part of the song</b>, and every chord waits two bars before it answers.</p>
       <p>No presets. No samples. Every kick, pad and grain of dust on these records was synthesized from raw sine waves and noise — then cut to the groove.</p>
       <ul class="speclist">
         <li><b>FORMAT</b><i>12&Prime; AMBER VINYL — 45 RPM</i></li>
@@ -642,22 +638,16 @@ body.hasplayer{padding-bottom:70px}
     <div><span class="hk">NIGHTS PAST — THE ARCHIVE</span><h2>Where the records were played.</h2></div>
     <p>Film from the nights that made the catalogue: the colonial patio where SESIÓN 001 was released, the booth, the rooftops. Shot on whatever camera was closest.</p>
   </div>
-  <div class="ngrid">
-    <figure class="ncard" style="--tilt:-.5deg"><img src="art/nights/night-patio.jpg" alt="Crowd at the colonial patio" loading="lazy"><figcaption class="ncap"><span>SESIÓN 001 RELEASE · PATIO</span><span>MORELIA · MMXXV</span></figcaption></figure>
-    <figure class="ncard" style="--tilt:.4deg"><img src="art/nights/night-cabina.jpg" alt="The booth, violet vinyl spinning" loading="lazy"><figcaption class="ncap"><span>GUERRERO ALL NIGHT · BOOTH</span><span>MORELIA · MMXXVI</span></figcaption></figure>
-    <figure class="ncard" style="--tilt:-.3deg"><img src="art/nights/night-azotea.jpg" alt="Rooftop listening at dusk" loading="lazy"><figcaption class="ncap"><span>JACARANDA LISTENING · ROOFTOP</span><span>CDMX · MMXXVI</span></figcaption></figure>
-    <figure class="ncard" style="--tilt:.5deg"><img src="art/nights/night-vinilos.jpg" alt="Hands exchanging a violet record" loading="lazy"><figcaption class="ncap"><span>THE HAND-OFF · EDITION TABLE</span><span>MORELIA · MMXXVI</span></figcaption></figure>
-  </div>
 </section>
+<div class="artrail nightsrail"><div class="arttrack nightstrack" id="nightstrack"></div></div>
 
 <!-- COLLABORATIONS -->
 <section class="sec" id="collabs">
   <div class="sh">
     <div><span class="hk">COLLABORATIONS</span><h2>Cut with friends.</h2></div>
-    <p>Studio AMR doesn&rsquo;t do features — it does objects. Two houses share the workshop.</p>
+    <p>Studio AMR doesn&rsquo;t do features — it does objects. One house shares the workshop.</p>
   </div>
   <div class="cgrid">
-    <div class="ccard"><span class="cx">CAPSULE — MMXXVI</span><h3><b>PLINTH</b> &times; STUDIO AMR</h3><p>The design house behind the sleeves. MONUMENTS was written to the sound of their first stone — five cuts for five monoliths, and the dust on the record pressed in on purpose. The capsule: three sculpted sleeves, cast as one piece, numbered as one edition.</p><span class="ctag">3 SCULPTED SLEEVES · NUMBERED AS ONE</span></div>
     <div class="ccard violet"><span class="cx">RESIDENT BOOTH — SINCE SESIÓN 001</span><h3><b>ALTAR</b> &times; STUDIO AMR</h3><p>Sculptural DJ booths, cast like monuments. Every AMR night since SESIÓN 001 has been played on an ALTAR piece — the booth is part of the instrument, and the wood you hear in the low end is real. One booth travels with the records.</p><span class="ctag">ONE BOOTH · EVERY NIGHT</span></div>
   </div>
 </section>
@@ -675,7 +665,7 @@ body.hasplayer{padding-bottom:70px}
 <section class="sec about" id="about">
   <span class="hk">WHO IS STUDIO AMR</span>
   <p class="lede">Studio AMR is the workshop of <i>André Macouzet Ruiz</i> — AMR, his initials — a builder from Morelia who treats every release like architecture.</p>
-  <p>The same hands behind the PLINTH monoliths cut these six records. The rule is the one pinned to the studio wall: <em>most DJ booths are furniture — this is a monument. Most tracks are content — these are records.</em> Each one is numbered by hand. None will be repressed.</p>
+  <p>Six records so far: an EP pressed from pure waveforms, three continuous sets, one beat-mixed double, and JACARANDA — the hypnotic one, out now. The rule is the one pinned to the studio wall: <em>most tracks are content — these are records.</em> Each one is numbered by hand. None will be repressed.</p>
 </section>
 
 <!-- CTA -->
@@ -685,13 +675,13 @@ body.hasplayer{padding-bottom:70px}
   <div class="cta-rule"><span></span><p class="price">EDITIONS OF 10 — 50 · NUMBERED BY HAND</p><span></span></div>
   <p class="sub">Claim a number from any edition. Each record ships with its blueprint sleeve, a download code for the digital master, and the number inked on the label.</p>
   <a class="btn solid" id="claimBtn" href="#">Claim your number</a>
-  <p class="cta-fine">TEST PRESSINGS PLAY ON THIS PAGE — THE VINYL IS THE ARTIFACT</p>
+  <p class="cta-fine">EVERY RECORD PLAYS IN FULL ON THIS PAGE — THE VINYL IS THE ARTIFACT</p>
 </div></section>
 
 <footer><div class="in">
   <span>STUDIO AMR<b>.</b> — SIX RECORDS, EVER</span>
   <span>CUT IN MORELIA, MX</span>
-  <span>SOUND BORN ON A <b>PLINTH</b></span>
+  <span>SYNTHESIZED FROM RAW WAVEFORMS</span>
 </div></footer>
 
 <!-- SHOTBOX — galería de producto del vinilo -->
@@ -835,8 +825,10 @@ function fmt(s){ s=Math.max(0,Math.floor(s)); var h=Math.floor(s/3600); if(h) re
 function cat(t){ return t.kicker ? t.title : 'AMR-00'+t.n; }
 
 /* ---- marquee ---- */
-var mq = ROLAS.map(function(t,i){ return '<span>AMR-00'+(i+1)+' '+t.title+'</span>'; }).join('')
-       + '<span>TWO RECORDS <b>·</b> PRESS PLAY <b>·</b> WINE-RED VINYL</span>';
+var MQCAT = ['AMR-01 MONUMENTS \u00b7 AMBER', 'AMR-02 SESI\u00d3N 001 \u00b7 WINE', 'AMR-03 DELIRIO \u00b7 BLUE',
+             'AMR-04 MEGA SET \u00b7 DOUBLE', 'AMR-05 GUERRERO \u00b7 JADE', 'AMR-06 JACARANDA \u00b7 VIOLET'];
+var mq = MQCAT.map(function(t){ return '<span>'+t+'</span>'; }).join('')
+       + '<span>SIX RECORDS <b>·</b> PRESS PLAY <b>·</b> NUMBERED BY HAND</span>';
 document.getElementById('mqtrack').innerHTML = mq + mq;
 
 /* ---- marquee DELIRIO (azul, scroll infinito) ---- */
@@ -994,29 +986,22 @@ if(window.AMR_JACARANDA){
   });
 }
 
-/* ---- THE ART: carril infinito de obras, cada una suena con su corte ---- */
-var OBRAS = [
-  {img:'art/obras/obra-antiguo.jpg', style:'M\u00c9XICO ANTIGUO', title:'La calzada', mp:4, note:'LLUVIA'},
-  {img:'art/obras/obra-anime.jpg',   style:'ANIME 1995',          title:'La esquina de abril', mp:2, note:'ABRIL'},
-  {img:'art/obras/obra-codice.jpg',  style:'C\u00d3DICE',        title:'\u00c1rbol madre', mp:0, note:'RAIZ'},
-  {img:'art/obras/obra-ukiyoe.jpg',  style:'UKIYO-E',             title:'El volc\u00e1n', mp:3, note:'CALMA'},
-  {img:'art/obras/obra-mural.jpg',   style:'MURAL',               title:'La pared florecida', mp:1, note:'FLOR'},
-  {img:'art/obras/obra-cartel.jpg',  style:'CARTEL 1940',         title:'Visite M\u00e9xico', mp:5, note:'PETALOS'}
+
+
+/* ---- NIGHTS PAST: carril infinito de fotos ---- */
+var NIGHTS = [
+  {img:'art/nights/night-patio.jpg',   a:'SESI\u00d3N 001 RELEASE \u00b7 PATIO', b:'MORELIA \u00b7 MMXXV',  t:-0.5},
+  {img:'art/nights/night-azotea.jpg',  a:'JACARANDA LISTENING \u00b7 ROOFTOP',    b:'CDMX \u00b7 MMXXVI',    t:-0.3},
+  {img:'art/nights/night-vinilos.jpg', a:'THE HAND-OFF \u00b7 EDITION TABLE',     b:'MORELIA \u00b7 MMXXVI', t:0.5}
 ];
 (function(){
-  var tr = document.getElementById('arttrack'); if(!tr) return;
-  function mk(o, rep){
-    var d = document.createElement('div'); d.className = 'artcard';
-    var gi = (typeof MPICKS !== 'undefined' && MPICKS[o.mp]) ? MPICKS[o.mp].gi : null;
-    d.innerHTML = '<img src="'+o.img+'" alt="'+o.title+'" loading="lazy">'+
-      '<div class="artcap"><span>'+o.style+'<b>'+o.title+'</b></span>'+
-      '<button class="artplay" data-gi="'+gi+'">\u25b8 PLAYS WITH '+o.note+'</button></div>';
-    d.querySelector('.artplay').addEventListener('click', function(){
-      if(gi != null){ (cur === gi && !audio.paused) ? pause() : playTrack(gi); }
-    });
-    return d;
-  }
-  for(var rep = 0; rep < 2; rep++) OBRAS.forEach(function(o){ tr.appendChild(mk(o, rep)); });
+  var tr = document.getElementById('nightstrack'); if(!tr) return;
+  for(var rep = 0; rep < 2; rep++) NIGHTS.forEach(function(n){
+    var f = document.createElement('figure'); f.className = 'ncard';
+    f.style.setProperty('--tilt', n.t + 'deg');
+    f.innerHTML = '<img src="'+n.img+'" alt="'+n.a+'" loading="lazy"><figcaption class="ncap"><span>'+n.a+'</span><span>'+n.b+'</span></figcaption>';
+    tr.appendChild(f);
+  });
 })();
 
 /* mixeadas: naranja, azul, jade, violeta… */
@@ -1241,7 +1226,7 @@ if(new URLSearchParams(location.search).get('browse')==='1'){ try{ closeIntro(fa
 /* ---- claim ---- */
 document.getElementById('claimBtn').addEventListener('click', function(e){
   e.preventDefault();
-  var body = "Hi Studio AMR — I want to claim a record.\n\nRecord: AMR-00_ (PLINTH / MONOLITH / VESSEL / STRATA / GHOST)\nName:\n";
+  var body = "Hi Studio AMR — I want to claim a record.\n\nRecord: (MONUMENTS / SESI\u00d3N 001 / DELIRIO / MEGA SET / GUERRERO / JACARANDA)\nNumber:\nName:\n";
   if(CONFIG.wa){ window.open('https://wa.me/'+CONFIG.wa+'?text='+encodeURIComponent(body),'_blank'); }
   else { location.href = 'mailto:'+CONFIG.email+'?subject='+encodeURIComponent('AMR — Claim a record')+'&body='+encodeURIComponent(body); }
 });

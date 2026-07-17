@@ -320,60 +320,127 @@ def render_section(sec, idx):
     def swing16(s):
         return s * S16 + (SWING - 0.5) * 2 * S16 * (s % 2)
 
+    # patrones de bajo por bloque: cada 8 compases el roll CAMBIA de figura
+    ROLL_VARS = [
+        [s for s in range(16) if s % 4 != 0],          # roll completo (Léger)
+        [2, 3, 6, 7, 10, 11, 14, 15],                  # pares al offbeat, más aire
+        [1, 3, 6, 9, 11, 14],                          # sincopado, saltos
+        [2, 5, 7, 10, 13, 15],                         # empujado, anticipos
+    ]
     for bi, b in enumerate(blocks):
+        bvar = (bi + idx) % len(ROLL_VARS)             # figura del bajo de ESTE bloque
+        kmode = (bi + idx) % 4                         # sabor del kick de ESTE bloque
         for bar in range(8):
             gb = bi * 8 + bar
             if gb >= bars: break
             base = gb * SPB
             chord = chords[(gb // 2) % len(chords)]
-            # --- kick: four on the floor
+            last16 = (gb % 16 == 15)                   # fin de frase de 16
+            blockend = (bar == 7)                      # fin de bloque de 8
+            # --- kick: 4x4 de base, pero RESPIRA al fin de frase y varía por bloque
             if b['kick']:
                 for beat in range(4):
-                    pos = base + int(beat * 4 * S16)
-                    add(kickb, pos, KICK, 1.0)
-                    kick_pos.append(pos)
+                    if last16 and beat >= 2 and (gb // 16) % 2 == 1:
+                        continue                        # medio compás de silencio cada 32
+                    add(kickb, base + int(beat * 4 * S16), KICK, 1.0)
+                    kick_pos.append(base + int(beat * 4 * S16))
+                if kmode == 1 and bar % 4 == 3 and not last16:
+                    add(kickb, base + int(14 * S16), KICK, 0.4)      # ghost de arranque
+                if kmode == 3 and bar % 2 == 1:
+                    add(kickb, base + int(7 * S16), KICK, 0.3)       # empuje sincopado suave
             # --- bajo
             if b['bass']:
                 fr = midi_f(chord[0] - 12 if chord[0] >= 45 else chord[0])
+                fifth = fr * 1.5
                 if sec['bass'] == 'round':
-                    dur = BEAT_S * rng.choice([2.0, 1.5, 2.5])
-                    add(bassb, base, bass_note(fr, dur, rng, 'round', 700), 0.95)
-                    add(bassb, base + int(10 * S16), bass_note(fr * rng.choice([1.0, 1.5]), BEAT_S * 1.2, rng, 'round', 700), 0.6)
+                    if bar % 2 == 0:
+                        dur = BEAT_S * rng.choice([2.0, 1.5, 2.5])
+                        add(bassb, base, bass_note(fr, dur, rng, 'round', 700), 0.95)
+                        add(bassb, base + int(10 * S16), bass_note(fr * rng.choice([1.0, 1.5]), BEAT_S * 1.2, rng, 'round', 700), 0.6)
+                    else:                               # el compás impar contesta distinto
+                        add(bassb, base + int(2 * S16), bass_note(fr, BEAT_S * 1.3, rng, 'round', 700), 0.8)
+                        add(bassb, base + int(8 * S16), bass_note(fifth if bvar % 2 else fr, BEAT_S * 1.6, rng, 'round', 700), 0.85)
+                        if bvar == 2:
+                            add(bassb, base + int(14 * S16), bass_note(fr * 2, BEAT_S * 0.5, rng, 'round', 900), 0.5)
                 else:
-                    # rolling 16ths dejando VACÍA la primera semicorchea de cada beat (Léger)
+                    # rolling: la figura cambia por bloque, el filtro abre, y hay fills
                     fc = 620 + 500 * (bi / max(1, len(blocks) - 1))
-                    for s in range(16):
-                        if s % 4 == 0: continue
-                        if rng.uniform() < 0.12: continue
-                        f = fr * (2.0 if (s % 8 == 7 and rng.uniform() < 0.4) else 1.0)
+                    steps = ROLL_VARS[bvar]
+                    for s in steps:
+                        if rng.uniform() < 0.10: continue
+                        f = fr
+                        if s % 8 == 7 and rng.uniform() < 0.4: f = fr * 2.0
+                        elif bvar == 2 and s in (6, 11): f = fifth
+                        elif b.get('gain', 1.0) >= 0.95 and s >= 14: f = fr * 2.0
                         vel = 0.9 if s % 4 == 2 else 0.65
+                        gate = 1.7 if bvar != 1 else 2.6
                         pos = base + int(swing16(s) + rng.normal(0, 0.004) * SR)
-                        add(bassb, pos, bass_note(f, S16 / SR * 1.7, rng, 'roll', fc), vel)
-            # --- percusión orgánica (tumbao con variación por golpe)
+                        add(bassb, pos, bass_note(f, S16 / SR * gate, rng, 'roll', fc), vel)
+                    if blockend:                        # fill: caminata al siguiente bloque
+                        for k, d in enumerate([0, 2, 3, 4]):
+                            fw = midi_f(deg(root, sc, d, 0) - 12 if chord[0] >= 45 else deg(root, sc, d, 0))
+                            pos = base + int(swing16(12 + k))
+                            add(bassb, pos, bass_note(fw, S16 / SR * 1.5, rng, 'roll', fc * 1.2), 0.75)
+            # --- percusión orgánica: el TUMBAO cambia de figura por bloque
             pg = b['perc']
+            pvar = (bi + idx + 1) % 3
             if pg > 0:
-                for s, kind, v in [(3, 'cm', 0.8), (7, 'co', 1.0), (11, 'cm', 0.7), (14, 'co', 0.9)]:
+                TUMBAOS = [
+                    [(3, 'cm', 0.8), (7, 'co', 1.0), (11, 'cm', 0.7), (14, 'co', 0.9)],
+                    [(2, 'cm', 0.7), (5, 'co', 0.9), (10, 'cm', 0.8), (13, 'co', 0.9), (15, 'cm', 0.5)],
+                    [(7, 'co', 1.0), (15, 'co', 0.8)],
+                ]
+                thin = last16 and (gb // 16) % 2 == 1   # la percusión también respira
+                for s, kind, v in TUMBAOS[pvar]:
+                    if thin and s >= 8: continue
                     if rng.uniform() < 0.85:
                         pos = base + int(swing16(s) + rng.normal(0, 0.005) * SR)
                         add(drumb, pos, hit_conga(rng, open_=(kind == 'co')), pg * v * 0.55)
-                if bar % 2 == 1 and pg > 0.4:
+                if bar % 2 == 1 and pg > 0.4 and pvar != 1:
                     for s in rng.choice([5, 9, 13], size=2, replace=False):
                         pos = base + int(swing16(int(s)) + rng.normal(0, 0.006) * SR)
-                        add(drumb, pos, hit_bongo(rng), pg * 0.4)
-                if bar % 4 == 3 and rng.uniform() < 0.7:
+                        add(drumb, pos, hit_bongo(rng), pg * (0.55 if pvar == 2 else 0.4))
+                if pvar == 2 and bar % 2 == 0:          # clave 3-2 en rim cuando el tumbao abre espacio
+                    for s in (0, 3, 6, 10, 12):
+                        pos = base + int(swing16(s) + rng.normal(0, 0.004) * SR)
+                        add(drumb, pos, hit_rim(rng), pg * 0.3)
+                elif bar % 4 == 3 and rng.uniform() < 0.7:
                     add(drumb, base + int(swing16(15)), hit_rim(rng), pg * 0.5)
+                if blockend and pg > 0.3:               # fill alterna: caminata de congas / redoble de bongo
+                    if bi % 2 == 0:
+                        for k, s in enumerate((12, 13, 14, 15)):
+                            pos = base + int(swing16(s) + rng.normal(0, 0.004) * SR)
+                            add(drumb, pos, hit_conga(rng, f0=175 + 30 * k, open_=(k == 3)), pg * (0.35 + 0.12 * k))
+                    else:
+                        for k, s in enumerate((12, 12.5, 13, 13.5, 14, 15)):
+                            pos = base + int(s * S16 + rng.normal(0, 0.003) * SR)
+                            add(drumb, pos, hit_bongo(rng), pg * (0.3 + 0.08 * k))
+                        add(drumb, base + int(15 * S16), hit_hat(rng, open_=True), pg * 0.5)
+            # --- shaker: tres figuras que rotan, y calla al final de frase
             if b['shaker']:
-                for s in range(16):
-                    acc = 1.0 if s % 4 == 2 else (0.55 if s % 2 == 0 else 0.75)
-                    pos = base + int(swing16(s) + rng.normal(0, 0.003) * SR)
-                    add(drumb, pos, hit_shaker(rng), 0.19 * acc)
+                svar = (bi + idx) % 3
+                if not (last16 and (gb // 16) % 2 == 0):
+                    if svar == 0: sk = range(16)
+                    elif svar == 1: sk = range(0, 16, 2)
+                    else: sk = (0, 3, 4, 7, 8, 11, 12, 15)          # galope
+                    for s in sk:
+                        acc = 1.0 if s % 4 == 2 else (0.55 if s % 2 == 0 else 0.75)
+                        pos = base + int(swing16(s) + rng.normal(0, 0.003) * SR)
+                        add(drumb, pos, hit_shaker(rng), 0.19 * acc)
+            # --- hats aireados: patrón por bloque y open hat que cambia de lugar
             hv = b['hats']
             if hv > 0:
-                for s in (2, 6, 10, 14):
+                hvar = (bi + idx + 2) % 3
+                HATS = [(2, 6, 10, 14), (2, 6, 9, 10, 14), (2, 5, 10, 13)]
+                for s in HATS[hvar]:
                     pos = base + int(swing16(s) + rng.normal(0, 0.003) * SR)
                     add(drumb, pos, hit_hat(rng), hv * 0.55)
-                if bar % 2 == 1:                       # open hat cada 2 compases
+                if hvar == 0 and bar % 2 == 1:
                     add(drumb, base + int(swing16(8)), hit_hat(rng, open_=True), hv * 0.5)
+                elif hvar == 1 and bar % 4 == 2:
+                    add(drumb, base + int(swing16(12)), hit_hat(rng, open_=True), hv * 0.45)
+                elif hvar == 2 and bar % 2 == 0:
+                    add(drumb, base + int(swing16(4)), hit_hat(rng, open_=True), hv * 0.35)
             # --- pads supersaw (2 capas: grave + brillante) cada 2 compases
             if bar % 2 == 0 and b['pads'] > 0:
                 durp = int(2 * SPB * 1.05)
