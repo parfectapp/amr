@@ -101,10 +101,10 @@ TRI_MARK = '<circle cx="90" cy="100" r="40" fill="#141210"/><circle cx="90" cy="
 
 GUER_MARK = '<path d="M120 40 L150 96 L120 152 L90 96 Z" fill="#141210"/><path d="M120 62 L138 96 L120 130 L102 96 Z" fill="#2E9C7C"/><circle cx="120" cy="96" r="7" fill="#EAE6DF"/><path d="M60 96 L78 96 M162 96 L180 96" stroke="#2E9C7C" stroke-width="3" stroke-linecap="round"/>'
 
-MAGMA_MARK = '<path d="M100 68 L140 68 L172 154 L68 154 Z" fill="#141210"/><ellipse cx="120" cy="68" rx="20" ry="6" fill="#E04E1A"/><path d="M120 74 L112 100 L126 124 L118 154" fill="none" stroke="#E04E1A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="104" cy="52" r="4" fill="#FF8A4C"/><circle cx="136" cy="50" r="3.4" fill="#FF8A4C"/>'
+JACA_MARK = '<path d="M120 168 L120 108 M120 130 L100 112 M120 124 L140 106" fill="none" stroke="#141210" stroke-width="7" stroke-linecap="round"/><circle cx="120" cy="78" r="38" fill="#6E5BAE"/><circle cx="104" cy="68" r="6.5" fill="#9D8BD6"/><circle cx="134" cy="62" r="5" fill="#9D8BD6"/><circle cx="138" cy="90" r="5.5" fill="#9D8BD6"/><ellipse cx="84" cy="140" rx="4" ry="7" fill="#9D8BD6" transform="rotate(-30 84 140)"/><ellipse cx="160" cy="132" rx="4" ry="7" fill="#6E5BAE" transform="rotate(24 160 132)"/>'
 
 SHOTS = [
-    dict(id='magma',     accent='#E04E1A', accent_lt='#FF8A4C', title='MAGMA',     sub='MOLTEN GRID · 0→100 · 41 MIN', edition=12, num='01', mark=MAGMA_MARK, tsize=56),
+    dict(id='jacaranda', accent='#6E5BAE', accent_lt='#9D8BD6', title='JACARANDA', sub='VIOLET BLOOM · 0→100 · 41 MIN', edition=12, num='01', mark=JACA_MARK, tsize=48),
     dict(id='guerrero',  accent='#2E9C7C', accent_lt='#5BC4A5', title='GUERRERO',  sub='DESERT SET · 0→100 · 57 MIN', edition=12, num='03', mark=GUER_MARK, tsize=54),
     dict(id='megaset',   accent='#C96F2B', accent_lt='#e0954f', title='MEGA SET',  sub='MONUMENTS × DELIRIO · 43 MIN', edition=10, num='02', mark=TRI_MARK, tsize=54),
     dict(id='monuments', accent='#C96F2B', accent_lt='#e0954f', title='MONUMENTS', sub='THE EP · 5 CUTS',   edition=50, num='07', mark=MONO_MARK, tsize=50),

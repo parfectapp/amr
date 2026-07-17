@@ -212,9 +212,9 @@ def audit(path, label):
 
 
 TARGETS = [
-    ('audio/amr-magma.m4a', 'MAGMA (set v2)'),
-    ('audio/amr-magma-cut-erupcion.m4a', 'MAGMA/ERUPCION'),
-    ('audio/amr-magma-cut-nucleo.m4a', 'MAGMA/NUCLEO'),
+    ('audio/amr-jacaranda.m4a', 'JACARANDA (set v2)'),
+    ('audio/amr-jacaranda-cut-lluvia.m4a', 'JACARANDA/LLUVIA'),
+    ('audio/amr-jacaranda-cut-flor.m4a', 'JACARANDA/FLOR'),
     ('audio/amr-001-plinth.m4a', 'PLINTH'),
     ('audio/amr-002-monolith.m4a', 'MONOLITH'),
     ('audio/amr-003-vessel.m4a', 'VESSEL'),
