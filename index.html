@@ -130,6 +130,8 @@ body.hero-in .hero-bottom{opacity:1;transform:none;transition-delay:.66s}
 
 /* ---- the setup — réplica CDJ-3000 × DJM-900NXS2 (fondo estudio limpio) ---- */
 .mixsec{position:relative;color:var(--bone);overflow:hidden;background:radial-gradient(120% 80% at 50% 0%,#1b1d21,#0c0d0f 70%)}
+.mixsec button:focus,.mixsec .pkcap:focus,.mixsec .pfader:focus,.mixsec .tempo:focus,.mixsec .xftrack:focus,.mixsec .jog:focus{outline:none}
+.mixsec button::-moz-focus-inner{border:0}
 .mixsec .mixin{position:relative;z-index:2;max-width:1340px;margin:0 auto;padding:clamp(60px,9vw,120px) clamp(16px,3vw,40px)}
 .mixsec .hk{color:rgba(234,230,223,.55)}
 .mixsec h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(34px,4.5vw,60px);margin:14px 0 16px}
@@ -1115,13 +1117,18 @@ if(window.AMR_TUL){
       BUS.split = ctx.createChannelSplitter(2);
       BUS.anL = ctx.createAnalyser(); BUS.anL.fftSize = 512;
       BUS.anR = ctx.createAnalyser(); BUS.anR.fftSize = 512;
+      // LIMITADOR de seguridad: pase lo que pase (4 canales al tope, FX, etc.) nunca clipea/revienta
+      BUS.limiter = ctx.createDynamicsCompressor();
+      BUS.limiter.threshold.value = -3; BUS.limiter.knee.value = 0; BUS.limiter.ratio.value = 20;
+      BUS.limiter.attack.value = 0.003; BUS.limiter.release.value = 0.12;
       BUS.sum.connect(BUS.master);
       BUS.sum.connect(BUS.masterSend); BUS.masterSend.connect(BUS.dly);
       BUS.dly.connect(BUS.fb); BUS.fb.connect(BUS.dly);
       BUS.dly.connect(BUS.wetLP); BUS.wetLP.connect(BUS.wet); BUS.wet.connect(BUS.master);
-      BUS.master.connect(BUS.split);
+      BUS.master.connect(BUS.limiter);
+      BUS.limiter.connect(BUS.split);
       BUS.split.connect(BUS.anL,0); BUS.split.connect(BUS.anR,1);
-      BUS.master.connect(ctx.destination);
+      BUS.limiter.connect(ctx.destination);
       applyFX();
     }
     if(ctx && ctx.state==='suspended') ctx.resume();
@@ -1216,7 +1223,7 @@ if(window.AMR_TUL){
     var name = cap.getAttribute('data-kn');
     cap.addEventListener('pointerdown', function(e){
       var sy=e.clientY, sv=KV[name];
-      cap.setPointerCapture(e.pointerId); e.preventDefault();
+      try{ cap.setPointerCapture(e.pointerId); }catch(_){} e.preventDefault();
       function mv(ev){ setKnob(name, sv + (sy-ev.clientY)/150); }
       function up(){ cap.removeEventListener('pointermove',mv); cap.removeEventListener('pointerup',up); cap.removeEventListener('pointercancel',up); }
       cap.addEventListener('pointermove',mv); cap.addEventListener('pointerup',up); cap.addEventListener('pointercancel',up);
@@ -1230,7 +1237,7 @@ if(window.AMR_TUL){
     function paintPos(){ cap.style.top = ((1-get())*(track.clientHeight-cap.offsetHeight))+'px'; }
     function pos(ev){ var r=track.getBoundingClientRect(); set(1-(ev.clientY-r.top-7)/(r.height-14)); paintPos(); }
     track.addEventListener('pointerdown', function(e){
-      track.setPointerCapture(e.pointerId); pos(e); e.preventDefault();
+      try{ track.setPointerCapture(e.pointerId); }catch(_){} pos(e); e.preventDefault();
       function mv(ev){ pos(ev); }
       function up(){ track.removeEventListener('pointermove',mv); track.removeEventListener('pointerup',up); track.removeEventListener('pointercancel',up); }
       track.addEventListener('pointermove',mv); track.addEventListener('pointerup',up); track.addEventListener('pointercancel',up);
@@ -1263,7 +1270,7 @@ if(window.AMR_TUL){
   (function(){
     function pos(ev){ var r=xfT.getBoundingClientRect(); setXF(((ev.clientX-r.left-10)/(r.width-20))*2-1); }
     xfT.addEventListener('pointerdown', function(e){
-      xfT.setPointerCapture(e.pointerId); pos(e); e.preventDefault();
+      try{ xfT.setPointerCapture(e.pointerId); }catch(_){} pos(e); e.preventDefault();
       function mv(ev){ pos(ev); }
       function up(){ xfT.removeEventListener('pointermove',mv); xfT.removeEventListener('pointerup',up); xfT.removeEventListener('pointercancel',up); }
       xfT.addEventListener('pointermove',mv); xfT.addEventListener('pointerup',up); xfT.addEventListener('pointercancel',up);
@@ -1383,6 +1390,8 @@ if(window.AMR_TUL){
       document.getElementById('pcdj'+d.i).classList.remove('playing');
       var pb = document.getElementById('pplay'+d.i); pb.innerHTML='&#9656;'; pb.classList.remove('on');
     });
+    d.au.addEventListener('ended', function(){ d.loopOn=false; try{ d.au.currentTime=0; }catch(e){} });  // fin de pista: limpio
+    d.au.addEventListener('error', function(){ var pb=document.getElementById('pplay'+d.i); if(pb){ pb.innerHTML='&#9656;'; pb.classList.remove('on'); } });
     paint(d);
   }
   function eject(d){
