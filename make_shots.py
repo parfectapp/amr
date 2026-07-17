@@ -106,7 +106,6 @@ JACA_MARK = '<path d="M120 168 L120 108 M120 130 L100 112 M120 124 L140 106" fil
 SHOTS = [
     dict(id='jacaranda', accent='#6E5BAE', accent_lt='#9D8BD6', title='JACARANDA', sub='VIOLET BLOOM · 0→100 · 41 MIN', edition=12, num='01', mark=JACA_MARK, tsize=48),
     dict(id='guerrero',  accent='#2E9C7C', accent_lt='#5BC4A5', title='GUERRERO',  sub='DESERT SET · 0→100 · 57 MIN', edition=12, num='03', mark=GUER_MARK, tsize=54),
-    dict(id='megaset',   accent='#C96F2B', accent_lt='#e0954f', title='MEGA SET',  sub='MONUMENTS × DELIRIO · 43 MIN', edition=10, num='02', mark=TRI_MARK, tsize=54),
     dict(id='monuments', accent='#C96F2B', accent_lt='#e0954f', title='MONUMENTS', sub='THE EP · 5 CUTS',   edition=50, num='07', mark=MONO_MARK, tsize=50),
     dict(id='tulum',     accent='#2E6FB0', accent_lt='#5B9BD5', title='DELIRIO',   sub='IN SYNC · 16 CUTS',  edition=15, num='04', mark=SUN_MARK,  tsize=54),
     dict(id='sesion',    accent='#A62D3E', accent_lt='#c8495e', title='SESIÓN 001',sub='THE SET · 19 CUTS',  edition=25, num='11', mark=ARCS_MARK, tsize=52),

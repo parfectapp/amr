@@ -227,7 +227,6 @@ TARGETS = [
     ('audio/amr-tulum-cut-sincronia.m4a', 'DELIRIO/SINCRONIA'),
     ('audio/amr-tulum-cut-perdidos.m4a', 'DELIRIO/PERDIDOS'),
     ('audio/amr-monuments-side.m4a', 'MONUMENTS (EP)'),
-    ('audio/amr-megaset.m4a', 'MEGA SET'),
     ('audio/amr-guerrero.m4a', 'GUERRERO (set)'),
     ('audio/amr-tulum.m4a', 'DELIRIO (set)'),
     ('audio/amr-set-the-set.m4a', 'SESIÓN 001'),
