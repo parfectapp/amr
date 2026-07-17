@@ -26,15 +26,14 @@ ART['marejada'] = wrap('gma', f'''
   <circle cx="76" cy="92" r="2.2" fill="{INK}"/><circle cx="182" cy="108" r="2.4" fill="{INK}"/>
 ''', gy=134)
 
-ART['serpiente'] = wrap('gse', f'''
-  <path d="M48 152 A24 24 0 0 1 96 152 A24 24 0 0 0 144 152 A16 16 0 0 1 162 140" fill="none" stroke="{A}" stroke-width="9" stroke-linecap="round"/>
-  <path d="M60 152 A12 12 0 0 1 84 152" fill="none" stroke="{AL}" stroke-width="4" stroke-linecap="round"/>
-  <circle cx="167" cy="133" r="9.5" fill="{INK}"/>
-  <circle cx="170" cy="130" r="2.2" fill="#EAE6DF"/>
-  <path d="M175 127 L185 120" stroke="{AL}" stroke-width="3" stroke-linecap="round"/>
+ART['estela'] = wrap('ges', f'''
+  <path d="M74 176 A150 150 0 0 1 128 100" fill="none" stroke="{A}" stroke-width="9" stroke-linecap="round"/>
+  <path d="M110 176 A130 130 0 0 1 152 116" fill="none" stroke="{AL}" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="134" cy="92" r="7" fill="{INK}"/>
+  <circle cx="158" cy="110" r="3.5" fill="{AL}"/>
   <rect x="46" y="176" width="148" height="5" rx="2.5" fill="{INK}"/>
-  <circle cx="66" cy="100" r="2.2" fill="{INK}"/><circle cx="182" cy="164" r="2.4" fill="{INK}"/>
-''', gy=140)
+  <circle cx="64" cy="100" r="2.2" fill="{INK}"/><circle cx="182" cy="150" r="2.4" fill="{INK}"/>
+''', gy=134)
 
 ART['brisa'] = wrap('gbr', f'''
   <path d="M52 118 A80 80 0 0 1 148 100 A15 15 0 0 1 146 128" fill="none" stroke="{A}" stroke-width="9" stroke-linecap="round"/>
