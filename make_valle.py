@@ -6,11 +6,12 @@ NO son sintetizados — son samples de hardware real (TR-909/808/707, DR5, RX5,
 CC0 dominio público) vía kit.py, con variación por golpe (micro-pitch+amplitud)
 para que no suene a copy-paste. Solo lo melódico se sintetiza (mt_voices.py).
 
-8 movimientos con el arco Anyma/Afterlife, contados como un día en el valle:
-amanece (ambiental SIN kick) → ladera (sube) → viento → milpa (motor hipnótico)
-→ siesta (breakdown + drop en MAYOR) → tolvanera (cumbre) → ocaso (clímax) →
-sereno (comedown). Bajo LIMPIO, dinámica ANCHA, master suave.
-Uso: python3 make_valle.py VIENTO (una sección) | sin args = set completo."""
+8 movimientos con el arco Anyma/Afterlife, contados como la FLORACIÓN de una
+jacaranda (la narrativa que André tenía en el set JACARANDA): semilla (ambiental
+SIN kick) → brote (sube) → rama → sombra (motor hipnótico) → flor (breakdown +
+drop en MAYOR: el árbol abre) → abril (cumbre de la temporada) → pétalos (clímax,
+la lluvia violeta) → primavera (comedown). Bajo LIMPIO, dinámica ANCHA.
+Uso: python3 make_valle.py RAMA (una sección) | sin args = set completo."""
 import os, sys
 import numpy as np
 from dream_core import (SR, lp, hp, bp, sat, widen, sub_mono, pingpong,
@@ -27,14 +28,14 @@ XF = 4
 ROOT = 57                       # La (A3) — La menor = 8A (mixea con DELIRIO/GUERRERO)
 
 SECTIONS = [
- dict(name='AMANECE',   shape='amb',    bars=48,  maj=False),
- dict(name='LADERA',    shape='rise',   bars=88,  maj=False),
- dict(name='VIENTO',    shape='wave',   bars=96,  maj=False),
- dict(name='MILPA',     shape='drive',  bars=96,  maj=False),
- dict(name='SIESTA',    shape='valley', bars=96,  maj=True),
- dict(name='TOLVANERA', shape='peak',   bars=88,  maj=False),
- dict(name='OCASO',     shape='peak2',  bars=104, maj=True),
- dict(name='SERENO',    shape='outro',  bars=56,  maj=False),
+ dict(name='SEMILLA',   shape='amb',    bars=48,  maj=False),
+ dict(name='BROTE',    shape='rise',   bars=88,  maj=False),
+ dict(name='RAMA',    shape='wave',   bars=96,  maj=False),
+ dict(name='SOMBRA',     shape='drive',  bars=96,  maj=False),
+ dict(name='FLOR',    shape='valley', bars=96,  maj=True),
+ dict(name='ABRIL', shape='peak',   bars=88,  maj=False),
+ dict(name='PETALOS',     shape='peak2',  bars=104, maj=True),
+ dict(name='PRIMAVERA',    shape='outro',  bars=56,  maj=False),
 ]
 
 def chords(sec):
