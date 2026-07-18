@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""MÁQUINA — set melodic techno cinemático (124 BPM, La menor) con BATERÍA REAL.
+"""ABISMO — set melodic techno cinemático (124 BPM, La menor) con BATERÍA REAL.
 
 La diferencia con todo lo anterior: kick, clap, hats, percusión, crashes y FX
 NO son sintetizados — son samples de hardware real (TR-909/808/707, DR5, RX5,
@@ -9,7 +9,7 @@ para que no suene a copy-paste. Solo lo melódico se sintetiza (mt_voices.py).
 8 movimientos con el arco Anyma/Afterlife: intro ambiental SIN kick → pulso →
 la musa → motor hipnótico → vacío (breakdown + drop en MAYOR) → cumbre →
 núcleo (clímax) → humano (comedown). Bajo LIMPIO, dinámica ANCHA, master suave.
-Uso: python3 make_maquina.py MUSA (una sección) | sin args = set completo."""
+Uso: python3 make_abismo.py MUSA (una sección) | sin args = set completo."""
 import os, sys
 import numpy as np
 from dream_core import (SR, lp, hp, bp, sat, widen, sub_mono, pingpong,
@@ -19,7 +19,7 @@ import mt_voices as V
 from mt_voices import midi_f, deg, MIN, MAJ
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TMP = os.path.join(HERE, '_maquina_tmp'); os.makedirs(TMP, exist_ok=True)
+TMP = os.path.join(HERE, '_abismo_tmp'); os.makedirs(TMP, exist_ok=True)
 BPM = 124.0
 SPB = int(round(SR * 240.0 / BPM)); S16 = SPB / 16.0; BEAT = 60.0 / BPM
 XF = 4
@@ -210,7 +210,7 @@ def _shave(x):
 
 def build(only=None):
     tot=sum(s['bars'] for s in SECTIONS)
-    print(f'MÁQUINA · {len(SECTIONS)} movimientos · {tot} compases ≈ {tot*SPB/SR/60:.0f} min · DRUMS REALES', flush=True)
+    print(f'ABISMO · {len(SECTIONS)} movimientos · {tot} compases ≈ {tot*SPB/SR/60:.0f} min · DRUMS REALES', flush=True)
     secs=[]
     for i,s in enumerate(SECTIONS):
         if only and s['name']!=only: continue
@@ -232,9 +232,9 @@ def build(only=None):
         a=min(total-pos,x.shape[1]); out[:,pos:pos+a]+=x[:,:a]; pos+=s['bars']*SPB; del x
     print('  … afeitado suave + master -10.5 (dinámico)', flush=True)
     out=_shave(out)
-    raw=os.path.join(TMP,'maquina-raw.wav'); wav_write(raw,out); del out
+    raw=os.path.join(TMP,'abismo-raw.wav'); wav_write(raw,out); del out
     os.makedirs(os.path.join(HERE,'masters'),exist_ok=True)
-    final=os.path.join(HERE,'masters','amr-maquina.wav')
+    final=os.path.join(HERE,'masters','amr-abismo.wav')
     hist=master_file(raw, final, target_i=-10.5, ceiling_db=-1.2)
     I,lra,tp=ffmeter(final)
     print(f'MASTER: {hist} → {I} LUFS · LRA {lra} · TP {tp}'); print(final)
