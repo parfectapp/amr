@@ -1131,7 +1131,7 @@ if(window.AMR_TUL){
       ctx = new AC();
       BUS = {};
       BUS.sum = ctx.createGain();
-      BUS.master = ctx.createGain(); BUS.master.gain.value = KV.master*1.3;
+      BUS.master = ctx.createGain(); BUS.master.gain.value = KV.master;   // sin boost: dos decks suman limpio
       BUS.masterSend = ctx.createGain(); BUS.masterSend.gain.value = 0;  // envío del master al FX
       BUS.dly = ctx.createDelay(2.0);
       BUS.fb = ctx.createGain();
@@ -1142,8 +1142,8 @@ if(window.AMR_TUL){
       BUS.anR = ctx.createAnalyser(); BUS.anR.fftSize = 512;
       // LIMITADOR de seguridad: pase lo que pase (4 canales al tope, FX, etc.) nunca clipea/revienta
       BUS.limiter = ctx.createDynamicsCompressor();
-      BUS.limiter.threshold.value = -3; BUS.limiter.knee.value = 0; BUS.limiter.ratio.value = 20;
-      BUS.limiter.attack.value = 0.003; BUS.limiter.release.value = 0.12;
+      BUS.limiter.threshold.value = -1; BUS.limiter.knee.value = 4; BUS.limiter.ratio.value = 6;   // suave, solo red de seguridad
+      BUS.limiter.attack.value = 0.006; BUS.limiter.release.value = 0.15;
       BUS.sum.connect(BUS.master);
       BUS.sum.connect(BUS.masterSend); BUS.masterSend.connect(BUS.dly);
       BUS.dly.connect(BUS.fb); BUS.fb.connect(BUS.dly);
@@ -1237,7 +1237,7 @@ if(window.AMR_TUL){
     KAPPLY['trim'+i] = KAPPLY['hi'+i] = KAPPLY['mid'+i] = KAPPLY['low'+i] = function(){ applyDeck(DECKS[i]); };
     KAPPLY['col'+i] = function(){ applyFilter(DECKS[i]); };
   })(ki);
-  KAPPLY.master = function(v){ if(BUS) BUS.master.gain.value = v*1.3; };
+  KAPPLY.master = function(v){ if(BUS) BUS.master.gain.value = v; };
   KAPPLY.fxtime = function(){ applyFX(); };
   KAPPLY.fxlvl  = function(v){ if(BUS) BUS.wet.gain.value = v*1.1; };
 
