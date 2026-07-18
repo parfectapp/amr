@@ -237,7 +237,7 @@ def render_section(sec, idx):
              + vox_st * 0.55 + lead_st * 0.68 + (pads + verb) * 0.8 + wind_st)
     mm = 0.5 * (music[0] + music[1]); ss = bp(0.5 * (music[0] - music[1]), 220, 11000, 2) * 2.3
     mix = np.stack([mm + ss, mm - ss])
-    mix += kickb[None, :] * 1.15 + bassb[None, :] * 1.32
+    mix += kickb[None, :] * 1.2                        # SIN bajo (André: el synth sonaba horrible) — el kick lleva el low end
     genv = np.ones(n, np.float32)
     for bi, blk in enumerate(plan_blocks(sec)):
         genv[bi * 8 * SPB:min(n, (bi + 1) * 8 * SPB)] = blk['gain']
