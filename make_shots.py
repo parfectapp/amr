@@ -107,7 +107,10 @@ COLI_MARK = '<ellipse cx="128" cy="96" rx="30" ry="19" fill="#12B3AE" transform=
 
 ELLA_MARK = '<path d="M64 148 A56 56 0 0 1 120 92 A26 26 0 0 1 146 118 A14 14 0 0 1 132 132 A7 7 0 0 1 125 125" fill="none" stroke="#C4756B" stroke-width="9" stroke-linecap="round"/><path d="M84 148 A38 38 0 0 1 112 112" fill="none" stroke="#E2A796" stroke-width="4" stroke-linecap="round"/><ellipse cx="96" cy="166" rx="12" ry="6" fill="#141210" transform="rotate(-18 96 166)"/><ellipse cx="146" cy="162" rx="11" ry="5.5" fill="#141210" transform="rotate(16 146 162)"/><rect x="56" y="150" width="128" height="6" rx="3" fill="#141210"/>'
 
+PLAYA_MARK = '<path d="M56 150 Q88 132 120 146 Q154 162 184 142" fill="none" stroke="#141210" stroke-width="8" stroke-linecap="round"/><path d="M84 128 A36 36 0 0 1 156 128" fill="none" stroke="#D9A13B" stroke-width="9" stroke-linecap="round"/><path d="M120 74 L120 60 M88 86 L78 76 M152 86 L162 76" stroke="#F0C97A" stroke-width="5" stroke-linecap="round"/><circle cx="70" cy="108" r="3" fill="#F0C97A"/><circle cx="172" cy="112" r="3.4" fill="#D9A13B"/><circle cx="150" cy="94" r="2.4" fill="#141210"/>'
+
 SHOTS = [
+    dict(id='playa',     accent='#D9A13B', accent_lt='#F0C97A', title='PLAYA',     sub='DESERT FUNK · 0→100 · 26 MIN', edition=12, num='01', mark=PLAYA_MARK, tsize=56),
     dict(id='colibri',   accent='#12B3AE', accent_lt='#6FE0D8', title='COLIBRÍ',   sub='TROPICAL SOLAR · 0→100 · 29 MIN', edition=15, num='01', mark=COLI_MARK, tsize=54),
     dict(id='jacaranda', accent='#6E5BAE', accent_lt='#9D8BD6', title='JACARANDA', sub='VIOLET BLOOM · 0→100 · 41 MIN', edition=12, num='01', mark=JACA_MARK, tsize=48),
     dict(id='guerrero',  accent='#2E9C7C', accent_lt='#5BC4A5', title='GUERRERO',  sub='DESERT SET · 0→100 · 57 MIN', edition=12, num='03', mark=GUER_MARK, tsize=54),
