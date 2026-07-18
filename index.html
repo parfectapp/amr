@@ -997,6 +997,19 @@ if(window.AMR_TUL){
     {v:window.AMR_FIEBRE,    c:'#D1342F', lc:'#E8635F'},
     {v:window.AMR_VUELVE,    c:'#8FA3B0', lc:'#B8C6CF'}
   ].filter(function(r){ return !!r.v; });
+  /* --- MIXING ARMÓNICO: tonalidad → rueda de Camelot --- */
+  var CAMELOT={'A MIN':'8A','A MAJ':'11B','C MAJ':'8B','E MIN':'9A','D MIN':'7A','G MAJ':'9B','F MAJ':'7B','B MIN':'10A','G MIN':'6A','E MAJ':'12B','D MAJ':'10B','F MIN':'4A'};
+  var KEYFALL={'amr-monuments-side':'A MIN','amr-set-the-set':'A MIN','amr-tulum':'A MIN','amr-guerrero':'A MIN'};
+  RECS.forEach(function(r){
+    var kn=(r.v.key||KEYFALL[r.v.id]||'A MIN').toUpperCase().replace('MAJOR','MAJ').replace('MINOR','MIN');
+    r.keyName=kn; r.cam=CAMELOT[kn]||'8A';
+  });
+  function camParse(c){ return {n:parseInt(c,10), l:c.slice(-1)}; }
+  function harmonic(a,b){ if(!a||!b) return false; if(a===b) return true;   // igual / relativo / adyacente ±1
+    var x=camParse(a),y=camParse(b); if(x.n===y.n) return true;
+    var d=Math.abs(x.n-y.n); if(d>6) d=12-d; return d===1 && x.l===y.l; }
+  function masterCam(exclude){ if(masterDeck==null) return null; var m=DECKS[masterDeck];
+    return (m && m.rec && m!==exclude && m.au && !m.au.paused) ? m.rec.cam : null; }
   function b64bytes(s){ var bin=atob(s), u=new Uint8Array(bin.length); for(var i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return u; }
   var WF = window.AMR_WF || {};
   RECS.forEach(function(r){
@@ -1026,7 +1039,7 @@ if(window.AMR_TUL){
   }
 
   /* --- DOM: 2 CDJs, DJM, 2 CDJs --- */
-  function rolaOpts(){ return '<option value="-1">&mdash; PICK A TRACK &mdash;</option>' + RECS.map(function(r,k){ return '<option value="'+k+'">'+r.v.title+(r.v.bpm?' &#183; '+r.v.bpm+' BPM':'')+'</option>'; }).join(''); }
+  function rolaOpts(){ return '<option value="-1">&mdash; PICK A TRACK &mdash;</option>' + RECS.map(function(r,k){ return '<option value="'+k+'">'+r.v.title+(r.v.bpm?' &#183; '+r.v.bpm+' &#183; '+r.cam:'')+'</option>'; }).join(''); }
   function cdjHTML(i){
     return '<div class="unit cdj" data-d="'+i+'" id="pcdj'+i+'">'+
       '<canvas class="cdjscr" id="cscr'+i+'"></canvas>'+
@@ -1560,8 +1573,8 @@ if(window.AMR_TUL){
     DECKS.forEach(function(d){ if(d.au && !d.au.paused) d.au.pause(); });
   });
 
-  /* ---- AI DJ: auto-mix (carga, beatmatch y crossfade solo) ---- */
-  var aiOn=false, aiTimer=null, aiRAF=null, aiIdx=0, aiCur=0;   // usa deck 0 (lado A) y deck 2 (lado B)
+  /* ---- AI DJ: auto-mix como pro (armónico · por frase · bass-swap) ---- */
+  var aiOn=false, aiTimer=null, aiRAF=null, aiIdx=0, aiCur=0;   // deck 0 (lado A) y deck 2 (lado B)
   var aiBtn=document.getElementById('aiDJ'), aiStatus=document.getElementById('aiStatus');
   function aiSay(t){ if(aiStatus) aiStatus.textContent=t; }
   function aiLoadPlay(deck, rec){
@@ -1569,14 +1582,20 @@ if(window.AMR_TUL){
     var d=DECKS[deck]; d.fv=1; if(d.fadeG) d.fadeG.gain.value=1; if(d.paintF) d.paintF();
     try{ d.au.play(); }catch(e){}
   }
+  function aiPickNext(curCam){   // elige el siguiente disco ARMÓNICO (en clave)
+    for(var s=1;s<=RECS.length;s++){ var k=(aiIdx+s)%RECS.length;
+      if(!curCam || harmonic(RECS[k].cam, curCam)){ aiIdx=k; return RECS[k]; } }
+    aiIdx=(aiIdx+1)%RECS.length; return RECS[aiIdx];
+  }
   function aiStart(){
     if(!RECS.length) return;
     aiOn=true; aiBtn.classList.add('on'); aiBtn.innerHTML='&#9632; AI DJ &#183; MIXING'; actx();
     DECKS[0].xa=0; DECKS[2].xa=2; applyXF();
+    setKnob('low0',0.5); setKnob('low2',0.5);
     aiIdx=0; aiCur=0;
     aiLoadPlay(0, RECS[0]); masterDeck=0; paintSync(); setXF(-1);
-    aiSay('mixing · '+RECS[0].v.title);
-    aiTimer=setTimeout(aiTransition, 20000);
+    aiSay('mixing · '+RECS[0].v.title+' · '+RECS[0].cam);
+    aiTimer=setTimeout(aiTransition, 16000);
   }
   function aiStop(){
     aiOn=false; aiBtn.classList.remove('on'); aiBtn.innerHTML='&#9654; AI DJ &#183; AUTO-MIX';
@@ -1584,21 +1603,31 @@ if(window.AMR_TUL){
     if(aiRAF){ cancelAnimationFrame(aiRAF); aiRAF=null; }
     aiSay('off');
   }
-  function aiTransition(){
+  function aiTransition(){   // espera a un borde de frase (8 compases) del master y ahí mezcla
+    if(!aiOn) return;
+    var m=DECKS[aiCur], delay=0;
+    if(m.au && m.rec){ var bs=60/((m.rec.v.bpm||120)*(1+m.tv/100)); var mbar=Math.floor(m.au.currentTime/(4*bs));
+      delay=((8-(mbar%8))%8)*4*bs*1000; if(delay<1200) delay+=8*4*bs*1000; }
+    aiSay('cueing next cut…');
+    aiTimer=setTimeout(aiDoMix, delay);
+  }
+  function aiDoMix(){
     if(!aiOn) return;
     var from=aiCur, to=(aiCur===0?2:0);
-    aiIdx=(aiIdx+1)%RECS.length; var rec=RECS[aiIdx];
+    var rec=aiPickNext(DECKS[from].rec ? DECKS[from].rec.cam : null);
     aiLoadPlay(to, rec);
-    var off=offsetsOf(rec); if(off.length>1){ try{ DECKS[to].au.currentTime=off[1]; }catch(e){} }  // entra pasando el intro
+    var off=offsetsOf(rec); if(off.length>1){ try{ DECKS[to].au.currentTime=off[1]; }catch(e){} }  // pasa el intro
     masterDeck=from; DECKS[to].synced=true; doSync(DECKS[to]); paintSync();
-    aiSay('mixing · '+rec.v.title);
-    var start=XFPOS, end=(to===0?-1:1), t0=performance.now(), dur=9000;   // crossfade beatmatcheado ~9 s
+    setKnob('low'+to, 0);   // BASS-SWAP: el entrante llega SIN bajos (nunca dos bajos juntos)
+    aiSay('mixing · '+rec.v.title+' · '+rec.cam+(harmonic(rec.cam, DECKS[from].rec?DECKS[from].rec.cam:null)?' ✓ in key':''));
+    var start=XFPOS, end=(to===0?-1:1), t0=performance.now(), dur=10000, swapped=false;
     (function step(){
       if(!aiOn) return;
       var k=Math.min(1,(performance.now()-t0)/dur);
       setXF(start+(end-start)*k);
+      if(k>=0.55 && !swapped){ swapped=true; setKnob('low'+from,0); setKnob('low'+to,0.5); }  // swap de bajos al ~55%
       if(k<1){ aiRAF=requestAnimationFrame(step); }
-      else { try{ DECKS[from].au.pause(); }catch(e){} aiCur=to; aiTimer=setTimeout(aiTransition, 20000); }
+      else { try{ DECKS[from].au.pause(); }catch(e){} setKnob('low'+from,0.5); aiCur=to; aiTimer=setTimeout(aiTransition, 16000); }
     })();
   }
   aiBtn.addEventListener('click', function(){ aiOn ? aiStop() : aiStart(); });
@@ -1711,15 +1740,17 @@ if(window.AMR_TUL){
       g.fillStyle=PADCOL[hco]; g.fillRect(d.hc[hco]/dur*W, oy, Math.max(1,1.2*dpr), oh); }
     g.fillStyle='#ff9f1a'; g.fillRect((d.cuePt||0)/dur*W, oy, Math.max(1,1.2*dpr), oh);   // cue point
     g.fillStyle='#e5372e'; g.fillRect(prog*(W-2*dpr), oy-1*dpr, Math.max(2,1.4*dpr), oh+2*dpr);
-    /* fila inferior: caja BPM + pitch */
+    /* fila inferior: caja BPM · KEY (Camelot, color = match armónico) · FRASE */
     var by = H-11*dpr;
     var bpm = r.v.bpm ? (r.v.bpm*(1+d.tv/100)).toFixed(1) : '--';
     g.strokeStyle='rgba(143,180,232,.5)'; g.lineWidth=1;
-    g.strokeRect(5*dpr, by-1.5*dpr, 62*dpr, 11*dpr);
+    g.strokeRect(5*dpr, by-1.5*dpr, 56*dpr, 11*dpr);
     g.fillStyle='#dfe6f2'; g.fillText(bpm+' BPM', 8*dpr, by);
-    var pvt = 'TEMPO '+(d.tv>0?'+':'')+d.tv.toFixed(1)+'%';
-    var pw = g.measureText(pvt).width;
-    g.fillStyle='#8fb4e8'; g.fillText(pvt, W-pw-6*dpr, by);
+    var mk=masterCam(d), kcol=mk?(harmonic(r.cam,mk)?'#3fd07a':'#e5372e'):'#d9b24a';
+    g.fillStyle=kcol; g.fillText(r.cam+' '+r.keyName.replace(' MIN','m').replace(' MAJ','M'), 66*dpr, by);
+    var bs=60/(r.v.bpm||120), bar=Math.floor(t/(4*bs)), bip=(bar%8)+1, phr='P'+(Math.floor(bar/8)+1)+' '+bip+'/8';
+    g.fillStyle=(bip>=7)?'#ffb03a':'#8fb4e8'; var pw=g.measureText(phr).width;
+    g.fillText(phr, W-pw-6*dpr, by);
   }
   var lcdms = document.getElementById('lcdms'), lcdbpm = document.getElementById('lcdbpm'), lcddot = document.getElementById('lcddot');
   var lastDrift = 0;
