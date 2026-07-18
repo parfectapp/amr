@@ -48,9 +48,9 @@ if __name__ == '__main__':
     for i, s in enumerate(SECTIONS):
         if s['name'] not in CUTS: continue
         secw = os.path.join(TMP, f'sec-{i:02d}-{s["name"].lower()}.wav')
-        x = ffdecode(secw)                                   # mismo afeitado que el set:
-        x = np.stack([sat(x[0] * 1.5, 2.0, 0.04), sat(x[1] * 1.5, 2.0, 0.04)])
-        x *= 0.72 / max(1e-9, float(np.abs(x).max()))
+        x = ffdecode(secw)                                   # normaliza suave (sin saturar):
+        x = np.stack([sat(x[0], 1.3, 0.02), sat(x[1], 1.3, 0.02)])
+        x *= 0.90 / max(1e-9, float(np.abs(x).max()))
         pre = os.path.join(TMP, f'pre-{s["name"].lower()}.wav')
         wav_write(pre, x); del x
         mst = os.path.join(TMP, f'cut-{s["name"].lower()}.wav')

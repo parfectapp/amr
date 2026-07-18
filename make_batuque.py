@@ -241,7 +241,7 @@ def render_section(sec, idx):
     # ------- buses
     env = sidechain(n, kpos)
     bassb *= env                                          # el bajo bombea con el kick (audible)
-    drum_st = widen(sat(drumb, 1.1, 0.04), amount=0.5, seed=idx * 3 + 2)
+    drum_st = widen(sat(drumb, 1.04, 0.03), amount=0.5, seed=idx * 3 + 2)
     conga_st = widen(congab * (env * 0.4 + 0.6), amount=0.6, seed=idx * 5 + 1)
     stab_st = pingpong(stabb * (env * 0.4 + 0.6), BEAT_S, fb=0.34, mix=0.28, taps=5, damp=4400)
     vox_st = pingpong(voxb * (env * 0.35 + 0.65), BEAT_S, fb=0.4, mix=0.4, taps=6, damp=4600)
@@ -257,18 +257,19 @@ def render_section(sec, idx):
     genv = np.ones(n, np.float32)
     for bi, blk in enumerate(plan_blocks(sec)):
         genv[bi * 8 * SPB:min(n, (bi + 1) * 8 * SPB)] = blk['gain']
-    genv = lp(genv, 2.0, 1); mix *= genv[None, :]
-    mix = np.stack([sat(mix[0], 1.12, 0.045), sat(mix[1], 1.12, 0.045)])
+    genv = lp(genv, 2.0, 1) ** 1.6; mix *= genv[None, :]  # macro-dinámica ENSANCHADA (intro/break bajan de verdad)
+    mix = np.stack([sat(mix[0], 1.05, 0.03), sat(mix[1], 1.05, 0.03)])
     mix = sub_mono(mix, 120.0)                             # low end mono
     pk = np.abs(mix).max()
-    if pk > 0.93: mix *= 0.93 / pk
+    if pk > 1.4: mix *= 1.4 / pk                           # NO normalizar cada sección (preserva loud vs quiet)
     return mix
 
 def _shave(x):
-    """afeitado pre-master para transientes tech house (soft-clip + normaliza):
-    evita que master_file no converja por inter-sample peaks (lección PLAYA)."""
-    x = np.stack([sat(x[0] * 1.5, 2.0, 0.04), sat(x[1] * 1.5, 2.0, 0.04)])
-    return x * (0.72 / max(1e-9, float(np.abs(x).max())))
+    """normaliza suave PRESERVANDO transientes (soft-clip MUY leve solo en picos
+    extremos); el limitador lookahead del master hace el control fino. André pidió
+    drums NO saturados → nada de clipeo agresivo (la onda debe mostrar los golpes)."""
+    x = np.stack([sat(x[0], 1.3, 0.02), sat(x[1], 1.3, 0.02)])
+    return x * (0.90 / max(1e-9, float(np.abs(x).max())))
 
 def build(only=None):
     tot = sum(s['bars'] for s in SECTIONS)
@@ -295,12 +296,12 @@ def build(only=None):
         x = ffdecode(f)
         if k > 0: x[:, :xf] *= (np.linspace(0, 1, xf) ** 0.5).astype(np.float32)[None, :]
         a = min(total - pos, x.shape[1]); out[:, pos:pos + a] += x[:, :a]; pos += s['bars'] * SPB; del x
-    print('  … afeitado + master -8.5 LUFS', flush=True)
+    print('  … normaliza suave + master -9.5 LUFS (dinámico, drums sin saturar)', flush=True)
     out = _shave(out)
     raw = os.path.join(TMP, 'batuque-raw.wav'); wav_write(raw, out); del out
     os.makedirs(os.path.join(HERE, 'masters'), exist_ok=True)
     final = os.path.join(HERE, 'masters', 'amr-batuque.wav')
-    hist = master_file(raw, final, target_i=-8.5, ceiling_db=-1.2)
+    hist = master_file(raw, final, target_i=-10.5, ceiling_db=-1.2)
     I, lra, tp = ffmeter(final)
     print(f'MASTER: {hist} → {I} LUFS · LRA {lra} · TP {tp}'); print(final)
 

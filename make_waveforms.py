@@ -61,7 +61,7 @@ def bands(path):
     # curva suave tipo pantalla (un poco de gamma para que respire)
     def q(b):
         v = np.clip(b * k, 0, 1.0)
-        v = v ** 0.72
+        v = v ** 0.9          # menos aplanado (0.72→0.9): la onda muestra más contraste/estructura
         return np.clip(v * 255.0, 0, 255).astype(np.uint8)
     return q(lo), q(mi), q(hi)
 
