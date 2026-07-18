@@ -175,8 +175,10 @@ def render_section(sec, idx):
                 add(padL, base, x, b['pad']); add(padR, base+int(0.02*SR), x, b['pad']*0.92)
             if b['piano']>0 and gb%4==0:
                 add(pianob, base, V.piano([c[1],c[2],c[3]], 2*SPB/SR, rng), b['piano'])
-            # ---- VOZ-musa
-            if b['vox']>0 and gb%4==0:
+            # ---- VOZ-musa ELIMINADA (André: suena a trompeta chillona / globo desinflándose).
+            # Los tonos con filtros de formante + vibrato le suenan a chillido — mismo
+            # problema que el lead 'wah' de PLAYA. NO volver a usar formantes sostenidos.
+            if False and b['vox']>0 and gb%4==0:
                 add(voxb, base, V.vox(midi_f(deg(ROOT,(gb//4)%5,1)), 2*SPB/SR*0.9, rng, 'aou'[(gb//4)%3]), b['vox']*0.5)
     # ---- buses
     env = sc_env(n, kpos)
@@ -187,8 +189,8 @@ def render_section(sec, idx):
     vox_st  = pingpong(voxb*(env*0.5+0.5), BEAT, fb=0.4, mix=0.42, taps=6, damp=5000)
     pads = np.stack([padL,padR])*(env*0.5+0.5)[None,:]
     piano_st = np.stack([pianob,pianob]); amb_st = np.stack([ambb, ambb[::-1].copy()])
-    music = (drum_st*0.82 + lead_st*0.7 + stab_st*0.5 + vox_st*0.56 + pads*0.8
-             + piano_st*0.5 + amb_st*0.5)
+    music = (drum_st*0.82 + lead_st*0.7 + stab_st*0.5 + pads*0.86           # SIN voz-musa
+             + piano_st*0.56 + amb_st*0.55)
     mm=0.5*(music[0]+music[1]); ss=bp(0.5*(music[0]-music[1]), 200, 12000, 2)*2.1
     mix=np.stack([mm+ss, mm-ss])
     mix += kickb[None,:]*1.15 + bassb[None,:]*0.78
