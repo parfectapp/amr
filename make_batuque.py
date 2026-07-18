@@ -191,8 +191,8 @@ def render_section(sec, idx):
             if last8 and b['gain'] >= 0.9 and not b['predrop']:
                 for k, s in enumerate((12, 13, 14, 15)):
                     add(congab, base + sw(s), V.tom(190 - 30 * k, rng), 0.4 + 0.1 * k)
-            # ===== EL BAJO WONKY — rolling en el pocket (raíz del acorde, bounce de octava)
-            if b['bass'] and not silence:
+            # ===== EL BAJO WONKY — ELIMINADO (André: durísimo/sobresaturado, quítalo de todo el set)
+            if False and b['bass'] and not silence:
                 prev = None
                 for (st, oo, ln, v) in sec['bass']:
                     if st // 16 != cyc: continue
@@ -253,7 +253,7 @@ def render_section(sec, idx):
              + voco_st * 0.5 + lead_st * 0.62 + (pads + verb) * 0.75)
     mm = 0.5 * (music[0] + music[1]); ss = bp(0.5 * (music[0] - music[1]), 220, 11000, 2) * 2.2
     mix = np.stack([mm + ss, mm - ss])
-    mix += kickb[None, :] * 1.18 + bassb[None, :] * 1.28  # kick + bajo wonky al centro (low end)
+    mix += kickb[None, :] * 1.32                          # SIN bajo (André: durísimo/sobresaturado) — el kick lleva el low end
     genv = np.ones(n, np.float32)
     for bi, blk in enumerate(plan_blocks(sec)):
         genv[bi * 8 * SPB:min(n, (bi + 1) * 8 * SPB)] = blk['gain']
