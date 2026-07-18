@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""VALLE — set melodic techno cinemático (124 BPM, La menor) con BATERÍA REAL.
+"""JACARANDA — set melodic techno cinemático (124 BPM, La menor) con BATERÍA REAL.
 
 La diferencia con todo lo anterior: kick, clap, hats, percusión, crashes y FX
 NO son sintetizados — son samples de hardware real (TR-909/808/707, DR5, RX5,
@@ -11,7 +11,7 @@ jacaranda (la narrativa que André tenía en el set JACARANDA): semilla (ambient
 SIN kick) → brote (sube) → rama → sombra (motor hipnótico) → flor (breakdown +
 drop en MAYOR: el árbol abre) → abril (cumbre de la temporada) → pétalos (clímax,
 la lluvia violeta) → primavera (comedown). Bajo LIMPIO, dinámica ANCHA.
-Uso: python3 make_valle.py RAMA (una sección) | sin args = set completo."""
+Uso: python3 make_jacaranda.py RAMA (una sección) | sin args = set completo."""
 import os, sys
 import numpy as np
 from dream_core import (SR, lp, hp, bp, sat, widen, sub_mono, pingpong,
@@ -21,7 +21,7 @@ import mt_voices as V
 from mt_voices import midi_f, deg, MIN, MAJ
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TMP = os.path.join(HERE, '_valle_tmp'); os.makedirs(TMP, exist_ok=True)
+TMP = os.path.join(HERE, '_jacaranda_tmp'); os.makedirs(TMP, exist_ok=True)
 BPM = 124.0
 SPB = int(round(SR * 240.0 / BPM)); S16 = SPB / 16.0; BEAT = 60.0 / BPM
 XF = 4
@@ -32,7 +32,7 @@ SECTIONS = [
  dict(name='BROTE',    shape='rise',   bars=88,  maj=False),
  dict(name='RAMA',    shape='wave',   bars=96,  maj=False),
  dict(name='SOMBRA',     shape='drive',  bars=96,  maj=False),
- dict(name='FLOR',    shape='valley', bars=96,  maj=True),
+ dict(name='FLOR',    shape='jacaranday', bars=96,  maj=True),
  dict(name='ABRIL', shape='peak',   bars=88,  maj=False),
  dict(name='PETALOS',     shape='peak2',  bars=104, maj=True),
  dict(name='PRIMAVERA',    shape='outro',  bars=56,  maj=False),
@@ -63,7 +63,7 @@ def plan(shape, p):
         if 0.5<p<0.62: b.update(kick=0,bass=0,clap=0,pad=0.9,vox=1,gain=0.76)
     elif shape=='drive':
         b.update(lead=0.8, stab=0.9, pad=0.5, perc=0.6, vox=0.4, gain=1.02, crash=1 if p<0.06 else 0)
-    elif shape=='valley':
+    elif shape=='jacaranday':
         if p<0.55:
             b.update(kick=0,bass=0,clap=0,hats=0.08,perc=0.05,pad=1,vox=1,piano=0.6,amb=0.5,
                      lead=0.5 if p>0.3 else 0, gain=0.6, filt=0.55)
@@ -212,7 +212,7 @@ def _shave(x):
 
 def build(only=None):
     tot=sum(s['bars'] for s in SECTIONS)
-    print(f'VALLE · {len(SECTIONS)} movimientos · {tot} compases ≈ {tot*SPB/SR/60:.0f} min · HUESO Y SALVIA', flush=True)
+    print(f'JACARANDA · {len(SECTIONS)} movimientos · {tot} compases ≈ {tot*SPB/SR/60:.0f} min · HUESO Y SALVIA', flush=True)
     secs=[]
     for i,s in enumerate(SECTIONS):
         if only and s['name']!=only: continue
@@ -234,9 +234,9 @@ def build(only=None):
         a=min(total-pos,x.shape[1]); out[:,pos:pos+a]+=x[:,:a]; pos+=s['bars']*SPB; del x
     print('  … afeitado suave + master -10.5 (dinámico)', flush=True)
     out=_shave(out)
-    raw=os.path.join(TMP,'valle-raw.wav'); wav_write(raw,out); del out
+    raw=os.path.join(TMP,'jacaranda-raw.wav'); wav_write(raw,out); del out
     os.makedirs(os.path.join(HERE,'masters'),exist_ok=True)
-    final=os.path.join(HERE,'masters','amr-valle.wav')
+    final=os.path.join(HERE,'masters','amr-jacaranda.wav')
     hist=master_file(raw, final, target_i=-10.5, ceiling_db=-1.2)
     I,lra,tp=ffmeter(final)
     print(f'MASTER: {hist} → {I} LUFS · LRA {lra} · TP {tp}'); print(final)
