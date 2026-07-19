@@ -144,7 +144,13 @@ def juzga(path):
     chk('crest 100 ms (dB)', c100, 6.5, None, 'refs de André', '{:.1f}')
     chk('crest 1 s (dB)',    c1000, 8.5, None, 'refs de André', '{:.1f}')
     chk('centroide (Hz)',   centroide(x), 2479-2*518, 2479+2*518, 'ISMIR 2014', '{:.0f}')
-    chk('inclinación dB/oct', tilt_db_oct(x), -8.0, -2.0, 'Pestana AES', '{:.1f}')
+    # Pestana et al. (AES 135, n=772, ≈la mitad de los #1 de EEUU/UK en 60 años)
+    # midió −5 dB/oct de 100 Hz a 4 kHz sobre display de ancho de banda constante.
+    # Ruido rosa en ese mismo display lee −3, así que un máster comercial es ~2 dB/oct
+    # MÁS OSCURO que el rosa. Ojo con la confusión de siempre: el 4.5 dB/oct de
+    # FabFilter y SPAN es una INCLINACIÓN DE PANTALLA, no un objetivo — pero cae
+    # tan cerca del promedio comercial que un máster que se ve plano ahí está bien.
+    chk('inclinación dB/oct', tilt_db_oct(x), -8.0, -2.0, 'Pestana n=772', '{:.1f}')
     chk('side/mid',         side_mid(x), 0.101-2*0.049, 0.101+2*0.049, 'ISMIR 2014', '{:.3f}')
     pr = pan_rms(x)
     print(f'     ancho por banda: bajo {pr["bajo"]:.3f}  medio {pr["medio"]:.3f}  alto {pr["alto"]:.3f}')
