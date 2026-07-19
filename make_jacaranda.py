@@ -53,9 +53,8 @@ NIVEL_MEZCLA = -18.0
 ARCO = {
     'VÍSPERA':   -2.5,   # abre, casi vacío
     'AUGURIO':   -1.2,
-    'FULGOR':    -0.5,
-    'LETANÍA':   -0.6,
-    'EPIFANÍA':   0.0,   # el pico
+    'FULGOR':     0.0,   # el pico se muda aquí al salir EPIFANÍA
+    'LETANÍA':   -0.7,
     'PENUMBRA':  -1.8,   # se apaga la luz, y se oye
     'ÉTER':      -1.0,
     'VESTIGIO':  -3.0,   # irse caminando
@@ -76,10 +75,16 @@ TECHO = -1.5
 # borraron (SEMILLA, BROTE, RAMA, SOMBRA, FLOR, ABRIL, PETALOS, PRIMAVERA,
 # RAIZ, CALMA, LLUVIA) — se revisó uno por uno.
 #
-# Sky_Catches_Fire.mp3 (aquí EPIFANÍA) salió y volvió a entrar. André dijo
-# "parece Avicii" señalando el minuto 11:30, y se quitó; después aclaró que se
-# había confundido y que esa sí le gustaba. Vuelve tal cual, en su lugar.
-# Se deja anotado para no volver a sacarla por error.
+# ⚠️ Sky_Catches_Fire.mp3 (fue AURORA, luego EPIFANÍA) ESTÁ FUERA, definitivo.
+# Dio tres vueltas: André dijo "parece Avicii" por el minuto 11:30 → se quitó;
+# luego "esa sí me gustaba, me confundí" → volvió; y al oírla completa: "borra
+# epifanía" → fuera otra vez. El archivo se queda en _raw/ pero NO se vuelve a
+# meter sin que él lo pida explícitamente.
+#
+# El diagnóstico original aguanta y sirve de lección: el prompt le pedía a
+# Gemini "bright, vast, transcendent" y "the peak of the record" en tonalidad
+# MAYOR — la receta del EDM de estadio. Salió lo que se pidió. Cuando una rola
+# suene demasiado eufórica, revisar el prompt antes que el modelo.
 SET = [
     ('Before_The_Sun_Hits.mp3',   'VÍSPERA',
      'la noche antes de que algo pase'),
@@ -89,8 +94,6 @@ SET = [
      'el resplandor — la ciudad entera prendida en violeta'),
     ('Murmuration_at_Dusk.mp3',   'LETANÍA',
      'miles de flores idénticas repitiendo hasta volverse una sola'),
-    ('Sky_Catches_Fire.mp3',      'EPIFANÍA',
-     'la luz que llega de golpe y lo explica todo'),
     ('Midnight_at_Noon.mp3',      'PENUMBRA',
      'la sombra parcial: ni luz ni oscuridad'),
     ('Salt_Flat_Mirror.mp3',      'ÉTER',
@@ -257,13 +260,13 @@ if __name__ == '__main__':
     # Tonos MEDIDOS con analiza.py, no los que se pidieron: Gemini no respetó
     # las tonalidades del prompt, así que la ficha dice lo que las rolas son.
     # F MAJ es la modal del set (3 de 8) y es la que se usa para el Camelot.
-    TONOS = ['F MAJ', 'F MAJ', 'C MAJ', 'C MAJ', 'F MAJ', 'A MIN', 'E MIN', 'D MIN']
+    TONOS = ['F MAJ', 'F MAJ', 'C MAJ', 'C MAJ', 'A MIN', 'E MIN', 'D MIN']
     meta = dict(
         id='amr-jacaranda', title='JACARANDA', kicker='FLORACIÓN · UNA MEZCLA',
         tracks=len(SET), dur=round(dur, 1),
         titles=[n for _, n, _ in SET], notes=[d for _, _, d in SET],
         keys=TONOS, offsets=cortes, file='audio/amr-jacaranda.m4a',
-        art='art/jacaranda.svg', edition=8, peaks=pk, bpm=120, key='F MAJ')
+        art='art/jacaranda.svg', edition=7, peaks=pk, bpm=120, key='F MAJ')
     with open(os.path.join(HERE, 'jacaranda.js'), 'w') as f:
         f.write('window.AMR_JACARANDA=' + json.dumps(meta, ensure_ascii=False) + ';')
     print('jacaranda.js escrito ·', len(SET), 'cortes')

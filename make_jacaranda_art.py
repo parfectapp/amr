@@ -110,11 +110,14 @@ def svg():
     # la línea de la banqueta: donde la alfombra se acaba
     p.append(f'<line x1="{W*0.06:.0f}" y1="{W*0.875:.0f}" x2="{W*0.94:.0f}" '
              f'y2="{W*0.875:.0f}" stroke="{VIOLETA}" stroke-width="1.8" opacity="0.4"/>')
-    # marcas de las 8 rolas, la 5ª (EPIFANÍA) encendida: es el pico del disco
-    for i in range(8):
-        cx = W * 0.10 + (W * 0.80) * (i + 0.5) / 8.0
-        col = LILA if i == 4 else VIOLETA
-        op = '1' if i == 4 else '0.5'
+    # marcas de las 7 rolas, la 3ª (FULGOR) encendida: es el pico del disco.
+    # Era la 5ª (EPIFANÍA) hasta que esa se sacó del set — al cambiar el número
+    # de rolas hay que mover ESTA marca Y la regla nth-child del index.html,
+    # si no se enciende el renglón equivocado.
+    for i in range(7):
+        cx = W * 0.10 + (W * 0.80) * (i + 0.5) / 7.0
+        col = LILA if i == 2 else VIOLETA
+        op = '1' if i == 2 else '0.5'
         p.append(f'<line x1="{cx:.1f}" y1="{W*0.875:.0f}" x2="{cx:.1f}" '
                  f'y2="{W*0.899:.0f}" stroke="{col}" stroke-width="2.4" opacity="{op}"/>')
     p.append('</svg>')
