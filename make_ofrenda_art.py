@@ -138,52 +138,153 @@ def svg():
 
 
 def svg_aurora(w=240):
-    """Cortina auroral. La forma no es inventada: las auroras se ven como
-    cortinas verticales porque las partículas del sol bajan siguiendo las
-    líneas del campo magnético, y esas líneas son casi verticales cerca de los
-    polos. Por eso son rayos de arriba a abajo y no manchas."""
+    """Cortina auroral.
+
+    ⚠️ LA v1 SALIÓ MAL y vale la pena dejar por qué. Eran 120 líneas verticales
+    a espaciado PAREJO con una ondulación senoidal: la interferencia entre ellas
+    produjo MOIRÉ y leía como arte con hilos o un espirógrafo, no como cielo.
+    Ese es el defecto clásico de lo procedural — la regularidad se ve.
+
+    La v2 cambia el enfoque completo: en vez de muchas rayas, se dibujan POCAS
+    cortinas como FORMAS RELLENAS con degradado, con espaciado IRREGULAR. Y se
+    respeta cómo se ve una aurora de verdad: no llena el cielo de rayas
+    verticales — es una BANDA que serpentea de horizonte a horizonte, con el
+    borde de ABAJO brillante (ahí es donde las partículas chocan más denso, a
+    unos 100 km) y difuminándose hacia arriba.
+    """
+    rng = np.random.default_rng(9)
     p = [f'<svg viewBox="0 0 {w} {w}" xmlns="http://www.w3.org/2000/svg">',
-         f'<rect width="{w}" height="{w}" fill="{CENIZA}"/>',
-         '<defs><linearGradient id="aucur" x1="0" y1="0" x2="0" y2="1">'
+         '<defs>',
+         '<linearGradient id="ausky" x1="0" y1="0" x2="0" y2="1">'
+         '<stop offset="0%" stop-color="#0A0A0B"/>'
+         '<stop offset="70%" stop-color="#15171A"/>'
+         '<stop offset="100%" stop-color="#0C0D0E"/></linearGradient>',
+         # el degradado de la cortina: brillante abajo, se deshace arriba
+         '<linearGradient id="aucur" x1="0" y1="0" x2="0" y2="1">'
          f'<stop offset="0%" stop-color="{AURORA}" stop-opacity="0"/>'
-         f'<stop offset="38%" stop-color="{AURORA}" stop-opacity="0.85"/>'
-         f'<stop offset="100%" stop-color="{AURORA}" stop-opacity="0.05"/>'
-         '</linearGradient></defs>']
-    rng = np.random.default_rng(5)
-    # cada rayo es una línea vertical con una ondulación suave: la cortina
-    for i in range(120):
-        x0 = w * 0.10 + (w * 0.80) * i / 119.0
-        amp = 9.0 + 7.0 * math.sin(i * 0.21)
-        fase = i * 0.17
-        pts = []
-        for k in range(11):
-            t = k / 10.0
-            y = w * 0.12 + t * w * 0.62
-            x = x0 + amp * math.sin(fase + t * 2.4)
-            pts.append(f'{x:.1f},{y:.1f}')
-        p.append(f'<polyline points="{" ".join(pts)}" fill="none" '
-                 f'stroke="url(#aucur)" stroke-width="{1.1+0.9*rng.random():.2f}"/>')
-    # el suelo, para que la cortina cuelgue de algo
-    p.append(f'<line x1="{w*0.08:.0f}" y1="{w*0.82:.0f}" x2="{w*0.92:.0f}" '
-             f'y2="{w*0.82:.0f}" stroke="{HUESO}" stroke-width="1" opacity="0.35"/>')
+         f'<stop offset="55%" stop-color="{AURORA}" stop-opacity="0.42"/>'
+         f'<stop offset="88%" stop-color="#B7FFE4" stop-opacity="0.92"/>'
+         f'<stop offset="100%" stop-color="{AURORA}" stop-opacity="0.30"/>'
+         '</linearGradient>',
+         '<radialGradient id="auglow" cx="50%" cy="62%" r="52%">'
+         f'<stop offset="0%" stop-color="{AURORA}" stop-opacity="0.30"/>'
+         f'<stop offset="100%" stop-color="{AURORA}" stop-opacity="0"/>'
+         '</radialGradient>',
+         '</defs>',
+         f'<rect width="{w}" height="{w}" fill="url(#ausky)"/>']
+
+    # estrellas: pocas y chiquitas, sólo para que el cielo sea cielo
+    for _ in range(46):
+        sx, sy = rng.uniform(0, w), rng.uniform(0, w * 0.72)
+        p.append(f'<circle cx="{sx:.1f}" cy="{sy:.1f}" r="{rng.uniform(0.3,0.85):.2f}" '
+                 f'fill="{HUESO}" opacity="{rng.uniform(0.18,0.62):.2f}"/>')
+
+    p.append(f'<ellipse cx="{w*0.5:.0f}" cy="{w*0.55:.0f}" rx="{w*0.55:.0f}" '
+             f'ry="{w*0.30:.0f}" fill="url(#auglow)"/>')
+
+    # TRES cortinas a distinta profundidad. Cada una es un polígono relleno
+    # entre dos curvas: la de abajo serpentea y la de arriba va más alto y
+    # más suave, que es como cuelga la cortina.
+    for c, (yb, alto, amp, fase, op) in enumerate(
+            [(0.58, 0.30, 0.055, 0.4, 0.55),
+             (0.64, 0.42, 0.075, 2.1, 0.85),
+             (0.70, 0.26, 0.045, 4.0, 0.45)]):
+        bajo, arriba = [], []
+        N = 60
+        for k in range(N + 1):
+            t = k / N
+            x = w * (0.02 + 0.96 * t)
+            ondul = math.sin(fase + t * 5.2) * amp + math.sin(fase + t * 11.0) * amp * 0.30
+            y0 = w * (yb + ondul)
+            bajo.append((x, y0))
+            arriba.append((x, y0 - w * alto * (0.72 + 0.28 * math.sin(fase + t * 3.1))))
+        pts = ' '.join(f'{x:.1f},{y:.1f}' for x, y in arriba) + ' ' + \
+              ' '.join(f'{x:.1f},{y:.1f}' for x, y in reversed(bajo))
+        p.append(f'<polygon points="{pts}" fill="url(#aucur)" opacity="{op}"/>')
+
+        # rayos DENTRO de la cortina, a espaciado IRREGULAR — esto es lo que
+        # mata el moiré: si el espaciado es parejo, vuelve el patrón óptico
+        t = 0.02
+        while t < 0.98:
+            i = int(t * N)
+            x, y0 = bajo[i]
+            _, y1 = arriba[i]
+            p.append(f'<line x1="{x:.1f}" y1="{y0:.1f}" x2="{x:.1f}" y2="{y1:.1f}" '
+                     f'stroke="{AURORA}" stroke-width="{rng.uniform(0.5,1.7):.2f}" '
+                     f'opacity="{rng.uniform(0.05,0.26)*op:.3f}"/>')
+            t += rng.uniform(0.016, 0.055)          # ← irregular a propósito
+
+    # horizonte: silueta de montañas, para que la aurora tenga sobre qué colgar
+    hz = w * 0.86
+    mts = [f'{0},{w}', f'{0},{hz+w*0.03:.1f}']
+    x = 0.0
+    while x < w:
+        x += rng.uniform(w * 0.06, w * 0.16)
+        mts.append(f'{min(x,w):.1f},{hz - rng.uniform(0, w*0.055):.1f}')
+    mts += [f'{w},{w}']
+    p.append(f'<polygon points="{" ".join(mts)}" fill="#08090A"/>')
     p.append('</svg>')
     return ''.join(p)
 
 
 def svg_murmuracion(w=240):
-    """La bandada sola, apretada, sin destello: aquí el verde no toca."""
+    """La bandada sola. Aquí el verde no toca.
+
+    ⚠️ LA v1 LEÍA COMO MANCHA — a tamaño de tarjeta parecía huella de dedo. Dos
+    causas, las dos de fondo:
+      · la densidad era un óvalo centrado, así que la bandada no tenía SILUETA,
+        sólo era una nube redonda
+      · todas las marcas medían casi igual, y sin variación de tamaño no hay
+        profundidad: se ve textura plana en vez de miles de cuerpos en el aire
+
+    La v2 le da forma de GOTA que se arrastra — denso en la cabeza y
+    deshilachándose en la cola, que es como se ven de verdad: la bandada se
+    comprime donde va y deja estela por donde vino. Y el tamaño de cada marca
+    cambia mucho, para que unos pájaros se lean cerca y otros lejos.
+    """
+    rng = np.random.default_rng(31)
     p = [f'<svg viewBox="0 0 {w} {w}" xmlns="http://www.w3.org/2000/svg">',
-         f'<rect width="{w}" height="{w}" fill="{HUESO}"/>',
-         f'<g fill="{CENIZA}">']
-    esc = w / float(W)
-    for x, y, a, d in cuerpos(n=1500, seed=23):
-        L = (2.6 + 4.0 * d) * esc * 2.4
-        p.append(f'<g transform="translate({x*esc:.1f},{y*esc:.1f}) rotate({a:.0f})">'
-                 f'<ellipse rx="{L:.2f}" ry="{max(0.45, L*0.20):.2f}" '
-                 f'opacity="{0.28+0.60*d:.2f}"/></g>')
+         f'<rect width="{w}" height="{w}" fill="{HUESO}"/>']
+
+    # la silueta: cabeza densa arriba-derecha, cola que se arrastra abajo-izq
+    def dens(x, y):
+        hx, hy = w * 0.66, w * 0.40                 # cabeza de la gota
+        tx, ty = w * 0.20, w * 0.66                 # punta de la cola
+        vx, vy = hx - tx, hy - ty
+        L2 = vx * vx + vy * vy
+        t = max(0.0, min(1.0, ((x - tx) * vx + (y - ty) * vy) / L2))
+        px, py = tx + vx * t, ty + vy * t
+        d = math.hypot(x - px, y - py)
+        ancho = w * (0.045 + 0.115 * t ** 1.5)      # angosta atrás, ancha adelante
+        return math.exp(-(d / ancho) ** 2) * (0.30 + 0.70 * t)
+
+    cuerpos_ = []
+    intentos = 0
+    while len(cuerpos_) < 1250 and intentos < 90000:
+        intentos += 1
+        x, y = rng.uniform(0, w), rng.uniform(0, w * 0.84)
+        if rng.random() > dens(x, y):
+            continue
+        u, v = campo(x / (w / W), y / (w / W))
+        cuerpos_.append((x, y, math.degrees(math.atan2(v, u)), dens(x, y)))
+
+    p.append(f'<g fill="{CENIZA}">')
+    for x, y, a, d in cuerpos_:
+        # rango de tamaño ANCHO = profundidad. Unos cerca, otros lejos.
+        L = (0.9 + 3.4 * d) * (0.4 + 1.9 * float(rng.random()))
+        p.append(f'<g transform="translate({x:.1f},{y:.1f}) rotate({a:.0f})">'
+                 f'<ellipse rx="{L:.2f}" ry="{max(0.34, L*0.22):.2f}" '
+                 f'opacity="{0.22+0.66*d:.2f}"/></g>')
     p.append('</g>')
-    p.append(f'<line x1="{w*0.10:.0f}" y1="{w*0.845:.0f}" x2="{w*0.90:.0f}" '
-             f'y2="{w*0.845:.0f}" stroke="{CENIZA}" stroke-width="1.2" opacity="0.45"/>')
+
+    # tres rezagados sueltos: la bandada no tiene borde limpio
+    for _ in range(3):
+        x, y = rng.uniform(w * 0.06, w * 0.30), rng.uniform(w * 0.16, w * 0.34)
+        p.append(f'<g transform="translate({x:.1f},{y:.1f}) rotate({rng.uniform(-25,10):.0f})">'
+                 f'<ellipse rx="2.6" ry="0.7" fill="{CENIZA}" opacity="0.5"/></g>')
+
+    p.append(f'<line x1="{w*0.10:.0f}" y1="{w*0.86:.0f}" x2="{w*0.90:.0f}" '
+             f'y2="{w*0.86:.0f}" stroke="{CENIZA}" stroke-width="1.2" opacity="0.4"/>')
     p.append('</svg>')
     return ''.join(p)
 
