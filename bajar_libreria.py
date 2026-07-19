@@ -85,7 +85,7 @@ def libre_gb():
     return s.f_bavail * s.f_frsize / (1024**3)
 
 if __name__ == '__main__':
-    reserva = 0.6                                   # GB que NO se tocan (para renderizar)
+    reserva = 3.0                                   # GB que NO se tocan (para renderizar)
     presupuesto = max(0.0, libre_gb() - reserva)
     print(f'Libre {libre_gb():.2f} GB · reservo {reserva} GB para renderizar '
           f'· presupuesto {presupuesto:.2f} GB\n', flush=True)
@@ -99,9 +99,9 @@ if __name__ == '__main__':
         print(f'  {k:10s} {len(v):5d} {sum(s for _,s in v)/1048576:7.1f}  {desc}')
 
     # reparto: la percusión y los melódicos primero, que es lo que urge
-    ORDEN = ['perc-mano','melodicos','teclas','cuerdas','graves','metal','aire']
-    PESO  = {'perc-mano':.30,'melodicos':.24,'teclas':.16,'cuerdas':.12,
-             'graves':.08,'metal':.06,'aire':.04}
+    ORDEN = ['melodicos','perc-mano','teclas','cuerdas','graves','metal','aire']
+    # Con disco de sobra ya no hay que racionar: se pide todo lo útil.
+    PESO  = {k: 1.0 for k in FAMILIAS}
     print(f'\nBajando…', flush=True)
     tot_n = 0; tot_mb = 0.0
     for k in ORDEN:

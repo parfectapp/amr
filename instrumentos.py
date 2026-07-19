@@ -105,10 +105,34 @@ def _carga(ruta):
 
 MAX_ESTIRA = 4        # semitonos. Más allá el timbre se deforma y vuelve a sonar sintético.
 
-def nota(inst, midi, dur=None, rng=None, gain=1.0):
-    """Devuelve la nota tocada por el instrumento REAL. dur en segundos (None = completa)."""
+def nota(inst, midi, dur=None, rng=None, gain=1.0, vel=1.0, largo_var=0.0):
+    """Nota tocada por el instrumento REAL.
+
+    ⭐ vel (0..1) NO es sólo volumen — también CIERRA EL FILTRO.
+    Un instrumento real tocado suave no suena igual pero más bajito: suena más
+    OSCURO, porque se excita menos el cuerpo y salen menos armónicos. Es la
+    técnica que se ve en el desglose de "Marea" de Fred again: mapear velocity
+    al cutoff, y luego darle una velocity distinta a CADA nota — de ahí se
+    concluye que la tocó a mano.
+
+    Y encaja con lo medido en la literatura: el tiempo de ataque PERCIBIDO se
+    mueve entre 23 y 83 ms según la envolvente (Frontiers 2018), o sea que
+    variando timbre y envolvente corres la sensación de timing decenas de ms
+    SIN sacar una sola nota de la rejilla — que es justo lo que los estudios
+    de humanización piden (cuantizado gana; el jitter aleatorio pierde).
+
+    largo_var (0..1): variación aleatoria del LARGO por golpe. En el mismo
+    desglose: los hats varían en largo Y afinación, no sólo en volumen."""
     M = mapa().get(inst)
-    if not M: return np.zeros(int((dur or 0.3)*SR), np.float32)
+    if not M:
+        # ⚠️ ANTES devolvía silencio. Eso es peor que fallar: André borró la
+        # librería para liberar disco y el motor siguió "tocando" notas mudas
+        # sin avisar. Un hueco tiene que TRONAR, no disimularse.
+        disponibles = ', '.join(sorted(mapa())) or 'NINGUNO'
+        raise RuntimeError(
+            f'INSTRUMENTO NO DISPONIBLE: "{inst}".\n'
+            f'  Hay: {disponibles}\n'
+            f'  ¿Falta la librería? Corre: python3 bajar_libreria.py')
     rng = rng or np.random
     disp = sorted(M)
     cerca = min(disp, key=lambda n: abs(n - midi))
@@ -124,6 +148,17 @@ def nota(inst, midi, dur=None, rng=None, gain=1.0):
         if n > 8:
             idx = np.minimum(len(x)-1, (np.arange(n)*r)).astype(np.int32)
             x = x[idx]
+    # ---- velocity -> cutoff: suave = oscuro, fuerte = brillante
+    v = float(np.clip(vel, 0.05, 1.0))
+    if v < 0.985:
+        from dream_core import lp
+        # de ~1.2 kHz en pianissimo a ~18 kHz a fondo, curva perceptual
+        corte = 1200.0 * (15.0 ** v)
+        if corte < 16000.0:
+            x = lp(x, float(corte), 2)
+        x = x * (0.30 + 0.70 * v)          # y el volumen, claro
+    if dur is not None and largo_var > 0 and rng is not None:
+        dur = dur * (1.0 - largo_var * float(rng.random()))
     if dur is not None:
         n = int(dur*SR)
         if len(x) > n:
