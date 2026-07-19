@@ -375,6 +375,13 @@ body.hasplayer{padding-bottom:70px}
   background:rgba(20,18,16,.8);color:var(--bone);display:grid;place-items:center;font-size:20px;opacity:0;transition:opacity .3s,background .3s;pointer-events:none}
 .vdiscwrap:hover .vgo{opacity:1}
 .vdisc.spinning{animation:spin 2.6s linear infinite}
+/* Los surcos dejan de ser un repeating-radial-gradient (el mismo anillo cada
+   4.8px, igual en todos los discos) y pasan a dibujarse desde la ENVOLVENTE
+   REAL del audio: donde el disco suena fuerte el surco se ve ancho y claro,
+   donde baja se cierra. Es lo que se ve en un vinilo de verdad al sesgarlo
+   contra la luz — se distinguen los pasajes fuertes de los callados. */
+.vgrooves{position:absolute;inset:0;width:100%;height:100%;border-radius:50%;pointer-events:none;z-index:1}
+.vdisc.tiene-surcos{background:#100e0d}
 .vprod .vgo.on,.vdiscwrap:has(.spinning) .vgo{opacity:1;background:var(--amber)}
 .vmeta{margin-top:28px;width:100%}
 .vkick{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.2em;color:var(--amber);text-transform:uppercase}
@@ -426,9 +433,15 @@ body.hasplayer{padding-bottom:70px}
 
 /* ---- NUEVO LANZAMIENTO — noche azul, vivo ---- */
 .nr{position:relative;background:#0b1524;color:var(--bone);overflow:hidden;border-top:1px solid rgba(46,111,176,.35);border-bottom:1px solid rgba(20,18,16,.12)}
-.nr::before{content:"";position:absolute;top:-45%;right:-12%;width:min(950px,90vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(46,111,176,.45),transparent 65%);animation:nrpulse 6s ease-in-out infinite;pointer-events:none}
-.nr::after{content:"";position:absolute;bottom:-55%;left:-18%;width:min(850px,80vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(91,155,213,.2),transparent 65%);animation:nrpulse 8s ease-in-out infinite reverse;pointer-events:none}
-@keyframes nrpulse{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:1;transform:scale(1.07)}}
+/* ⚠️ Aquí vivían DOS MANCHAS radial-gradient que pulsaban, iguales en los
+   cuatro paneles y sólo cambiando de color. Eso no es diseño: es el glow
+   genérico de siempre, y hacía que MONUMENTS, DELIRIO, GUERRERO y JACARANDA
+   se vieran idénticos.
+   Las reemplaza un lienzo por panel (.nrbg) que se dibuja con LOS DATOS DEL
+   PROPIO DISCO — su onda real medida del audio, más un motivo geométrico
+   sacado de su concepto. Cada panel es distinto porque cada disco es distinto,
+   no porque le cambié el tono. */
+.nrbg{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
 .nrin{position:relative;z-index:2;max-width:1300px;margin:0 auto;padding:clamp(70px,10vw,130px) clamp(20px,4vw,48px);display:grid;grid-template-columns:1.15fr minmax(280px,460px);gap:clamp(34px,6vw,90px);align-items:center}
 .nrlive{display:inline-flex;align-items:center;gap:11px;font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.24em;color:#5B9BD5;text-transform:uppercase}
 .nrlive i{width:9px;height:9px;border-radius:50%;background:#5B9BD5;animation:livedot 1.7s ease-in-out infinite}
@@ -1052,6 +1065,9 @@ if(window.AMR_TUL){
     {v:window.AMR_JACARANDA,   c:'#463A73', lc:'#9D8BD6'},
     {v:window.AMR_AFELIO,  c:'#2B3A4A', lc:'#C9D6E3'}
   ].filter(function(r){ return !!r.v; });
+  // los colores de disco viven aquí; el motor de fondos y surcos los reusa en
+  // vez de tener su propia tabla que se desincronice
+  window.__RECCOL = RECS.map(function(r){ return {id:r.v.id, c:r.c, lc:r.lc}; });
   /* --- MIXING ARMÓNICO: tonalidad → rueda de Camelot --- */
   var CAMELOT={'A MIN':'8A','A MAJ':'11B','C MAJ':'8B','E MIN':'9A','D MIN':'7A','G MAJ':'9B','F MAJ':'7B','B MIN':'10A','G MIN':'6A','E MAJ':'12B','D MAJ':'10B','F MIN':'4A'};
   var KEYFALL={'amr-monuments-side':'A MIN','amr-set-the-set':'A MIN','amr-tulum':'A MIN','amr-guerrero':'A MIN'};
@@ -2248,6 +2264,162 @@ VINYLS.forEach(function(p,j){
     });
   });
 });
+
+/* ---- IDENTIDAD POR DISCO: fondo y surcos dibujados con SUS PROPIOS DATOS ----
+   Antes los cuatro paneles eran el mismo par de manchas borrosas con distinto
+   tono, y los cuatro vinilos el mismo gradiente de anillos. Se veían iguales
+   porque ERAN iguales.
+   Aquí cada disco se dibuja con lo suyo: la onda que ya se horneó del audio
+   real (window.AMR_WF, 3000 columnas de graves/medios/agudos por disco) y un
+   motivo geométrico sacado de lo que ES ese disco. Nada de esto es decoración
+   genérica — si cambia la música, cambia el dibujo. */
+(function(){
+  if(!window.AMR_WF) return;
+  function bytes(b64){ var s=atob(b64), u=new Uint8Array(s.length); for(var i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
+  function onda(rec){ var w = window.AMR_WF[rec.file]; if(!w) return null;
+    return { lo:bytes(w.lo), mi:bytes(w.mi), hi:bytes(w.hi) }; }
+  function lienzo(host, cls){
+    var c = document.createElement('canvas'); c.className = cls;
+    host.appendChild(c);
+    var r = host.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio||1);
+    c.width = Math.max(2, Math.round(r.width*d)); c.height = Math.max(2, Math.round(r.height*d));
+    return c;
+  }
+  function hex(h, a){
+    var n = parseInt(h.slice(1),16);
+    return 'rgba('+((n>>16)&255)+','+((n>>8)&255)+','+(n&255)+','+a+')';
+  }
+
+  /* --- los motivos. Uno por disco, y cada uno dice algo del disco --- */
+  var MOTIVO = {
+    // MONUMENTS se prensó "de puras formas de onda": losas verticales, como
+    // las piedras paradas que le dan nombre
+    'amr-monuments-side': function(c,w,h,col,W){
+      var n = 26;
+      for(var i=0;i<n;i++){
+        var x = w*0.04 + (w*0.92)*i/(n-1);
+        var e = W ? W.lo[Math.floor(i/(n-1)*(W.lo.length-1))]/255 : 0.5;
+        var alto = h*(0.16 + 0.62*e), an = w*0.012;
+        c.fillStyle = hex(col, 0.05 + 0.07*e);
+        c.fillRect(x-an/2, h-alto, an, alto);
+      }
+    },
+    // DELIRIO es "in sync del primer compás al último": la rejilla de compases,
+    // marcada más fuerte cada 4, que es como se lee una rejilla de verdad
+    'amr-tulum': function(c,w,h,col){
+      for(var i=0;i<=96;i++){
+        var x = w*0.02 + (w*0.96)*i/96;
+        var fuerte = (i%4===0);
+        c.strokeStyle = hex(col, fuerte ? 0.13 : 0.05);
+        c.lineWidth = fuerte ? 1.6 : 1;
+        c.beginPath(); c.moveTo(x, h*(fuerte?0.06:0.14)); c.lineTo(x, h*(fuerte?0.94:0.86)); c.stroke();
+      }
+    },
+    // GUERRERO se escribió para el desierto: horizontes de duna, uno tras otro
+    'amr-guerrero': function(c,w,h,col){
+      for(var k=0;k<7;k++){
+        var y0 = h*(0.42 + 0.085*k), amp = h*(0.055 - 0.005*k);
+        c.strokeStyle = hex(col, 0.12 - 0.012*k); c.lineWidth = 1.4;
+        c.beginPath();
+        for(var x=0;x<=w;x+=6){
+          var t = x/w;
+          var y = y0 + Math.sin(t*4.1 + k*1.7)*amp + Math.sin(t*9.3 + k)*amp*0.35;
+          x===0 ? c.moveTo(x,y) : c.lineTo(x,y);
+        }
+        c.stroke();
+      }
+    },
+    // JACARANDA: lo que cae. Mismos pétalos que la portada, sembrados aquí
+    'amr-jacaranda': function(c,w,h,col,W,rnd){
+      for(var i=0;i<260;i++){
+        var x = rnd()*w, y = rnd()*h;
+        var d = Math.exp(-Math.pow((y/h - 0.12)/0.55, 2));
+        var r = (2.2 + 5.5*d) * (0.5 + rnd());
+        c.save(); c.translate(x,y); c.rotate(rnd()*Math.PI);
+        c.fillStyle = hex(col, 0.05 + 0.12*d);
+        c.beginPath(); c.ellipse(0,0,r,r*0.62,0,0,6.284); c.fill();
+        c.restore();
+      }
+    }
+  };
+
+  /* --- el fondo: motivo + la onda real del disco, grande y tenue --- */
+  function fondo(panel, rec, col){
+    var c = lienzo(panel, 'nrbg'), x = c.getContext('2d');
+    var w = c.width, h = c.height, W = onda(rec);
+    var semilla = 9; function rnd(){ semilla = (semilla*1103515245+12345)%2147483648; return semilla/2147483648; }
+    var m = MOTIVO[rec.id]; if(m) m(x, w, h, col, W, rnd);
+    if(!W) return;
+    // la onda del disco, espejada al centro: graves llenos, agudos encima
+    var N = 460, base = h*0.60, alto = h*0.30;
+    ['lo','mi'].forEach(function(banda, k){
+      x.beginPath();
+      for(var i=0;i<=N;i++){
+        var v = W[banda][Math.floor(i/N*(W[banda].length-1))]/255;
+        var y = base - v*alto*(k?0.55:1);
+        i===0 ? x.moveTo(0,y) : x.lineTo(i/N*w, y);
+      }
+      for(var j=N;j>=0;j--){
+        var v2 = W[banda][Math.floor(j/N*(W[banda].length-1))]/255;
+        x.lineTo(j/N*w, base + v2*alto*(k?0.55:1));
+      }
+      x.closePath(); x.fillStyle = hex(col, k ? 0.05 : 0.075); x.fill();
+    });
+  }
+
+  /* --- los surcos: la envolvente real, en espiral. Donde suena fuerte el
+         surco se abre; donde baja, se cierra. Como un vinilo al sesgo. --- */
+  function surcos(disco, rec, col){
+    var host = disco.querySelector('.vdisc'); if(!host) return;
+    var W = onda(rec); if(!W) return;
+    disco.querySelectorAll('.vgrooves').forEach(function(n){ n.remove(); });
+    var c = lienzo(host, 'vgrooves'), x = c.getContext('2d');
+    var d = c.width, cx = d/2, cy = d/2, R0 = d*0.487, R1 = d*0.232;
+    var vueltas = 42, pasos = vueltas*150;
+    host.classList.add('tiene-surcos');
+    x.lineCap = 'butt';
+    for(var i=0;i<pasos;i++){
+      var t = i/pasos, t2 = (i+1)/pasos;
+      var e = W.lo[Math.floor(t*(W.lo.length-1))]/255;
+      var a = (e*0.55 + 0.10);
+      var th = t*vueltas*6.283185, th2 = t2*vueltas*6.283185;
+      var r = R0 + (R1-R0)*t, r2 = R0 + (R1-R0)*t2;
+      x.strokeStyle = hex(col, 0.05 + 0.30*a);
+      x.lineWidth = 0.5 + 1.5*e;
+      x.beginPath();
+      x.moveTo(cx + Math.cos(th)*r, cy + Math.sin(th)*r);
+      x.lineTo(cx + Math.cos(th2)*r2, cy + Math.sin(th2)*r2);
+      x.stroke();
+    }
+  }
+
+  var COLOR = {};
+  (window.__RECCOL||[]).forEach(function(r){ COLOR[r.id] = r.lc; });
+  function pinta(){
+    document.querySelectorAll('.nr').forEach(function(panel){
+      if(panel.querySelector('.nrbg')) return;
+      var disco = panel.querySelector('.vdisc'); if(!disco) return;
+      var id = (disco.id||'').replace('vdisc-','');
+      var rec = VINYLS[+id]; if(!rec) return;
+      var col = COLOR[rec.id] || '#9D8BD6';
+      fondo(panel, rec, col);
+      surcos(panel, rec, col);
+    });
+    document.querySelectorAll('.vprod').forEach(function(pr){
+      var disco = pr.querySelector('.vdisc'); if(!disco || pr.querySelector('.vgrooves')) return;
+      var rec = VINYLS[+(disco.id||'').replace('vdisc-','')]; if(!rec) return;
+      surcos(pr, rec, COLOR[rec.id] || '#C96F2B');
+    });
+  }
+  pinta();
+  var redib; addEventListener('resize', function(){
+    clearTimeout(redib);
+    redib = setTimeout(function(){
+      document.querySelectorAll('.nrbg,.vgrooves').forEach(function(n){ n.remove(); });
+      pinta();
+    }, 260);
+  });
+})();
 
 /* ---- player ---- */
 var player = document.getElementById('player'), playBtn = document.getElementById('playBtn');
