@@ -19,8 +19,23 @@ MCK = os.path.join(HERE, '_samples', 'MckSamplePacks-main')
 AMB = os.path.join(HERE, '_samples', 'sonicpi')
 _cache = {}
 
+# ⛔ LISTA NEGRA — samples con etiqueta CC0 INVÁLIDA. No usar: André VENDE la música.
+# Sonic Pi trae loop_amen y loop_amen_full etiquetados CC0 en Freesound, pero son
+# el Amen break: un fragmento de "Amen, Brother" de The Winstons (1969), grabación
+# con copyright vigente. Quien la subió no tenía derecho a dedicarla al dominio
+# público, así que esa etiqueta no vale. Los 26 samples de tabla de Sonic Pi tienen
+# el enlace de origen marcado "(link deprecated)" — su cadena de título ya no se
+# puede verificar, así que también quedan fuera por precaución.
+BLOQUEADOS = ('loop_amen', 'loop_amen_full', 'tabla_')
+
 def smp(path, gain=1.0, norm=True):
     """carga un sample real (cacheado, mono, sin silencio inicial, normalizado)."""
+    base = os.path.basename(path)
+    for b in BLOQUEADOS:
+        if base.startswith(b):
+            raise ValueError(
+                f'SAMPLE BLOQUEADO: {base}\n'
+                f'Su etiqueta CC0 no es válida y esta música SE VENDE. Ver BLOQUEADOS en kit.py.')
     if path not in _cache:
         x = ffdecode(path, mono=True).astype(np.float32)
         nz = np.nonzero(np.abs(x) > 2e-4)[0]
