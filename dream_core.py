@@ -130,10 +130,27 @@ def widen(x, amount=0.5, lo=220.0, hi=11000.0, seed=7):
     side = bp(d, lo, hi) * (amount * 0.5)
     return np.stack([x + side, x - side])
 
-def sub_mono(LR, fc=120.0):
-    """el low end SIEMPRE al centro: highpass al canal lateral y recombina."""
+def sub_mono(LR, fc=120.0, orden=1):
+    """EQ ELÍPTICO sobre el canal lateral — así lo hacen las salas de corte.
+
+    ⚠️ CORREGIDO (jul 2026). Antes usaba hp(s, fc, 4) = 24 dB/oct, que es
+    justamente lo que Ian Stewart (Flotown Mastering) clasifica como problemático:
+    "2do orden y más causa volteo de imagen alrededor del corte y desplazamiento
+    de fase sustancial". El Neumann EE-70/EE-77 y el Maselec MTC-2 —el estándar
+    de corte de vinilo durante años— son **1er orden, 6 dB/oct, 90° máximo**.
+
+    Y el "todo mono debajo de 150 Hz" está DISPUTADO por los ingenieros más
+    veteranos: Scott Hull (Masterdisk) lo llama "patentemente falso"; Jett Galindo
+    dice que "poner el corte en 100 Hz ya lo consideran excesivo muchos cortadores";
+    Bob Macc dice que monoizar agresivamente debajo de 300 Hz es exagerado.
+    Rashad Becker, tras miles de cortes, encontró quizá TRES casos que lo
+    necesitaran. Por eso esto es una INCLINACIÓN suave, no un muro."""
     m = 0.5 * (LR[0] + LR[1]); s = 0.5 * (LR[0] - LR[1])
-    s = hp(s, fc, 4)
+    n = len(s); S = np.fft.rfft(s.astype(np.float64))
+    f = np.fft.rfftfreq(n, 1.0 / SR)
+    r = f / max(1e-9, fc)
+    H = (r ** orden) / np.sqrt(1.0 + r ** (2 * orden))    # 1er orden = 6 dB/oct
+    s = np.fft.irfft(S * H, n).astype(np.float32)
     return np.stack([m + s, m - s])
 
 def pingpong(x, beat_s, fb=0.42, mix=0.22, taps=7, damp=4200.0, seed=0):
