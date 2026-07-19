@@ -126,103 +126,73 @@ def svg():
     # el horizonte: una sola línea, para que la bandada tenga suelo
     p.append(f'<line x1="{W*0.10:.0f}" y1="{W*0.845:.0f}" x2="{W*0.90:.0f}" '
              f'y2="{W*0.845:.0f}" stroke="{CENIZA}" stroke-width="1.6" opacity="0.5"/>')
-    # marcas de los 8: ocho tramos sobre el horizonte, el 5º en verde (AURORA)
-    for i in range(8):
-        cx = W * 0.10 + (W * 0.80) * (i + 0.5) / 8.0
-        col = AURORA if i == 4 else CENIZA
-        op = '1' if i == 4 else '0.55'
+    # marcas de las 7 rolas, el 3º en verde: BIOLUMINISCENCIA.
+    # Antes el verde era AURORA, pero esa se sacó del set (sonaba a Avicii). Y
+    # el destello queda MEJOR justificado aquí: bioluminiscencia es literalmente
+    # el mar prendiéndose en verde cuando lo tocas — le das algo y te contesta,
+    # que es la idea entera del disco.
+    for i in range(7):
+        cx = W * 0.10 + (W * 0.80) * (i + 0.5) / 7.0
+        col = AURORA if i == 2 else CENIZA
+        op = '1' if i == 2 else '0.55'
         p.append(f'<line x1="{cx:.1f}" y1="{W*0.845:.0f}" x2="{cx:.1f}" '
                  f'y2="{W*0.869:.0f}" stroke="{col}" stroke-width="2.4" opacity="{op}"/>')
     p.append('</svg>')
     return ''.join(p)
 
 
-def svg_aurora(w=240):
-    """Cortina auroral.
+def svg_biolum(w=240):
+    """BIOLUMINISCENCIA — el mar que se enciende donde lo tocas.
 
-    ⚠️ LA v1 SALIÓ MAL y vale la pena dejar por qué. Eran 120 líneas verticales
-    a espaciado PAREJO con una ondulación senoidal: la interferencia entre ellas
-    produjo MOIRÉ y leía como arte con hilos o un espirógrafo, no como cielo.
-    Ese es el defecto clásico de lo procedural — la regularidad se ve.
-
-    La v2 cambia el enfoque completo: en vez de muchas rayas, se dibujan POCAS
-    cortinas como FORMAS RELLENAS con degradado, con espaciado IRREGULAR. Y se
-    respeta cómo se ve una aurora de verdad: no llena el cielo de rayas
-    verticales — es una BANDA que serpentea de horizonte a horizonte, con el
-    borde de ABAJO brillante (ahí es donde las partículas chocan más denso, a
-    unos 100 km) y difuminándose hacia arriba.
+    Reemplaza al dibujo de AURORA, que se fue con la rola. Y el cambio le queda
+    mejor al disco: la bioluminiscencia ES la respuesta — el plancton no brilla
+    solo, brilla cuando algo lo mueve. Le das algo al mar y te contesta con luz.
+    Por eso el verde aquí va en ESTELAS, no en manchas: marca por dónde pasó
+    algo. Agua casi negra, y la luz sólo donde hubo movimiento.
     """
-    rng = np.random.default_rng(9)
+    rng = np.random.default_rng(17)
     p = [f'<svg viewBox="0 0 {w} {w}" xmlns="http://www.w3.org/2000/svg">',
          '<defs>',
-         '<linearGradient id="ausky" x1="0" y1="0" x2="0" y2="1">'
-         '<stop offset="0%" stop-color="#0A0A0B"/>'
-         '<stop offset="70%" stop-color="#15171A"/>'
-         '<stop offset="100%" stop-color="#0C0D0E"/></linearGradient>',
-         # el degradado de la cortina: brillante abajo, se deshace arriba
-         '<linearGradient id="aucur" x1="0" y1="0" x2="0" y2="1">'
-         f'<stop offset="0%" stop-color="{AURORA}" stop-opacity="0"/>'
-         f'<stop offset="55%" stop-color="{AURORA}" stop-opacity="0.42"/>'
-         f'<stop offset="88%" stop-color="#B7FFE4" stop-opacity="0.92"/>'
-         f'<stop offset="100%" stop-color="{AURORA}" stop-opacity="0.30"/>'
-         '</linearGradient>',
-         '<radialGradient id="auglow" cx="50%" cy="62%" r="52%">'
-         f'<stop offset="0%" stop-color="{AURORA}" stop-opacity="0.30"/>'
+         '<linearGradient id="biagua" x1="0" y1="0" x2="0" y2="1">'
+         '<stop offset="0%" stop-color="#05070A"/>'
+         '<stop offset="55%" stop-color="#0A1016"/>'
+         '<stop offset="100%" stop-color="#04070A"/></linearGradient>',
+         '<radialGradient id="biglow" cx="50%" cy="50%" r="50%">'
+         f'<stop offset="0%" stop-color="{AURORA}" stop-opacity="0.34"/>'
          f'<stop offset="100%" stop-color="{AURORA}" stop-opacity="0"/>'
          '</radialGradient>',
          '</defs>',
-         f'<rect width="{w}" height="{w}" fill="url(#ausky)"/>']
+         f'<rect width="{w}" height="{w}" fill="url(#biagua)"/>']
 
-    # estrellas: pocas y chiquitas, sólo para que el cielo sea cielo
-    for _ in range(46):
-        sx, sy = rng.uniform(0, w), rng.uniform(0, w * 0.72)
-        p.append(f'<circle cx="{sx:.1f}" cy="{sy:.1f}" r="{rng.uniform(0.3,0.85):.2f}" '
-                 f'fill="{HUESO}" opacity="{rng.uniform(0.18,0.62):.2f}"/>')
+    # las estelas: curvas que se encienden fuerte en el centro y se apagan
+    # en las puntas, porque el plancton tarda en prenderse y en apagarse
+    for e in range(7):
+        y0 = w * (0.16 + 0.11 * e) + rng.uniform(-6, 6)
+        amp = rng.uniform(w * 0.03, w * 0.075)
+        fase = rng.uniform(0, 6.3)
+        largo = rng.uniform(0.55, 0.98)
+        x0 = rng.uniform(0, w * (1 - largo))
+        p.append(f'<ellipse cx="{x0+w*largo*0.5:.0f}" cy="{y0:.0f}" '
+                 f'rx="{w*largo*0.42:.0f}" ry="{w*0.07:.0f}" fill="url(#biglow)"/>')
+        N = 44
+        for k in range(N):
+            t0, t1 = k / N, (k + 1) / N
+            def pt(t):
+                x = x0 + w * largo * t
+                y = y0 + amp * math.sin(fase + t * 6.0) + amp * 0.35 * math.sin(fase + t * 14.0)
+                return x, y
+            xa, ya = pt(t0); xb, yb = pt(t1)
+            # brillo tipo campana: máximo a la mitad de la estela
+            br = math.sin(math.pi * ((t0 + t1) / 2)) ** 1.6
+            p.append(f'<line x1="{xa:.1f}" y1="{ya:.1f}" x2="{xb:.1f}" y2="{yb:.1f}" '
+                     f'stroke="#CFFFEC" stroke-width="{0.7+1.9*br:.2f}" '
+                     f'stroke-linecap="round" opacity="{0.10+0.80*br:.2f}"/>')
 
-    p.append(f'<ellipse cx="{w*0.5:.0f}" cy="{w*0.55:.0f}" rx="{w*0.55:.0f}" '
-             f'ry="{w*0.30:.0f}" fill="url(#auglow)"/>')
-
-    # TRES cortinas a distinta profundidad. Cada una es un polígono relleno
-    # entre dos curvas: la de abajo serpentea y la de arriba va más alto y
-    # más suave, que es como cuelga la cortina.
-    for c, (yb, alto, amp, fase, op) in enumerate(
-            [(0.58, 0.30, 0.055, 0.4, 0.55),
-             (0.64, 0.42, 0.075, 2.1, 0.85),
-             (0.70, 0.26, 0.045, 4.0, 0.45)]):
-        bajo, arriba = [], []
-        N = 60
-        for k in range(N + 1):
-            t = k / N
-            x = w * (0.02 + 0.96 * t)
-            ondul = math.sin(fase + t * 5.2) * amp + math.sin(fase + t * 11.0) * amp * 0.30
-            y0 = w * (yb + ondul)
-            bajo.append((x, y0))
-            arriba.append((x, y0 - w * alto * (0.72 + 0.28 * math.sin(fase + t * 3.1))))
-        pts = ' '.join(f'{x:.1f},{y:.1f}' for x, y in arriba) + ' ' + \
-              ' '.join(f'{x:.1f},{y:.1f}' for x, y in reversed(bajo))
-        p.append(f'<polygon points="{pts}" fill="url(#aucur)" opacity="{op}"/>')
-
-        # rayos DENTRO de la cortina, a espaciado IRREGULAR — esto es lo que
-        # mata el moiré: si el espaciado es parejo, vuelve el patrón óptico
-        t = 0.02
-        while t < 0.98:
-            i = int(t * N)
-            x, y0 = bajo[i]
-            _, y1 = arriba[i]
-            p.append(f'<line x1="{x:.1f}" y1="{y0:.1f}" x2="{x:.1f}" y2="{y1:.1f}" '
-                     f'stroke="{AURORA}" stroke-width="{rng.uniform(0.5,1.7):.2f}" '
-                     f'opacity="{rng.uniform(0.05,0.26)*op:.3f}"/>')
-            t += rng.uniform(0.016, 0.055)          # ← irregular a propósito
-
-    # horizonte: silueta de montañas, para que la aurora tenga sobre qué colgar
-    hz = w * 0.86
-    mts = [f'{0},{w}', f'{0},{hz+w*0.03:.1f}']
-    x = 0.0
-    while x < w:
-        x += rng.uniform(w * 0.06, w * 0.16)
-        mts.append(f'{min(x,w):.1f},{hz - rng.uniform(0, w*0.055):.1f}')
-    mts += [f'{w},{w}']
-    p.append(f'<polygon points="{" ".join(mts)}" fill="#08090A"/>')
+    # chispas sueltas: plancton que se prendió por su cuenta
+    for _ in range(90):
+        sx, sy = rng.uniform(0, w), rng.uniform(w * 0.05, w * 0.95)
+        p.append(f'<circle cx="{sx:.1f}" cy="{sy:.1f}" r="{rng.uniform(0.35,1.2):.2f}" '
+                 f'fill="{AURORA}" opacity="{rng.uniform(0.15,0.75):.2f}"/>')
     p.append('</svg>')
     return ''.join(p)
 
@@ -292,7 +262,7 @@ def svg_murmuracion(w=240):
 if __name__ == '__main__':
     os.makedirs(os.path.join(HERE, 'art'), exist_ok=True)
     for nombre, gen in [('amr-ofrenda', svg),
-                        ('ofrenda-aurora', svg_aurora),
+                        ('ofrenda-biolum', svg_biolum),
                         ('ofrenda-murmuracion', svg_murmuracion)]:
         dst = os.path.join(HERE, 'art', f'{nombre}.svg')
         s = gen()

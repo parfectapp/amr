@@ -12,10 +12,12 @@ from dream_core import FF
 HERE = os.path.dirname(os.path.abspath(__file__))
 SET = os.path.join(HERE, '_ofrenda', '_tmp', 'ofrenda-set.wav')
 
-# cuáles y por qué: AURORA es el pico y la única en mayor; MURMURACIÓN es la
-# que está en la portada.
+# cuáles y por qué: BIOLUMINISCENCIA es el pico y el único color del disco;
+# MURMURACIÓN es la que está en la portada.
+# AURORA salió del set (sonaba a Avicii), así que su corte se reemplaza por
+# BIOLUMINISCENCIA — que además es el nuevo pico del disco.
 CORTES = [
-    ('aurora',      630.0,  788.0),
+    ('biolum',      320.0,  480.0),
     ('murmuracion', 480.0,  630.0),
 ]
 

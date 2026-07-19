@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""OFRENDA — 8 rolas generadas en Gemini, masterizadas parejas y mezcladas en set.
+"""OFRENDA — 7 rolas generadas en Gemini, masterizadas parejas y mezcladas en set.
 
 QUÉ HACE ESTE ARCHIVO Y QUÉ NO
   No sintetiza nada. El material viene de Gemini y ya está mezclado; aquí se hace
@@ -7,7 +7,7 @@ QUÉ HACE ESTE ARCHIVO Y QUÉ NO
   mezclar. Es el trabajo de mastering e ingeniería de un DJ mix, no de producción.
 
 LAS TRES CORRECCIONES QUE SE APLICAN
-  1. TEMPO. Las ocho midieron 119.93–119.97 BPM: son 120.000 con ruido de medición.
+  1. TEMPO. Todas midieron 119.78–119.97 BPM: son 120.000 con ruido de medición.
      Se estira cada una a 120.000 exacto (atempo, 0.06 % — inaudible) para que el
      compás valga 2.000 s = 88200 muestras justas y la rejilla no se despegue en
      los 20 minutos de set.
@@ -53,9 +53,8 @@ NIVEL_MEZCLA = -18.0
 ARCO = {
     'PETRICOR':         -2.5,   # abre, casi vacío
     'MONZÓN':           -1.2,
-    'BIOLUMINISCENCIA': -0.5,
-    'MURMURACIÓN':      -0.6,
-    'AURORA':            0.0,   # el pico: el único momento con color
+    'BIOLUMINISCENCIA':  0.0,   # el pico ahora es aquí: el mar que contesta
+    'MURMURACIÓN':      -0.7,
     'ECLIPSE':          -1.8,   # se apaga la luz, y se oye
     'SALAR':            -1.0,
     'CENIZA':           -3.0,   # irse caminando
@@ -65,6 +64,14 @@ ARCO = {
 TECHO = -1.5
 
 # archivo → (nº, nombre, qué es). El orden es el del rito, no el del disco duro.
+#
+# ⚠️ AURORA (Sky_Catches_Fire.mp3) SE SACÓ. André: "parece Avicii". Tenía razón
+# y la culpa fue del prompt: le pedí "bright, vast, transcendent" y "the peak of
+# the record" en tonalidad MAYOR. Eso es la receta exacta del EDM de estadio.
+# El archivo sigue en _raw/ por si algún día se rehace con otro prompt.
+#
+# Se gana algo al quitarla: MURMURACIÓN (Do mayor, 8B) → ECLIPSE (La menor, 8A)
+# es mismo número con cambio de letra, o sea mejor mezcla que la que había.
 SET = [
     ('Before_The_Sun_Hits.mp3',   'PETRICOR',
      'el olor de la tierra seca justo antes de que llueva'),
@@ -74,8 +81,6 @@ SET = [
      'el mar que se enciende cuando lo tocas'),
     ('Murmuration_at_Dusk.mp3',   'MURMURACIÓN',
      'cien mil pájaros moviéndose como un solo cuerpo'),
-    ('Sky_Catches_Fire.mp3',      'AURORA',
-     'el cielo prendido en verde — el único momento con color'),
     ('Midnight_at_Noon.mp3',      'ECLIPSE',
      'oscuridad a mediodía; los animales se callan'),
     ('Salt_Flat_Mirror.mp3',      'SALAR',
@@ -241,7 +246,7 @@ if __name__ == '__main__':
     # Tonos MEDIDOS con analiza.py, no los que se pidieron: Gemini no respetó
     # las tonalidades del prompt, así que la ficha dice lo que las rolas son.
     # F MAJ es la modal del set (3 de 8) y es la que se usa para el Camelot.
-    TONOS = ['F MAJ', 'F MAJ', 'C MAJ', 'C MAJ', 'F MAJ', 'A MIN', 'E MIN', 'D MIN']
+    TONOS = ['F MAJ', 'F MAJ', 'C MAJ', 'C MAJ', 'A MIN', 'E MIN', 'D MIN']
     meta = dict(
         id='amr-ofrenda', title='OFRENDA', kicker='OCHO OFRENDAS · UNA MEZCLA',
         tracks=len(SET), dur=round(dur, 1),
