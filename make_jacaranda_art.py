@@ -125,51 +125,51 @@ def svg():
 
 
 def svg_fulgor(w=240):
-    """FULGOR — la copa vista desde abajo, a contraluz.
+    """FULGOR — el jacarandá en plena floración, el árbol entero prendido.
 
-    Es el pico del disco, y el pico del jacarandá es un instante muy concreto:
-    estás debajo del árbol, miras para arriba, y el sol pasa POR las flores. El
-    violeta deja de ser color y se vuelve luz. Por eso aquí el fondo es claro
-    (el cielo) y las flores son la masa oscura — al revés que la portada.
-    """
-    rng = np.random.default_rng(13)
+    Es el pico del disco. La primera versión era una copa a contraluz de
+    degradado (estilo atmosférico); André pidió emparejarla al estilo de la
+    casa, como subsuelo y letanía. Ahora es un ICONO: un árbol bold con el
+    tronco negro y la copa hecha una nube de flor violeta, con el sol detrás.
+    El árbol que pone violeta la ciudad, en un solo objeto."""
+    import math as _m
+    TRONCO = '#2E2650'
+    cx = 120
     p = [f'<svg viewBox="0 0 {w} {w}" xmlns="http://www.w3.org/2000/svg">',
-         '<defs><radialGradient id="fgsol" cx="46%" cy="40%" r="46%">'
-         '<stop offset="0%" stop-color="#FFF6E4"/>'
-         f'<stop offset="55%" stop-color="{LILA}" stop-opacity="0.55"/>'
-         f'<stop offset="100%" stop-color="{VIOLETA}" stop-opacity="0.30"/>'
-         '</radialGradient></defs>',
-         f'<rect width="{w}" height="{w}" fill="{HUESO}"/>',
-         f'<rect width="{w}" height="{w}" fill="url(#fgsol)"/>']
-
-    # las ramas: salen del borde hacia adentro, adelgazando como ramas de verdad
-    def rama(x, y, ang, largo, grosor, prof=0):
-        if largo < 4 or grosor < 0.35:
-            return
-        x2 = x + math.cos(ang) * largo
-        y2 = y + math.sin(ang) * largo
-        p.append(f'<line x1="{x:.1f}" y1="{y:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-                 f'stroke="{VIOLETA}" stroke-width="{grosor:.2f}" '
-                 f'stroke-linecap="round" opacity="{0.30+0.45*min(1,prof/3):.2f}"/>')
-        # racimos de flor colgando de las puntas
-        if prof >= 2:
-            for _ in range(int(rng.integers(3, 9))):
-                fx = x2 + rng.uniform(-largo * 0.4, largo * 0.4)
-                fy = y2 + rng.uniform(-largo * 0.3, largo * 0.5)
-                r = rng.uniform(1.1, 3.0)
-                p.append(f'<ellipse cx="{fx:.1f}" cy="{fy:.1f}" rx="{r:.2f}" '
-                         f'ry="{r*0.66:.2f}" fill="{VIOLETA}" '
-                         f'opacity="{rng.uniform(0.30,0.80):.2f}"/>')
-        for _ in range(2):
-            rama(x2, y2, ang + rng.uniform(-0.75, 0.75), largo * rng.uniform(0.52, 0.74),
-                 grosor * 0.62, prof + 1)
-
-    for k in range(9):
-        ang = k / 9.0 * 2 * math.pi + rng.uniform(-0.2, 0.2)
-        x0 = w * 0.5 + math.cos(ang) * w * 0.62
-        y0 = w * 0.5 + math.sin(ang) * w * 0.62
-        rama(x0, y0, math.atan2(w * 0.5 - y0, w * 0.5 - x0) + rng.uniform(-0.3, 0.3),
-             w * 0.17, 2.6)
+         f'<defs><radialGradient id="jfg" cx="50%" cy="42%" r="52%">'
+         f'<stop offset="0%" stop-color="#FFF3D6" stop-opacity="0.9"/>'
+         f'<stop offset="42%" stop-color="{LILA}" stop-opacity="0.5"/>'
+         f'<stop offset="100%" stop-color="{LILA}" stop-opacity="0"/>'
+         f'</radialGradient></defs>',
+         f'<ellipse cx="{cx}" cy="214" rx="60" ry="8" fill="{TRONCO}" opacity="0.06"/>',
+         f'<circle cx="{cx}" cy="96" r="78" fill="url(#jfg)"/>']
+    # tronco: sube del suelo y se abre en tres ramas
+    p.append(f'<path d="M{cx-8},206 L{cx-8},120 L{cx+8},120 L{cx+8},206 Z" fill="{TRONCO}"/>')
+    for ang, largo in [(-0.6, 46), (0.0, 40), (0.62, 46)]:
+        x2 = cx + _m.sin(ang) * largo
+        y2 = 120 - _m.cos(ang) * largo
+        p.append(f'<line x1="{cx}" y1="126" x2="{x2:.0f}" y2="{y2:.0f}" '
+                 f'stroke="{TRONCO}" stroke-width="9" stroke-linecap="round"/>')
+    # copa: nube de flor, círculos violetas encimados (bold, no degradado)
+    rng = __import__('numpy').random.default_rng(41)
+    pom = [(cx, 78, 40), (cx-40, 96, 30), (cx+40, 96, 30),
+           (cx-22, 62, 26), (cx+24, 60, 27), (cx, 108, 30),
+           (cx-52, 74, 20), (cx+52, 74, 20)]
+    for x, y, r in pom:
+        p.append(f'<circle cx="{x}" cy="{y}" r="{r}" fill="{VIOLETA}"/>')
+    # manchones claros de flor (lila) para que la copa respire
+    for _ in range(16):
+        x = cx + float(rng.uniform(-56, 56)); y = 78 + float(rng.uniform(-30, 34))
+        if _m.hypot((x-cx)/58, (y-84)/44) > 1: continue
+        p.append(f'<circle cx="{x:.0f}" cy="{y:.0f}" r="{float(rng.uniform(4,9)):.0f}" '
+                 f'fill="{LILA}" opacity="0.8"/>')
+    # pétalos cayendo: tres puntitos bajo la copa (la lluvia que empieza)
+    for x, y in [(cx-30, 150), (cx+18, 162), (cx+40, 140)]:
+        p.append(f'<circle cx="{x}" cy="{y}" r="3" fill="{VIOLETA}" opacity="0.7"/>')
+    # suelo + dos puntitos de acento
+    p.append(f'<rect x="{cx-52}" y="204" width="104" height="6" rx="3" fill="{VIOLETA}"/>')
+    p.append(f'<circle cx="60" cy="150" r="2.2" fill="{TRONCO}"/>')
+    p.append(f'<circle cx="182" cy="176" r="2.4" fill="{TRONCO}"/>')
     p.append('</svg>')
     return ''.join(p)
 

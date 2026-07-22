@@ -128,52 +128,6 @@ body.hero-in .hero-bottom{opacity:1;transform:none;transition-delay:.66s}
 .card::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--amber);transition:width .5s}
 .card:hover::after,.card.playing::after{width:100%}
 
-/* ---- LA SESIÓN — el catálogo corrido como un solo set ----
-   Aquí vivía la cabina completa: cuatro tornamesas, la DJM de cuatro canales,
-   AI DJ, hot cues, loops, beat FX. Mil líneas para que el visitante jugara a
-   ser DJ. André pidió lo contrario — "déjalo más bien como un set de nuestras
-   canciones" — así que no se simplificó la cabina: se quitó entera y en su
-   lugar quedó una sola cosa que hace una sola cosa. */
-.sess{position:relative;color:var(--bone);background:radial-gradient(120% 80% at 50% 0%,#1b1d21,#0c0d0f 70%);overflow:hidden}
-.sessin{position:relative;z-index:2;max-width:1120px;margin:0 auto;padding:clamp(60px,9vw,120px) clamp(16px,3vw,40px)}
-.sess .hk{color:rgba(234,230,223,.55)}
-.sess h2{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(34px,4.5vw,60px);margin:14px 0 16px}
-.sesslede{color:rgba(234,230,223,.62);line-height:1.7;max-width:60ch;margin:0 0 34px}
-.sesslede b{color:var(--bone);font-weight:500}
-/* la barra: onda real del disco que suena + cabezal */
-.sessbar{position:relative;height:120px;margin:0 0 4px;cursor:pointer;background:#0a0b0d;border:1px solid rgba(234,230,223,.09)}
-.sessbar canvas{position:absolute;inset:0;width:100%;height:100%}
-.sesshead{position:absolute;top:0;bottom:0;width:1px;background:var(--bone);pointer-events:none;box-shadow:0 0 10px rgba(234,230,223,.5)}
-.sessnums{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;color:rgba(234,230,223,.45);padding:9px 0 26px}
-.sessnums b{color:var(--bone);font-weight:400}
-/* el transporte: un botón grande y dos chicos. Nada más. */
-.sesstrans{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 38px}
-.sessplay{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.16em;text-transform:uppercase;
-  border:1px solid var(--bone);background:var(--bone);color:#0c0d0f;padding:17px 34px;cursor:pointer;transition:.3s}
-.sessplay:hover{background:transparent;color:var(--bone)}
-.sesskip{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
-  border:1px solid rgba(234,230,223,.35);background:none;color:rgba(234,230,223,.75);padding:16px 20px;cursor:pointer;transition:.3s}
-.sesskip:hover{border-color:var(--bone);color:var(--bone)}
-.sessnow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.16em;color:rgba(234,230,223,.5);text-transform:uppercase}
-.sessnow b{color:var(--bone);font-weight:400}
-/* el orden del set: un renglón por disco, sus movimientos adentro */
-.sessdisc{border-top:1px solid rgba(234,230,223,.13)}
-.sessdisc:last-child{border-bottom:1px solid rgba(234,230,223,.13)}
-.sesshead2{display:flex;align-items:baseline;gap:14px;padding:18px 0;cursor:pointer;transition:.2s}
-.sesshead2:hover{padding-left:6px}
-.sessno{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--sc,#8b857c);min-width:34px}
-.sesstit{font-family:'Instrument Serif',serif;font-size:clamp(22px,2.6vw,32px);line-height:1}
-.sessmeta{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.12em;color:rgba(234,230,223,.42);text-align:right}
-.sessdisc.on .sesstit{color:var(--sc,#8b857c)}
-.sesscuts{list-style:none;margin:0;padding:0 0 16px;columns:3;column-gap:26px}
-.sesscuts li{display:flex;gap:9px;padding:4px 0;font-family:'IBM Plex Mono',monospace;font-size:11px;
-  color:rgba(234,230,223,.45);cursor:pointer;break-inside:avoid;transition:color .2s}
-.sesscuts li:hover{color:var(--bone)}
-.sesscuts li b{color:var(--sc,#8b857c);font-weight:400;min-width:22px}
-.sesscuts li.on{color:var(--bone)}
-.sesscuts li.on b::after{content:" \25b8"}
-@media(max-width:860px){.sesscuts{columns:2}.sessbar{height:88px}}
-@media(max-width:560px){.sesscuts{columns:1}}
 /* ---- about ---- */
 .about{text-align:center}
 .about .lede{font-family:'Instrument Serif',serif;font-size:clamp(26px,3.6vw,44px);line-height:1.25;max-width:26ch;margin:0 auto 24px}
@@ -642,7 +596,6 @@ body.hasplayer{padding-bottom:70px}
   <a href="#" class="wm">STUDIO AMR<i>.</i></a>
   <nav>
     <a href="#records">Records</a>
-    <a href="#sound">The mixer</a>
     <a href="#about">About</a>
     <a href="#own">Own one</a>
   </nav>
@@ -752,24 +705,6 @@ body.hasplayer{padding-bottom:70px}
   <div class="grid" id="recordGrid"></div>
 </section>
 
-<!-- LA SESIÓN — el catálogo corrido como un solo set -->
-<div class="sess" id="sound">
-<div class="sessin">
-  <span class="hk">THE SESSION — SIX RECORDS, ONE SITTING</span>
-  <p class="sesslede">Every record in order, played as one session — <b>press play once</b> and it runs from the first bar of MONUMENTS to the last of SUBSUELO without you touching anything. Pick any movement below to drop straight into it.</p>
-  <div class="sessbar" id="sessBar"><canvas id="sessCv"></canvas><div class="sesshead" id="sessHead" style="left:0"></div></div>
-  <div class="sessnums"><span id="sessT">0:00</span><span class="sessnow" id="sessNow">—</span><span id="sessD">0:00</span></div>
-  <div class="sesstrans">
-    <button class="sessplay" id="sessPlay">&#9654; Play the session</button>
-    <button class="sesskip" id="sessPrev">&#9664;&#9664;</button>
-    <button class="sesskip" id="sessNext">&#9654;&#9654;</button>
-  </div>
-  <div id="sessList"></div>
-</div>
-</div>
-
-
-
 <!-- MARQUEE DELIRIO (azul, scroll infinito) -->
 <div class="mq blue"><div id="mqtrack2"></div></div>
 
@@ -859,8 +794,8 @@ body.hasplayer{padding-bottom:70px}
 <script src="set.js?v=202607161934"></script>
 <script src="tulum.js?v=202607161934"></script>
 <script src="guerrero.js?v=202607170430"></script>
-<script src="jacaranda.js?v=202607202000"></script>
-<script src="subsuelo.js?v=202607202000"></script>
+<script src="jacaranda.js?v=202607202300"></script>
+<script src="subsuelo.js?v=202607202300"></script>
 <script src="waveforms.js?v=202607201200"></script>
 <script>
 var CONFIG = { email:'andremacouzetruiz@gmail.com', wa:'' }; // pon tu WhatsApp con lada, ej '52443...'
@@ -1132,7 +1067,7 @@ if(window.AMR_SUBSUELO){
 }
 
 var NPICKS = [
-  {sec:2, file:'audio/amr-jacaranda-cut-fulgor.m4a',  art:'art/jacaranda-fulgor.svg',  key:'C MAJ',
+  {sec:2, file:'audio/amr-jacaranda-cut-fulgor.m4a',  art:'art/jacaranda-fulgor.svg?v=2',  key:'C MAJ',
    desc:'Standing under the tree looking up, with the sun coming through the flowers. The violet stops being a colour and becomes light.'},
   {sec:3, file:'audio/amr-jacaranda-cut-letania.m4a', art:'art/jacaranda-letania.svg?v=4', key:'C MAJ',
    desc:'A litany is the same phrase said so many times it stops being a phrase. Thousands of identical flowers doing exactly that.'}
@@ -1387,13 +1322,9 @@ VINYLS.forEach(function(p,j){
   });
 });
 
-/* ---- LA SESIÓN: el catálogo corrido, una sola cosa que hace una sola cosa ----
-   Reemplaza a la cabina de 4 tornamesas que vivía aquí. No hay decks, ni EQ, ni
-   crossfader, ni AI DJ: hay un botón que arranca MONUMENTS y no para hasta el
-   último compás del último disco, encadenando uno con otro solo. Y una lista
-   donde puedes caer directo en cualquier movimiento.
-   Aquí también se define __RECCOL (la tabla de colores por disco) que ANTES
-   vivía dentro del mixer y que usa el motor de fondos y surcos de abajo. */
+/* ---- colores por disco — los usa el motor de fondos y surcos de abajo.
+   Vivían en el mixer, luego en la sesión; las dos se quitaron, así que ahora
+   van sueltos aquí para que no se pierdan. ---- */
 window.__RECCOL = [
   {id:'amr-monuments-side', c:'#C96F2B', lc:'#E0954F'},
   {id:'amr-set-the-set',    c:'#A62D3E', lc:'#C8495E'},
@@ -1402,107 +1333,6 @@ window.__RECCOL = [
   {id:'amr-jacaranda',      c:'#463A73', lc:'#9D8BD6'},
   {id:'amr-subsuelo',       c:'#B4501F', lc:'#D97A45'}
 ];
-(function(){
-  var lista = document.getElementById('sessList'), cv = document.getElementById('sessCv');
-  if(!lista || !cv || !VINYLS.length) return;
-  var COL = {}; window.__RECCOL.forEach(function(r){ COL[r.id] = r.lc; });
-  var bar = document.getElementById('sessBar'), cab = document.getElementById('sessHead');
-  var elT = document.getElementById('sessT'), elD = document.getElementById('sessD');
-  var elNow = document.getElementById('sessNow'), btn = document.getElementById('sessPlay');
-  var idx = 0;                                      // disco de la sesión que toca
-  function gi(j){ return VOFF + j; }                // índice global en T
-
-  function bytes(b64){ var t=atob(b64), u=new Uint8Array(t.length); for(var i=0;i<t.length;i++) u[i]=t.charCodeAt(i); return u; }
-  var ONDA = {};
-  VINYLS.forEach(function(v){
-    var w = (window.AMR_WF||{})[v.file];
-    if(w) ONDA[v.id] = {lo:bytes(w.lo), mi:bytes(w.mi), hi:bytes(w.hi)};
-  });
-  function rgb(h){ var n=parseInt(h.slice(1),16); return [(n>>16)&255,(n>>8)&255,n&255]; }
-
-  function dibuja(){
-    var v = VINYLS[idx], W = ONDA[v.id];
-    var d = Math.min(2, window.devicePixelRatio||1), r = bar.getBoundingClientRect();
-    if(r.width < 8){ requestAnimationFrame(dibuja); return; }   // espera al layout
-    cv.width = Math.max(2, Math.round(r.width*d)); cv.height = Math.max(2, Math.round(r.height*d));
-    var x = cv.getContext('2d'), w = cv.width, h = cv.height, mid = h/2;
-    x.clearRect(0,0,w,h);
-    if(!W) return;
-    var c = rgb(COL[v.id] || '#8b857c');
-    [['lo',1.0,.42],['mi',.62,.34],['hi',.34,.5]].forEach(function(b){
-      var A = W[b[0]]; x.fillStyle = 'rgba('+c[0]+','+c[1]+','+c[2]+','+b[2]+')';
-      for(var i=0;i<w;i++){
-        var a = A[Math.floor(i/w*(A.length-1))]/255 * b[1];
-        var alto = Math.max(1, a*mid*0.94);
-        x.fillRect(i, mid-alto, 1, alto*2);
-      }
-    });
-  }
-
-  function pinta(){
-    var t = (typeof absTime==='function' ? absTime() : audio.currentTime) || 0;
-    var dur = VINYLS[idx].dur || 0;
-    cab.style.left = (dur ? Math.min(1, t/dur)*100 : 0) + '%';
-    elT.textContent = fmt(t); elD.textContent = fmt(dur);
-    var v = VINYLS[idx], k = 0;
-    (v.offsets||[]).forEach(function(o,i){ if(t >= o) k = i; });
-    elNow.innerHTML = '<b>'+v.title+'</b> &#183; '+((v.titles||[])[k]||'');
-    document.querySelectorAll('.sessdisc').forEach(function(el,j){
-      el.classList.toggle('on', j===idx);
-      el.querySelectorAll('.sesscuts li').forEach(function(li,i){
-        li.classList.toggle('on', j===idx && i===k && !audio.paused);
-      });
-    });
-    btn.innerHTML = (!audio.paused && cur===gi(idx)) ? '&#9646;&#9646; Pause' : '&#9654; Play the session';
-  }
-
-  function suena(j, seg){
-    idx = j; dibuja();
-    if(cur === gi(j)){ if(seg!=null) absSeek(seg); if(audio.paused) audio.play(); }
-    else {
-      playTrack(gi(j));
-      if(seg!=null){ var f=function(){ audio.removeEventListener('canplay', f); absSeek(seg); }; audio.addEventListener('canplay', f); }
-    }
-  }
-
-  VINYLS.forEach(function(v,j){
-    var col = COL[v.id] || '#8b857c';
-    var cuts = (v.titles||[]).map(function(t,i){
-      return '<li data-d="'+j+'" data-c="'+i+'"><b>'+(i+1<10?'0':'')+(i+1)+'</b> '+t+'</li>';
-    }).join('');
-    var el = document.createElement('div');
-    el.className = 'sessdisc'; el.style.setProperty('--sc', col);
-    el.innerHTML =
-      '<div class="sesshead2" data-d="'+j+'">'+
-        '<span class="sessno">'+(j+1<10?'0':'')+(j+1)+'</span>'+
-        '<span class="sesstit">'+v.title+'</span>'+
-        '<span class="sessmeta">'+(v.tracks||0)+' CUTS &#183; '+fmt(v.dur)+'</span>'+
-      '</div><ul class="sesscuts">'+cuts+'</ul>';
-    lista.appendChild(el);
-  });
-  lista.addEventListener('click', function(e){
-    var h = e.target.closest('.sesshead2');
-    if(h){ suena(+h.dataset.d, 0); return; }
-    var li = e.target.closest('.sesscuts li');
-    if(li){ suena(+li.dataset.d, (VINYLS[+li.dataset.d].offsets||[])[+li.dataset.c]||0); }
-  });
-  btn.addEventListener('click', function(){ (!audio.paused && cur===gi(idx)) ? pause() : suena(idx, null); });
-  document.getElementById('sessPrev').addEventListener('click', function(){ suena((idx-1+VINYLS.length)%VINYLS.length, 0); });
-  document.getElementById('sessNext').addEventListener('click', function(){ suena((idx+1)%VINYLS.length, 0); });
-  bar.addEventListener('click', function(e){
-    var r = bar.getBoundingClientRect();
-    suena(idx, ((e.clientX-r.left)/r.width) * (VINYLS[idx].dur||0));
-  });
-  // encadenado: al acabar un disco entra el siguiente, sin que nadie toque nada
-  audio.addEventListener('ended', function(){ if(cur===gi(idx) && idx<VINYLS.length-1) suena(idx+1, 0); });
-  // si el disco se arranca desde otra parte de la página, la sesión se sincroniza
-  audio.addEventListener('play', function(){
-    var j = VINYLS.findIndex(function(v,k){ return cur === gi(k); });
-    if(j > -1 && j !== idx){ idx = j; dibuja(); }
-  });
-  dibuja(); pinta(); setInterval(pinta, 250);
-  var rd; addEventListener('resize', function(){ clearTimeout(rd); rd = setTimeout(dibuja, 200); });
-})();
 
 /* ---- IDENTIDAD POR DISCO: fondo y surcos dibujados con SUS PROPIOS DATOS ----
    Antes los cuatro paneles eran el mismo par de manchas borrosas con distinto
@@ -1657,13 +1487,16 @@ window.__RECCOL = [
     if(pendiente) requestAnimationFrame(pinta);
   }
   requestAnimationFrame(pinta);
-  var redib; addEventListener('resize', function(){
-    clearTimeout(redib);
-    redib = setTimeout(function(){
-      document.querySelectorAll('.nrbg,.vgrooves').forEach(function(n){ n.remove(); });
-      pinta();
-    }, 260);
-  });
+  function repinta(){
+    document.querySelectorAll('.nrbg,.vgrooves').forEach(function(n){ n.remove(); });
+    pinta();
+  }
+  var redib; addEventListener('resize', function(){ clearTimeout(redib); redib = setTimeout(repinta, 260); });
+  // rAF se PAUSA cuando la pestaña está oculta; al volver a verse, los paneles
+  // que quedaron sin pintar (canvas de 0px) se rehacen. En producción el
+  // viewport nunca es 0, pero esto cubre el caso del preview colapsado.
+  addEventListener('load', function(){ setTimeout(pinta, 60); });
+  document.addEventListener('visibilitychange', function(){ if(!document.hidden) setTimeout(repinta, 60); });
 })();
 
 /* ---- player ---- */
