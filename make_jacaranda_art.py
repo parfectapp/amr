@@ -175,43 +175,52 @@ def svg_fulgor(w=240):
 
 
 def svg_letania(w=240):
-    """LETANÍA — miles de flores idénticas repitiendo hasta volverse una sola.
+    """LETANÍA — el jacarandá florece en RACIMOS colgantes (panículas): decenas
+    de campanitas idénticas colgando de un mismo tallo. Una letanía es la misma
+    frase repetida hasta volverse una; el racimo es lo mismo hecho flor.
 
-    Una letanía es la misma frase dicha muchas veces hasta que deja de ser
-    frase. El dibujo hace exactamente eso: una sola forma, repetida en rejilla,
-    con variaciones tan chicas que de lejos se lee como textura y no como
-    flores. De cerca vuelven a ser flores. Ese ir y venir ES la rola.
-    """
-    rng = np.random.default_rng(29)
+    ⚠️ La primera versión era una rejilla de florecitas que de lejos se leía como
+    PAPEL TAPIZ, no como un dibujo. André pidió cambiarla "por algo del estilo".
+    El estilo de la casa (guer-cactus, tulum-atlas) es UN objeto icónico en
+    trazo grueso sobre hueso — así que ahora es un solo racimo, claro y bold."""
+    TALLO = '#2E2650'          # violeta casi negro, el "trazo grueso" del estilo
     p = [f'<svg viewBox="0 0 {w} {w}" xmlns="http://www.w3.org/2000/svg">',
-         f'<rect width="{w}" height="{w}" fill="{HUESO}"/>']
-    paso = w / 17.0
-    for fila in range(19):
-        for col in range(19):
-            # la rejilla se desfasa un poco fila con fila: no es cuadrícula
-            cx = (col + (0.5 if fila % 2 else 0.0)) * paso + rng.uniform(-1.6, 1.6)
-            cy = fila * paso * 0.86 + rng.uniform(-1.6, 1.6)
-            if not (-paso < cx < w + paso and -paso < cy < w + paso):
-                continue
-            # se apaga hacia las orillas para que el centro mande
-            d = math.hypot((cx - w / 2) / (w * 0.62), (cy - w / 2) / (w * 0.62))
-            op = max(0.0, 0.88 - d * 0.78) * rng.uniform(0.72, 1.0)
-            if op < 0.05:
-                continue
-            r = paso * rng.uniform(0.20, 0.30)
-            ang = rng.uniform(0, 360)
-            col_f = LILA if rng.random() < 0.30 else VIOLETA
-            # la flor: cinco lóbulos, como la campana del jacarandá
-            g = [f'<g transform="translate({cx:.1f},{cy:.1f}) rotate({ang:.0f})" '
-                 f'fill="{col_f}" opacity="{op:.2f}">']
-            for k in range(5):
-                a = k / 5.0 * 2 * math.pi
-                g.append(f'<ellipse cx="{math.cos(a)*r*0.52:.2f}" '
-                         f'cy="{math.sin(a)*r*0.52:.2f}" rx="{r*0.46:.2f}" '
-                         f'ry="{r*0.34:.2f}" transform="rotate({math.degrees(a):.0f} '
-                         f'{math.cos(a)*r*0.52:.2f} {math.sin(a)*r*0.52:.2f})"/>')
-            g.append('</g>')
-            p.append(''.join(g))
+         f'<defs><radialGradient id="jlt" cx="50%" cy="48%" r="52%">'
+         f'<stop offset="0%" stop-color="{LILA}" stop-opacity="0.42"/>'
+         f'<stop offset="55%" stop-color="{LILA}" stop-opacity="0.13"/>'
+         f'<stop offset="100%" stop-color="{LILA}" stop-opacity="0"/>'
+         f'</radialGradient></defs>',
+         f'<circle cx="120" cy="120" r="66" fill="url(#jlt)"/>']
+
+    # una campanita del jacarandá: trompeta bold que cuelga (apunta abajo)
+    def campana(cx, cy, col):
+        d = (f'M{cx-5},{cy} C{cx-7},{cy+9} {cx-12},{cy+17} {cx-10},{cy+24} '
+             f'L{cx+10},{cy+24} C{cx+12},{cy+17} {cx+7},{cy+9} {cx+5},{cy} Z')
+        return (f'<path d="{d}" fill="{col}"/>'
+                f'<ellipse cx="{cx}" cy="{cy+24}" rx="10" ry="3" fill="{LILA}" opacity="0.9"/>')
+
+    # el racimo: triángulo colgante que se angosta hacia abajo (una panícula).
+    # Todas las campanas IDÉNTICAS = la repetición de la letanía.
+    filas = [(72, [-45,-22.5,0,22.5,45]), (100, [-33,-11,11,33]),
+             (128, [-22,0,22]), (156, [-11,11]), (184, [0])]
+    # rama de la que cuelga todo + tallo central
+    p.append(f'<line x1="96" y1="52" x2="144" y2="52" stroke="{TALLO}" '
+             f'stroke-width="7" stroke-linecap="round"/>')
+    p.append(f'<line x1="120" y1="50" x2="120" y2="186" stroke="{TALLO}" stroke-width="4"/>')
+    # tallitos a cada campana + las campanas
+    bells = []
+    for fy, xs in filas:
+        for dx in xs:
+            cx = 120 + dx
+            p.append(f'<line x1="120" y1="{fy-14}" x2="{cx}" y2="{fy-4}" '
+                     f'stroke="{TALLO}" stroke-width="2.4"/>')
+            bells.append((cx, fy))
+    # las campanas al final, encima de los tallos; una de cada tres en lila
+    for i, (cx, fy) in enumerate(bells):
+        p.append(campana(cx, fy, LILA if i % 3 == 1 else VIOLETA))
+    # dos puntitos de acento, como el resto del catálogo
+    p.append(f'<circle cx="66" cy="150" r="2.2" fill="{TALLO}"/>')
+    p.append(f'<circle cx="180" cy="96" r="2.4" fill="{TALLO}"/>')
     p.append('</svg>')
     return ''.join(p)
 

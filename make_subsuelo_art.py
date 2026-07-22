@@ -15,8 +15,8 @@ EL ESTILO DE LA CASA (ver art/guer-cactus.svg, guer-serpiente.svg, tulum-atlas):
 Es un grabado, no una fotografía. Cada disco es un objeto reconocible.
 
 LOS TRES OBJETOS DE SUBSUELO (industrial, subterráneo, óxido):
-  · portada  = tapa de alcantarilla vista de arriba — el ícono más "subsuelo"
-               que existe: lo que pisas todos los días sin mirar
+  · portada  = una escalera que baja — el concepto del disco: ocho niveles
+               hacia abajo, de la banqueta a la roca
   · BASALTO  = las columnas de basalto (los órganos), la roca del fondo
   · DUCTO    = una rejilla de ventilación, el tiro de aire
 """
@@ -44,32 +44,38 @@ def _dots():
 
 
 def svg_portada(w=240):
-    """Tapa de alcantarilla — vista de arriba. Aro grueso, radios, tornillos y
-    la ranura de palanca. Lo que pisas sin mirar: la puerta del subsuelo."""
-    cx = cy = 120
-    p = [f'<svg viewBox="0 0 {w} {w}" xmlns="http://www.w3.org/2000/svg">',
-         _glow('ssp', cx, cy, 66)]
-    # aro exterior grueso
-    p.append(f'<circle cx="{cx}" cy="{cy}" r="74" fill="none" stroke="{TINTA}" stroke-width="15"/>')
-    # aro interior
-    p.append(f'<circle cx="{cx}" cy="{cy}" r="54" fill="none" stroke="{TINTA}" stroke-width="7"/>')
-    # radios: 12 costillas gruesas del hub al aro interior
-    for k in range(12):
-        a = k / 12 * 2 * math.pi
-        x1, y1 = cx + math.cos(a) * 16, cy + math.sin(a) * 16
-        x2, y2 = cx + math.cos(a) * 50, cy + math.sin(a) * 50
-        col = OXIDO if k % 3 == 0 else TINTA
-        p.append(f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" '
-                 f'stroke="{col}" stroke-width="5" stroke-linecap="round"/>')
-    # hub central
-    p.append(f'<circle cx="{cx}" cy="{cy}" r="12" fill="{TINTA}"/>')
-    # tornillos: 8 puntos sobre el aro
-    for k in range(8):
-        a = k / 8 * 2 * math.pi + 0.39
-        p.append(f'<circle cx="{cx+math.cos(a)*64:.1f}" cy="{cy+math.sin(a)*64:.1f}" '
-                 f'r="3.4" fill="{TINTA}"/>')
-    # ranura de palanca (arriba) en óxido
-    p.append(f'<rect x="{cx-11}" y="{cy-72}" width="22" height="9" rx="4.5" fill="{OXIDO}"/>')
+    """Escalera que baja — el concepto del disco hecho ícono: ocho niveles hacia
+    abajo, de la banqueta a la roca. La primera versión era una tapa de
+    alcantarilla, pero con los radios se leía como RUEDA DE CARRETA, no como
+    subsuelo. La escalera no se confunde con nada: es bajar, y punto. Abajo, el
+    óxido encendido = el fondo (BASALTO)."""
+    p = [f'<svg viewBox="0 0 {w} {w}" xmlns="http://www.w3.org/2000/svg">']
+    # glow del fondo abajo-derecha (hacia donde se desciende)
+    p.append(f'<defs><radialGradient id="ssp" cx="50%" cy="50%" r="50%">'
+             f'<stop offset="0%" stop-color="{OXIDO}" stop-opacity="0.5"/>'
+             f'<stop offset="60%" stop-color="{OXIDO}" stop-opacity="0.16"/>'
+             f'<stop offset="100%" stop-color="{OXIDO}" stop-opacity="0"/>'
+             f'</radialGradient></defs>')
+    p.append(f'<ellipse cx="120" cy="214" rx="72" ry="8" fill="{TINTA}" opacity="0.05"/>')
+    p.append(f'<circle cx="150" cy="176" r="62" fill="url(#ssp)"/>')
+    # la escalera: masa sólida con el borde superior escalonado (6 escalones),
+    # bajando de arriba-izquierda a abajo-derecha. Sólida = no se lee como barras.
+    x0, y0, paso = 54, 60, 21
+    esc = [(x0, y0)]
+    for i in range(6):
+        esc.append((x0 + (i+1)*paso, y0 + i*paso))       # tramo horizontal (huella)
+        esc.append((x0 + (i+1)*paso, y0 + (i+1)*paso))    # tramo vertical (contrahuella)
+    borde = ' '.join(f'{x},{y}' for x, y in esc)
+    base = f'{x0+6*paso},202 {x0},202'
+    p.append(f'<polygon points="{borde} {base}" fill="{TINTA}"/>')
+    # nariz de óxido en el filo de cada escalón (donde pega la luz)
+    for i in range(6):
+        xa = x0 + (i+1)*paso
+        ya = y0 + i*paso
+        p.append(f'<line x1="{xa-paso}" y1="{ya}" x2="{xa}" y2="{ya}" '
+                 f'stroke="{OXIDO}" stroke-width="4" stroke-linecap="round"/>')
+    # el último escalón se hunde en el óxido: un bloque encendido al fondo
+    p.append(f'<rect x="{x0+6*paso-4}" y="{y0+6*paso-4}" width="10" height="26" fill="{OXIDO}"/>')
     p.append(_dots())
     p.append('</svg>')
     return ''.join(p)
